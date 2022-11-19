@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Security;
 using System.Threading;
+using LiteDB.Client.Shared;
+
 using static LiteDB.Constants;
 
 namespace LiteDB
@@ -278,7 +280,7 @@ namespace LiteDB
             _machine = (GetMachineHash() +
                 AppDomain.CurrentDomain.Id
                 ) & 0x00ffffff;
-            _increment = (new Random()).Next();
+            _increment = SharedStuff.Random.Next();
 
             try
             {

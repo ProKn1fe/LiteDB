@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.IO;
 using System.Text;
 using static LiteDB.Constants;
+using LiteDB.Client.Shared;
 
 namespace LiteDB
 {
@@ -83,9 +84,7 @@ namespace LiteDB
         {
             var salt = new byte[maxLength];
             {
-                var rng = RandomNumberGenerator.Create();
-                using (rng as IDisposable)
-                    rng.GetBytes(salt);
+                SharedStuff.RandomNumberGenerator.GetBytes(salt);
             }
             return salt;
         }

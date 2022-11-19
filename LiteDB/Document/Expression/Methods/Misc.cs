@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+
+using LiteDB.Client.Shared;
+
 using static LiteDB.Constants;
 
 namespace LiteDB
@@ -208,15 +211,13 @@ namespace LiteDB
             return items.Distinct();
         }
 
-        private static Random _random = new Random();
-
         /// <summary>
         /// Return a random int value
         /// </summary>
         [Volatile]
         public static BsonValue RANDOM()
         {
-            return _random.Next();
+            return SharedStuff.Random.Next();
         }
 
         /// <summary>
@@ -227,7 +228,7 @@ namespace LiteDB
         {
             if (min.IsNumber && max.IsNumber)
             {
-                return _random.Next(min.AsInt32, max.AsInt32);
+                return SharedStuff.Random.Next(min.AsInt32, max.AsInt32);
             }
             else
             {

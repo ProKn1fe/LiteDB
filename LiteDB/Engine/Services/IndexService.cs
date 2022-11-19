@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using LiteDB.Client.Shared;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -12,8 +14,6 @@ namespace LiteDB.Engine
     /// </summary>
     internal class IndexService
     {
-        private static Random _rnd = new Random();
-
         private readonly Snapshot _snapshot;
         private readonly Collation _collation;
 
@@ -172,7 +172,7 @@ namespace LiteDB.Engine
         {
             byte level = 1;
 
-            for (int R = _rnd.Next(); (R & 1) == 1; R >>= 1)
+            for (int R = SharedStuff.Random.Next(); (R & 1) == 1; R >>= 1)
             {
                 level++;
                 if (level == MAX_LEVEL_LENGTH) break;

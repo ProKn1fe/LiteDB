@@ -3,6 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+
+using LiteDB.Client.Shared;
+
 using XTSSharp;
 using static LiteDB.Constants;
 
@@ -33,10 +36,7 @@ namespace LiteDB.Engine
                 if (isNew)
                 {
                     // create new SALT
-                    using (var rng = RandomNumberGenerator.Create())
-                    {
-                        rng.GetBytes(salt);
-                    }
+                    SharedStuff.RandomNumberGenerator.GetBytes(salt);
 
                     // store encryption type + salt
                     _baseStream.WriteByte((byte)encryption);
