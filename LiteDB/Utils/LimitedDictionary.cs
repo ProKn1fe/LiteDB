@@ -87,7 +87,7 @@ namespace LiteDB.Utils
                 if (Capacity == Count)
                     dict.RemoveAt(0);
 
-                dict.Add(key, value);
+                dict[key] = value;
             }
         }
 
