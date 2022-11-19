@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -30,8 +29,8 @@ namespace LiteDB.Engine
 
         public IndexCost(CollectionIndex index, BsonExpression expr, BsonExpression value, Collation collation)
         {
-            this.IndexExpression = index.Expression;
-            this.Expression = expr;
+            IndexExpression = index.Expression;
+            Expression = expr;
 
             var exprType = expr.Type;
 
@@ -58,21 +57,21 @@ namespace LiteDB.Engine
             }
 
             // create index instance
-            this.Index = value.Execute(collation).Select(x => this.CreateIndex(exprType, index.Name, x)).FirstOrDefault();
+            Index = value.Execute(collation).Select(x => CreateIndex(exprType, index.Name, x)).FirstOrDefault();
 
-            ENSURE(this.Index != null, "index must be not null");
+            ENSURE(Index != null, "index must be not null");
 
             // calcs index cost
-            this.Cost = this.Index.GetCost(index);
+            Cost = Index.GetCost(index);
         }
 
         // used when full index search
         public IndexCost(CollectionIndex index)
         {
-            this.Expression = BsonExpression.Create(index.Expression);
-            this.Index = new IndexAll(index.Name, Query.Ascending);
-            this.Cost = this.Index.GetCost(index);
-            this.IndexExpression = index.Expression;
+            Expression = BsonExpression.Create(index.Expression);
+            Index = new IndexAll(index.Name, Query.Ascending);
+            Cost = Index.GetCost(index);
+            IndexExpression = index.Expression;
         }
 
         /// <summary>

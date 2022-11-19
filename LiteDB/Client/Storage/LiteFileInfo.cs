@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text.RegularExpressions;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -66,7 +63,7 @@ namespace LiteDB
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
 
-            using (var reader = this.OpenRead())
+            using (var reader = OpenRead())
             {
                 reader.CopyTo(stream);
             }
@@ -81,7 +78,7 @@ namespace LiteDB
 
             using (var file = File.Open(filename, overwritten ? FileMode.Create : FileMode.CreateNew))
             {
-                using (var stream = this.OpenRead())
+                using (var stream = OpenRead())
                 {
                     stream.CopyTo(file);
                 }

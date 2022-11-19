@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -26,7 +26,7 @@ namespace LiteDB.Engine
             // drop collection is possible only in exclusive transaction for this
             if (_locker.IsInTransaction) throw LiteException.AlreadyExistsTransaction();
 
-            return this.AutoTransaction(transaction =>
+            return AutoTransaction(transaction =>
             {
                 var snapshot = transaction.CreateSnapshot(LockMode.Write, name, false);
 
@@ -65,7 +65,7 @@ namespace LiteDB.Engine
             // rename collection is possible only in exclusive transaction for this
             if (_locker.IsInTransaction) throw LiteException.AlreadyExistsTransaction();
 
-            return this.AutoTransaction(transaction =>
+            return AutoTransaction(transaction =>
             {
                 var currentSnapshot = transaction.CreateSnapshot(LockMode.Write, collection, false);
                 var newSnapshot = transaction.CreateSnapshot(LockMode.Write, newName, false);

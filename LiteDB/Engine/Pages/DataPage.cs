@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -16,9 +15,9 @@ namespace LiteDB.Engine
         public DataPage(PageBuffer buffer)
             : base(buffer)
         {
-            ENSURE(this.PageType == PageType.Data, "page type must be data page");
+            ENSURE(PageType == PageType.Data, "page type must be data page");
 
-            if (this.PageType != PageType.Data) throw LiteException.InvalidPageType(PageType.Data, this);
+            if (PageType != PageType.Data) throw LiteException.InvalidPageType(PageType.Data, this);
         }
 
         /// <summary>
@@ -81,7 +80,7 @@ namespace LiteDB.Engine
 
                 if (extend == false)
                 {
-                    yield return new PageAddress(this.PageID, index);
+                    yield return new PageAddress(PageID, index);
                 }
             }
         }

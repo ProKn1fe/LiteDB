@@ -112,7 +112,7 @@ namespace LiteDB.Engine
                 bufferPosition += bytesToCopy;
 
                 // move position in current segment (and go to next segment if finish)
-                this.MoveForward(bytesToCopy);
+                MoveForward(bytesToCopy);
 
                 if (_isEOF) break;
             }
@@ -125,7 +125,7 @@ namespace LiteDB.Engine
         /// <summary>
         /// Skip bytes (same as Read but with no array copy)
         /// </summary>
-        public int Skip(int count) => this.Read(null, 0, count);
+        public int Skip(int count) => Read(null, 0, count);
 
         /// <summary>
         /// Consume all data source until finish
@@ -156,14 +156,14 @@ namespace LiteDB.Engine
             {
                 value = Encoding.UTF8.GetString(_current.Array, _current.Offset + _currentPosition, count);
 
-                this.MoveForward(count);
+                MoveForward(count);
             }
             else
             {
                 // rent a buffer to be re-usable
                 var buffer = BufferPool.Rent(count);
 
-                this.Read(buffer, 0, count);
+                Read(buffer, 0, count);
 
                 value = Encoding.UTF8.GetString(buffer, 0, count);
 
@@ -179,7 +179,7 @@ namespace LiteDB.Engine
         public string ReadCString()
         {
             // first try read CString in current segment
-            if (this.TryReadCStringCurrentSegment(out var value))
+            if (TryReadCStringCurrentSegment(out var value))
             {
                 return value;
             }
@@ -192,17 +192,17 @@ namespace LiteDB.Engine
 
                     mem.Write(_current.Array, _current.Offset + _currentPosition, initialCount);
 
-                    this.MoveForward(initialCount);
+                    MoveForward(initialCount);
 
                     // and go to next segment
                     while (_current[_currentPosition] != 0x00 && _isEOF == false)
                     {
                         mem.WriteByte(_current[_currentPosition]);
 
-                        this.MoveForward(1);
+                        MoveForward(1);
                     }
 
-                    this.MoveForward(1); // +1 to '\0'
+                    MoveForward(1); // +1 to '\0'
 
                     return Encoding.UTF8.GetString(mem.ToArray());
                 }
@@ -221,7 +221,7 @@ namespace LiteDB.Engine
                 if (_current[pos] == 0x00)
                 {
                     value = Encoding.UTF8.GetString(_current.Array, _current.Offset + _currentPosition, count);
-                    this.MoveForward(count + 1); // +1 means '\0'	
+                    MoveForward(count + 1); // +1 means '\0'	
                     return true;
                 }
                 else
@@ -247,13 +247,13 @@ namespace LiteDB.Engine
             {
                 value = convert(_current.Array, _current.Offset + _currentPosition);
 
-                this.MoveForward(size);
+                MoveForward(size);
             }
             else
             {
                 var buffer = BufferPool.Rent(size);
 
-                this.Read(buffer, 0, size);
+                Read(buffer, 0, size);
 
                 value = convert(buffer, 0);
 
@@ -263,18 +263,18 @@ namespace LiteDB.Engine
             return value;
         }
 
-        public Int32 ReadInt32() => this.ReadNumber(BitConverter.ToInt32, 4);
-        public Int64 ReadInt64() => this.ReadNumber(BitConverter.ToInt64, 8);
-        public UInt32 ReadUInt32() => this.ReadNumber(BitConverter.ToUInt32, 4);
-        public Double ReadDouble() => this.ReadNumber(BitConverter.ToDouble, 8);
+        public int ReadInt32() => ReadNumber(BitConverter.ToInt32, 4);
+        public long ReadInt64() => ReadNumber(BitConverter.ToInt64, 8);
+        public uint ReadUInt32() => ReadNumber(BitConverter.ToUInt32, 4);
+        public double ReadDouble() => ReadNumber(BitConverter.ToDouble, 8);
 
-        public Decimal ReadDecimal()
+        public decimal ReadDecimal()
         {
-            var a = this.ReadInt32();
-            var b = this.ReadInt32();
-            var c = this.ReadInt32();
-            var d = this.ReadInt32();
-            return new Decimal(new int[] { a, b, c, d });
+            var a = ReadInt32();
+            var b = ReadInt32();
+            var c = ReadInt32();
+            var d = ReadInt32();
+            return new decimal(new int[] { a, b, c, d });
         }
 
         #endregion
@@ -286,7 +286,7 @@ namespace LiteDB.Engine
         /// </summary>
         public DateTime ReadDateTime()
         {
-            var date = new DateTime(this.ReadInt64(), DateTimeKind.Utc);
+            var date = new DateTime(ReadInt64(), DateTimeKind.Utc);
 
             return _utcDate ? date.ToLocalTime() : date;
         }
@@ -302,12 +302,12 @@ namespace LiteDB.Engine
             {
                 value = _current.ReadGuid(_currentPosition);
 
-                this.MoveForward(16);
+                MoveForward(16);
             }
             else
             {
                 // can't use _tempoBuffer because Guid validate 16 bytes array length
-                value = new Guid(this.ReadBytes(16));
+                value = new Guid(ReadBytes(16));
             }
 
             return value;
@@ -324,13 +324,13 @@ namespace LiteDB.Engine
             {
                 value = new ObjectId(_current.Array, _current.Offset + _currentPosition);
 
-                this.MoveForward(12);
+                MoveForward(12);
             }
             else
             {
                 var buffer = BufferPool.Rent(12);
 
-                this.Read(buffer, 0, 12);
+                Read(buffer, 0, 12);
 
                 value = new ObjectId(buffer, 0);
 
@@ -346,7 +346,7 @@ namespace LiteDB.Engine
         public bool ReadBoolean()
         {
             var value = _current[_currentPosition] != 0;
-            this.MoveForward(1);
+            MoveForward(1);
             return value;
         }
 
@@ -356,7 +356,7 @@ namespace LiteDB.Engine
         public byte ReadByte()
         {
             var value = _current[_currentPosition];
-            this.MoveForward(1);
+            MoveForward(1);
             return value;
         }
 
@@ -365,7 +365,7 @@ namespace LiteDB.Engine
         /// </summary>
         internal PageAddress ReadPageAddress()
         {
-            return new PageAddress(this.ReadUInt32(), this.ReadByte());
+            return new PageAddress(ReadUInt32(), ReadByte());
         }
 
         /// <summary>
@@ -374,7 +374,7 @@ namespace LiteDB.Engine
         public byte[] ReadBytes(int count)
         {
             var buffer = new byte[count];
-            this.Read(buffer, 0, count);
+            Read(buffer, 0, count);
             return buffer;
         }
 
@@ -383,30 +383,30 @@ namespace LiteDB.Engine
         /// </summary>
         public BsonValue ReadIndexKey()
         {
-            var type = (BsonType)this.ReadByte();
+            var type = (BsonType)ReadByte();
 
             switch (type)
             {
                 case BsonType.Null: return BsonValue.Null;
 
-                case BsonType.Int32: return this.ReadInt32();
-                case BsonType.Int64: return this.ReadInt64();
-                case BsonType.Double: return this.ReadDouble();
-                case BsonType.Decimal: return this.ReadDecimal();
+                case BsonType.Int32: return ReadInt32();
+                case BsonType.Int64: return ReadInt64();
+                case BsonType.Double: return ReadDouble();
+                case BsonType.Decimal: return ReadDecimal();
                 
                 // Use +1 byte only for length
-                case BsonType.String: return this.ReadString(this.ReadByte());
+                case BsonType.String: return ReadString(ReadByte());
 
-                case BsonType.Document: return this.ReadDocument(null);
-                case BsonType.Array: return this.ReadArray();
+                case BsonType.Document: return ReadDocument(null);
+                case BsonType.Array: return ReadArray();
 
                 // Use +1 byte only for length
-                case BsonType.Binary: return this.ReadBytes(this.ReadByte());
-                case BsonType.ObjectId: return this.ReadObjectId();
-                case BsonType.Guid: return this.ReadGuid();
+                case BsonType.Binary: return ReadBytes(ReadByte());
+                case BsonType.ObjectId: return ReadObjectId();
+                case BsonType.Guid: return ReadGuid();
 
-                case BsonType.Boolean: return this.ReadBoolean();
-                case BsonType.DateTime: return this.ReadDateTime();
+                case BsonType.Boolean: return ReadBoolean();
+                case BsonType.DateTime: return ReadDateTime();
 
                 case BsonType.MinValue: return BsonValue.MinValue;
                 case BsonType.MaxValue: return BsonValue.MaxValue;
@@ -424,7 +424,7 @@ namespace LiteDB.Engine
         /// </summary>
         public BsonDocument ReadDocument(HashSet<string> fields = null)
         {
-            var length = this.ReadInt32();
+            var length = ReadInt32();
             var end = _position + length - 5;
             var remaining = fields == null || fields.Count == 0 ? null : new HashSet<string>(fields, StringComparer.OrdinalIgnoreCase);
 
@@ -432,7 +432,7 @@ namespace LiteDB.Engine
 
             while (_position < end && (remaining == null || remaining?.Count > 0))
             {
-                var value = this.ReadElement(remaining, out string name);
+                var value = ReadElement(remaining, out string name);
 
                 // null value means are not selected field
                 if (value != null)
@@ -444,7 +444,7 @@ namespace LiteDB.Engine
                 }
             }
 
-            this.MoveForward(1); // skip \0
+            MoveForward(1); // skip \0
 
             return doc;
         }
@@ -454,17 +454,17 @@ namespace LiteDB.Engine
         /// </summary>
         public BsonArray ReadArray()
         {
-            var length = this.ReadInt32();
+            var length = ReadInt32();
             var end = _position + length - 5;
             var arr = new BsonArray();
 
             while (_position < end)
             {
-                var value = this.ReadElement(null, out string name);
+                var value = ReadElement(null, out string name);
                 arr.Add(value);
             }
 
-            this.MoveForward(1); // skip \0
+            MoveForward(1); // skip \0
 
             return arr;
         }
@@ -474,8 +474,8 @@ namespace LiteDB.Engine
         /// </summary>
         private BsonValue ReadElement(HashSet<string> remaining, out string name)
         {
-            var type = this.ReadByte();
-            name = this.ReadCString();
+            var type = ReadByte();
+            name = ReadCString();
 
             // check if need skip this element
             if (remaining != null && !remaining.Contains(name))
@@ -488,13 +488,13 @@ namespace LiteDB.Engine
                     (type == 0x01 || type == 0x12 || type == 0x09) ? 8 : // Double, Int64, DateTime
                     (type == 0x07) ? 12 : // ObjectId
                     (type == 0x13) ? 16 : // Decimal
-                    (type == 0x02) ? this.ReadInt32() : // String
-                    (type == 0x05) ? this.ReadInt32() + 1 : // Binary (+1 for subtype)
-                    (type == 0x03 || type == 0x04) ? this.ReadInt32() - 4 : 0; // Document, Array (-4 to Length + zero)
+                    (type == 0x02) ? ReadInt32() : // String
+                    (type == 0x05) ? ReadInt32() + 1 : // Binary (+1 for subtype)
+                    (type == 0x03 || type == 0x04) ? ReadInt32() - 4 : 0; // Document, Array (-4 to Length + zero)
 
                 if (length > 0)
                 {
-                    this.Skip(length);
+                    Skip(length);
                 }
 
                 return null;
@@ -502,28 +502,28 @@ namespace LiteDB.Engine
 
             if (type == 0x01) // Double
             {
-                return this.ReadDouble();
+                return ReadDouble();
             }
             else if (type == 0x02) // String
             {
-                var length = this.ReadInt32();
-                var value = this.ReadString(length - 1);
-                this.MoveForward(1); // read '\0'
+                var length = ReadInt32();
+                var value = ReadString(length - 1);
+                MoveForward(1); // read '\0'
                 return value;
             }
             else if (type == 0x03) // Document
             {
-                return this.ReadDocument();
+                return ReadDocument();
             }
             else if (type == 0x04) // Array
             {
-                return this.ReadArray();
+                return ReadArray();
             }
             else if (type == 0x05) // Binary
             {
-                var length = this.ReadInt32();
-                var subType = this.ReadByte();
-                var bytes = this.ReadBytes(length);
+                var length = ReadInt32();
+                var subType = ReadByte();
+                var bytes = ReadBytes(length);
 
                 switch (subType)
                 {
@@ -533,15 +533,15 @@ namespace LiteDB.Engine
             }
             else if (type == 0x07) // ObjectId
             {
-                return this.ReadObjectId();
+                return ReadObjectId();
             }
             else if (type == 0x08) // Boolean
             {
-                return this.ReadBoolean();
+                return ReadBoolean();
             }
             else if (type == 0x09) // DateTime
             {
-                var ts = this.ReadInt64();
+                var ts = ReadInt64();
 
                 // catch specific values for MaxValue / MinValue #19
                 if (ts == 253402300800000) return DateTime.MaxValue;
@@ -557,15 +557,15 @@ namespace LiteDB.Engine
             }
             else if (type == 0x10) // Int32
             {
-                return this.ReadInt32();
+                return ReadInt32();
             }
             else if (type == 0x12) // Int64
             {
-                return this.ReadInt64();
+                return ReadInt64();
             }
             else if (type == 0x13) // Decimal
             {
-                return this.ReadDecimal();
+                return ReadDecimal();
             }
             else if (type == 0xFF) // MinKey
             {

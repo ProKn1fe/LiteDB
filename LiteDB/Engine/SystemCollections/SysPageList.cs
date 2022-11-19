@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -31,8 +28,8 @@ namespace LiteDB.Engine
             _collections = _header.GetCollections().ToDictionary(x => x.Value, x => x.Key);
 
             var result = pageID != null ?
-                this.GetList((uint)pageID.AsInt32, null, transaction, snapshot) :
-                this.GetAllList(transaction, snapshot);
+                GetList((uint)pageID.AsInt32, null, transaction, snapshot) :
+                GetAllList(transaction, snapshot);
 
             foreach (var page in result)
             {
@@ -43,7 +40,7 @@ namespace LiteDB.Engine
         private IEnumerable<BsonDocument> GetAllList(TransactionService transaction, Snapshot snapshot)
         {
             // get empty page list, from header
-            foreach (var page in this.GetList(_header.FreeEmptyPageList, null, transaction, snapshot))
+            foreach (var page in GetList(_header.FreeEmptyPageList, null, transaction, snapshot))
             {
                 yield return page;
             }
@@ -55,7 +52,7 @@ namespace LiteDB.Engine
 
                 for (var slot = 0; slot < PAGE_FREE_LIST_SLOTS; slot++)
                 {
-                    var result = this.GetList(snap.CollectionPage.FreeDataPageList[slot], null, transaction, snap);
+                    var result = GetList(snap.CollectionPage.FreeDataPageList[slot], null, transaction, snap);
 
                     foreach (var page in result)
                     {
@@ -67,7 +64,7 @@ namespace LiteDB.Engine
 
                 foreach (var index in indexes)
                 {
-                    var result = this.GetList(index.FreeIndexPageList, index.Name, transaction, snap);
+                    var result = GetList(index.FreeIndexPageList, index.Name, transaction, snap);
 
                     foreach (var page in result)
                     {

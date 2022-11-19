@@ -43,7 +43,7 @@ namespace LiteDB.Engine
 
         public override long Length => _stream.Length;
 
-        public override long Position { get => _stream.Position; set => this.Seek(value, SeekOrigin.Begin); }
+        public override long Position { get => _stream.Position; set => Seek(value, SeekOrigin.Begin); }
 
         public override void Flush() => _stream.Flush();
 
@@ -61,7 +61,7 @@ namespace LiteDB.Engine
                 _stream.Position - offset;
 
             // when offset pass limit first time, change current _stream from MemoryStrem to FileStream with TempFilename()
-            if (position > _maxMemoryUsage && this.InMemory)
+            if (position > _maxMemoryUsage && InMemory)
             {
                 // create new filename if not passed on ctor (must be unique
                 _filename = _filename ?? Path.Combine(Path.GetTempPath(), "litedb_" + Guid.NewGuid() + ".db");
@@ -89,7 +89,7 @@ namespace LiteDB.Engine
             _stream.Dispose();
 
             // if any file was created, let's delete now
-            if (this.InDisk)
+            if (InDisk)
             {
                 File.Delete(_filename);
             }

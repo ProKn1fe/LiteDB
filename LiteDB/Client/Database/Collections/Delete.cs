@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq.Expressions;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -37,16 +36,16 @@ namespace LiteDB
         /// <summary>
         /// Delete all documents based on predicate expression. Returns how many documents was deleted
         /// </summary>
-        public int DeleteMany(string predicate, BsonDocument parameters) => this.DeleteMany(BsonExpression.Create(predicate, parameters));
+        public int DeleteMany(string predicate, BsonDocument parameters) => DeleteMany(BsonExpression.Create(predicate, parameters));
 
         /// <summary>
         /// Delete all documents based on predicate expression. Returns how many documents was deleted
         /// </summary>
-        public int DeleteMany(string predicate, params BsonValue[] args) => this.DeleteMany(BsonExpression.Create(predicate, args));
+        public int DeleteMany(string predicate, params BsonValue[] args) => DeleteMany(BsonExpression.Create(predicate, args));
 
         /// <summary>
         /// Delete all documents based on predicate expression. Returns how many documents was deleted
         /// </summary>
-        public int DeleteMany(Expression<Func<T, bool>> predicate) => this.DeleteMany(_mapper.GetExpression(predicate));
+        public int DeleteMany(Expression<Func<T, bool>> predicate) => DeleteMany(_mapper.GetExpression(predicate));
     }
 }

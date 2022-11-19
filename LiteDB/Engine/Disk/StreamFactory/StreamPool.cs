@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using static LiteDB.Constants;
 
 namespace LiteDB.Engine
 {
@@ -70,10 +64,7 @@ namespace LiteDB.Engine
             }
 
             // do writer dispose (wait async writer thread)
-            if (_writer != null)
-            {
-                _writer.Dispose();
-            }
+            _writer?.Dispose();
         }
     }
 }

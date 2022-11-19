@@ -15,7 +15,7 @@ namespace LiteDB.Engine
             if (collection.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(collection));
             if (docs == null) throw new ArgumentNullException(nameof(docs));
 
-            return this.AutoTransaction(transaction =>
+            return AutoTransaction(transaction =>
             {
                 var snapshot = transaction.CreateSnapshot(LockMode.Write, collection, false);
                 var collectionPage = snapshot.CollectionPage;
@@ -31,7 +31,7 @@ namespace LiteDB.Engine
                 {
                     transaction.Safepoint();
 
-                    if (this.UpdateDocument(snapshot, collectionPage, doc, indexer, data))
+                    if (UpdateDocument(snapshot, collectionPage, doc, indexer, data))
                     {
                         count++;
                     }
@@ -49,7 +49,7 @@ namespace LiteDB.Engine
             if (collection.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(collection));
             if (transform == null) throw new ArgumentNullException(nameof(transform));
 
-            return this.Update(collection, transformDocs());
+            return Update(collection, transformDocs());
 
             IEnumerable<BsonDocument> transformDocs()
             {
@@ -60,7 +60,7 @@ namespace LiteDB.Engine
                     q.Where.Add(predicate);
                 }
 
-                using (var reader = this.Query(collection, q))
+                using (var reader = Query(collection, q))
                 {
                     while (reader.Read())
                     {

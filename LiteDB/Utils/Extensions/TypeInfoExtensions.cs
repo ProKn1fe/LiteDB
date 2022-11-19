@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Linq;
-using System.Text;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Collections;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -22,7 +19,7 @@ namespace LiteDB
         public static bool IsEnumerable(this Type type)
         {
             return 
-                type != typeof(String) &&
+                type != typeof(string) &&
                 typeof(IEnumerable).IsAssignableFrom(type);
         }
     }

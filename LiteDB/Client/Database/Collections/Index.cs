@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -34,7 +31,7 @@ namespace LiteDB
 
             var name = Regex.Replace(expression.Source, @"[^a-z0-9]", "", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-            return this.EnsureIndex(name, expression, unique);
+            return EnsureIndex(name, expression, unique);
         }
 
         /// <summary>
@@ -44,9 +41,9 @@ namespace LiteDB
         /// <param name="unique">Create a unique keys index?</param>
         public bool EnsureIndex<K>(Expression<Func<T, K>> keySelector, bool unique = false)
         {
-            var expression = this.GetIndexExpression(keySelector);
+            var expression = GetIndexExpression(keySelector);
 
-            return this.EnsureIndex(expression, unique);
+            return EnsureIndex(expression, unique);
         }
 
         /// <summary>
@@ -57,9 +54,9 @@ namespace LiteDB
         /// <param name="unique">Create a unique keys index?</param>
         public bool EnsureIndex<K>(string name, Expression<Func<T, K>> keySelector, bool unique = false)
         {
-            var expression = this.GetIndexExpression(keySelector);
+            var expression = GetIndexExpression(keySelector);
 
-            return this.EnsureIndex(name, expression, unique);
+            return EnsureIndex(name, expression, unique);
         }
 
         /// <summary>

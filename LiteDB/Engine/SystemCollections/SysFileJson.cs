@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using static LiteDB.Constants;
 
 namespace LiteDB.Engine
 {
@@ -15,7 +13,7 @@ namespace LiteDB.Engine
 
         public override IEnumerable<BsonDocument> Input(BsonValue options)
         {
-            var filename = GetOption(options, "filename")?.AsString ?? throw new LiteException(0, $"Collection ${this.Name} requires string as 'filename' or a document field 'filename'");
+            var filename = GetOption(options, "filename")?.AsString ?? throw new LiteException(0, $"Collection ${Name} requires string as 'filename' or a document field 'filename'");
             var encoding = GetOption(options, "encoding", "utf-8").AsString;
 
             using (var fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
@@ -82,8 +80,8 @@ namespace LiteDB.Engine
             }
             finally
             {
-                if (writer != null) writer.Dispose();
-                if (fs != null) fs.Dispose();
+                writer?.Dispose();
+                fs?.Dispose();
             }
 
             return index;

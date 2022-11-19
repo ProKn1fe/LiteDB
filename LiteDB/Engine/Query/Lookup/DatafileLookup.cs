@@ -23,7 +23,7 @@ namespace LiteDB.Engine
         {
             ENSURE(node.DataBlock != PageAddress.Empty, "data block must be a valid block address");
 
-            return this.Load(node.DataBlock);
+            return Load(node.DataBlock);
         }
 
         public virtual BsonDocument Load(PageAddress rawId)

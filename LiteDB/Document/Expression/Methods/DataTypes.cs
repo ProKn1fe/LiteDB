@@ -1,11 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -71,7 +66,7 @@ namespace LiteDB
             }
             else if(value.IsString)
             {
-                if (Int32.TryParse(value.AsString, out var val))
+                if (int.TryParse(value.AsString, out var val))
                 {
                     return val;
                 }
@@ -91,7 +86,7 @@ namespace LiteDB
             }
             else if(value.IsString)
             {
-                if (Int64.TryParse(value.AsString, out var val))
+                if (long.TryParse(value.AsString, out var val))
                 {
                     return val;
                 }
@@ -111,7 +106,7 @@ namespace LiteDB
             }
             else if(value.IsString)
             {
-                if (Double.TryParse(value.AsString, NumberStyles.Any, collation.Culture.NumberFormat, out var val))
+                if (double.TryParse(value.AsString, NumberStyles.Any, collation.Culture.NumberFormat, out var val))
                 {
                     return val;
                 }
@@ -133,7 +128,7 @@ namespace LiteDB
             {
                 var c = new CultureInfo(culture.AsString); // en-US
 
-                if (Double.TryParse(value.AsString, NumberStyles.Any, c.NumberFormat, out var val))
+                if (double.TryParse(value.AsString, NumberStyles.Any, c.NumberFormat, out var val))
                 {
                     return val;
                 }
@@ -153,7 +148,7 @@ namespace LiteDB
             }
             else if(value.IsString)
             {
-                if (Decimal.TryParse(value.AsString, NumberStyles.Any, collation.Culture.NumberFormat, out var val))
+                if (decimal.TryParse(value.AsString, NumberStyles.Any, collation.Culture.NumberFormat, out var val))
                 {
                     return val;
                 }
@@ -175,7 +170,7 @@ namespace LiteDB
             {
                 var c = new CultureInfo(culture.AsString); // en-US
 
-                if (Decimal.TryParse(value.AsString, NumberStyles.Any, c.NumberFormat, out var val))
+                if (decimal.TryParse(value.AsString, NumberStyles.Any, c.NumberFormat, out var val))
                 {
                     return val;
                 }

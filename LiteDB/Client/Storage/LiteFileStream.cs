@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
+
 using static LiteDB.Constants;
 
 namespace LiteDB
@@ -35,7 +35,7 @@ namespace LiteDB
             if (mode == FileAccess.Read)
             {
                 // initialize first data block
-                _currentChunkData = this.GetChunkData(_currentChunkIndex);
+                _currentChunkData = GetChunkData(_currentChunkIndex);
             }
             else if(mode == FileAccess.Write)
             {
@@ -71,7 +71,7 @@ namespace LiteDB
         public override long Position
         {
             get { return _streamPosition; }
-            set { if (_mode == FileAccess.Read) { this.SetReadStreamPosition(value); } else { throw new NotSupportedException(); } }
+            set { if (_mode == FileAccess.Read) { SetReadStreamPosition(value); } else { throw new NotSupportedException(); } }
         }
 
         public override long Seek(long offset, SeekOrigin origin)
@@ -84,13 +84,13 @@ namespace LiteDB
             switch (origin)
             {
                 case SeekOrigin.Begin:
-                    this.SetReadStreamPosition(offset);
+                    SetReadStreamPosition(offset);
                     break;
                 case SeekOrigin.Current:
-                    this.SetReadStreamPosition(_streamPosition + offset);
+                    SetReadStreamPosition(_streamPosition + offset);
                     break;
                 case SeekOrigin.End:
-                    this.SetReadStreamPosition(Length + offset);
+                    SetReadStreamPosition(Length + offset);
                     break;
             }
             return _streamPosition;
@@ -106,9 +106,9 @@ namespace LiteDB
 
             if (_disposed) return;
 
-            if (disposing && this.CanWrite)
+            if (disposing && CanWrite)
             {
-                this.Flush();
+                Flush();
                 _buffer?.Dispose();
             }
 

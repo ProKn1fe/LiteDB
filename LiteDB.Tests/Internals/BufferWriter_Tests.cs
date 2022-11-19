@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+
 using FluentAssertions;
+
 using LiteDB.Engine;
-using System.Collections.Generic;
+
 using Xunit;
 
 namespace LiteDB.Internals

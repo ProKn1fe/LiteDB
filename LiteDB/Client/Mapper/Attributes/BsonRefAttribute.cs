@@ -1,5 +1,4 @@
 ﻿using System;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -12,12 +11,12 @@ namespace LiteDB
 
         public BsonRefAttribute(string collection)
         {
-            this.Collection = collection;
+            Collection = collection;
         }
 
         public BsonRefAttribute()
         {
-            this.Collection = null;
+            Collection = null;
         }
     }
 }

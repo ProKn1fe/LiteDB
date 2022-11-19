@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -61,7 +60,7 @@ namespace LiteDB.Engine
                 {
                     if (_transactions.Count >= MAX_OPEN_TRANSACTIONS) throw new LiteException(0, "Maximum number of transactions reached");
 
-                    var initialSize = this.GetInitialSize();
+                    var initialSize = GetInitialSize();
 
                     // check if current thread contains any transaction
                     alreadyLock = _transactions.Values.Any(x => x.ThreadID == Environment.CurrentManagedThreadId);
@@ -201,7 +200,7 @@ namespace LiteDB.Engine
         {
             return 
                 trans.Pages.TransactionSize >= trans.MaxTransactionSize &&
-                this.TryExtend(trans) == false;
+                TryExtend(trans) == false;
         }
 
         /// <summary>

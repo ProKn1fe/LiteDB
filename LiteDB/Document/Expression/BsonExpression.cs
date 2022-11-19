@@ -1,15 +1,10 @@
 ﻿using LiteDB.Utils;
+
 using System;
-using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -83,37 +78,37 @@ namespace LiteDB
         /// Predicate expressions must have Left/Right expressions
         /// </summary>
         internal bool IsPredicate =>
-            this.Type == BsonExpressionType.Equal ||
-            this.Type == BsonExpressionType.Like ||
-            this.Type == BsonExpressionType.Between ||
-            this.Type == BsonExpressionType.GreaterThan ||
-            this.Type == BsonExpressionType.GreaterThanOrEqual ||
-            this.Type == BsonExpressionType.LessThan ||
-            this.Type == BsonExpressionType.LessThanOrEqual ||
-            this.Type == BsonExpressionType.NotEqual ||
-            this.Type == BsonExpressionType.In;
+            Type == BsonExpressionType.Equal ||
+            Type == BsonExpressionType.Like ||
+            Type == BsonExpressionType.Between ||
+            Type == BsonExpressionType.GreaterThan ||
+            Type == BsonExpressionType.GreaterThanOrEqual ||
+            Type == BsonExpressionType.LessThan ||
+            Type == BsonExpressionType.LessThanOrEqual ||
+            Type == BsonExpressionType.NotEqual ||
+            Type == BsonExpressionType.In;
 
         /// <summary>
         /// This expression can be indexed? To index some expression must contains fields (at least 1) and
         /// must use only immutable methods and no parameters
         /// </summary>
         internal bool IsIndexable =>
-            this.Fields.Count > 0 &&
-            this.IsImmutable == true &&
-            this.Parameters.Count == 0;
+            Fields.Count > 0 &&
+            IsImmutable == true &&
+            Parameters.Count == 0;
 
         /// <summary>
         /// This expression has no dependency of BsonDocument so can be used as user value (when select index)
         /// </summary>
         internal bool IsValue =>
-            this.Fields.Count == 0;
+            Fields.Count == 0;
 
         /// <summary>
         /// Indicate when predicate expression uses ANY keywork for filter array items
         /// </summary>
         internal bool IsANY =>
-            this.IsPredicate &&
-            this.Expression.ToString().Contains("_ANY");
+            IsPredicate &&
+            Expression.ToString().Contains("_ANY");
 
         /// <summary>
         /// Compiled Expression into a function to be executed: func(source[], root, current, parameters)[]
@@ -130,7 +125,7 @@ namespace LiteDB
         /// </summary>
         internal string DefaultFieldName()
         {
-            var name = string.Join("_", this.Fields.Where(x => x != "$"));
+            var name = string.Join("_", Fields.Where(x => x != "$"));
 
             return string.IsNullOrEmpty(name) ? "expr" : name;
         }
@@ -145,7 +140,7 @@ namespace LiteDB
         /// <summary>
         /// Implicit string converter
         /// </summary>
-        public static implicit operator String(BsonExpression expr)
+        public static implicit operator string(BsonExpression expr)
         {
             return expr.Source;
         }
@@ -153,7 +148,7 @@ namespace LiteDB
         /// <summary>
         /// Implicit string converter
         /// </summary>
-        public static implicit operator BsonExpression(String expr)
+        public static implicit operator BsonExpression(string expr)
         {
             return BsonExpression.Create(expr);
         }
@@ -168,7 +163,7 @@ namespace LiteDB
             var root = new BsonDocument();
             var source = new BsonDocument[] { root };
 
-            return this.Execute(source, root, root, collation);
+            return Execute(source, root, root, collation);
         }
 
         /// <summary>
@@ -180,7 +175,7 @@ namespace LiteDB
 
             var source = new BsonDocument[] { root };
 
-            return this.Execute(source, root, root, collation);
+            return Execute(source, root, root, collation);
         }
 
         /// <summary>
@@ -190,7 +185,7 @@ namespace LiteDB
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
 
-            return this.Execute(source, null, null, collation);
+            return Execute(source, null, null, collation);
         }
 
         /// <summary>
@@ -198,15 +193,15 @@ namespace LiteDB
         /// </summary>
         internal IEnumerable<BsonValue> Execute(IEnumerable<BsonDocument> source, BsonDocument root, BsonValue current, Collation collation)
         {
-            if (this.IsScalar)
+            if (IsScalar)
             {
-                var value = _funcScalar(source, root, current, collation ?? Collation.Binary, this.Parameters);
+                var value = _funcScalar(source, root, current, collation ?? Collation.Binary, Parameters);
 
                 yield return value;
             }
             else
             {
-                var values = _funcEnumerable(source, root, current, collation ?? Collation.Binary, this.Parameters);
+                var values = _funcEnumerable(source, root, current, collation ?? Collation.Binary, Parameters);
 
                 foreach (var value in values)
                 {
@@ -221,7 +216,7 @@ namespace LiteDB
         /// </summary>
         internal IEnumerable<BsonValue> GetIndexKeys(BsonDocument doc, Collation collation)
         {
-            return this.Execute(doc, collation).Distinct();
+            return Execute(doc, collation).Distinct();
         }
 
         #endregion
@@ -236,7 +231,7 @@ namespace LiteDB
             var root = new BsonDocument();
             var source = new BsonDocument[] { };
 
-            return this.ExecuteScalar(source, root, root, collation);
+            return ExecuteScalar(source, root, root, collation);
         }
 
         /// <summary>
@@ -248,7 +243,7 @@ namespace LiteDB
 
             var source = new BsonDocument[] { root };
 
-            return this.ExecuteScalar(source, root, root, collation);
+            return ExecuteScalar(source, root, root, collation);
         }
 
         /// <summary>
@@ -258,7 +253,7 @@ namespace LiteDB
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
 
-            return this.ExecuteScalar(source, null, null, collation);
+            return ExecuteScalar(source, null, null, collation);
         }
 
         /// <summary>
@@ -266,13 +261,13 @@ namespace LiteDB
         /// </summary>
         internal BsonValue ExecuteScalar(IEnumerable<BsonDocument> source, BsonDocument root, BsonValue current, Collation collation)
         {
-            if (this.IsScalar)
+            if (IsScalar)
             {
-                return _funcScalar(source, root, current, collation ?? Collation.Binary, this.Parameters);
+                return _funcScalar(source, root, current, collation ?? Collation.Binary, Parameters);
             }
             else
             {
-                throw new LiteException(0, $"Expression `{this.Source}` is not a scalar expression and can return more than one result");
+                throw new LiteException(0, $"Expression `{Source}` is not a scalar expression and can return more than one result");
             }
         }
 
@@ -458,7 +453,7 @@ namespace LiteDB
 
         public override string ToString()
         {
-            return $"`{this.Source}` [{this.Type}]";
+            return $"`{Source}` [{Type}]";
         }
     }
 }

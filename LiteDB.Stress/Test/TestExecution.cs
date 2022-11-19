@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Xml;
 
 namespace LiteDB.Stress
 {
@@ -23,7 +21,7 @@ namespace LiteDB.Stress
 
         public TestExecution(string filename, TimeSpan duration)
         {
-            this.Duration = duration;
+            Duration = duration;
 
             _file = new TestFile(filename);
         }
@@ -32,7 +30,7 @@ namespace LiteDB.Stress
         {
             if (_file.Delete)
             {
-                this.DeleteFiles();
+                DeleteFiles();
             }
 
             _db = new LiteDatabase(_file.Filename);
@@ -44,10 +42,10 @@ namespace LiteDB.Stress
             }
 
             // create all threads
-            this.CreateThreads();
+            CreateThreads();
 
             // start report thread
-            var t = new Thread(() => this.ReportThread());
+            var t = new Thread(() => ReportThread());
             t.Name = "REPORT";
             t.Start();
         }
@@ -116,28 +114,28 @@ namespace LiteDB.Stress
 
         private void ReportThread()
         {
-            this.Timer.Start();
+            Timer.Start();
 
             var output = new StringBuilder();
 
-            while(this.Timer.Elapsed < this.Duration && _running)
+            while(Timer.Elapsed < Duration && _running)
             {
-                Thread.Sleep(Math.Min(1000, (int)this.Duration.Subtract(this.Timer.Elapsed).TotalMilliseconds));
+                Thread.Sleep(Math.Min(1000, (int)Duration.Subtract(Timer.Elapsed).TotalMilliseconds));
 
-                this.ReportPrint(output);
+                ReportPrint(output);
 
                 Console.Clear();
                 Console.WriteLine(output.ToString());
             }
 
-            this.StopRunning();
+            StopRunning();
 
-            this.Timer.Stop();
+            Timer.Stop();
 
             _db.Dispose();
 
-            this.ReportPrint(output);
-            this.ReportSummary(output);
+            ReportPrint(output);
+            ReportSummary(output);
 
             Console.Clear();
             Console.WriteLine(output.ToString());
@@ -155,7 +153,7 @@ namespace LiteDB.Stress
 
             _maxRam = Math.Max(_maxRam, ram);
 
-            output.AppendLine($"LiteDB Multithreaded: {_threads.Count}, running for {this.Timer.Elapsed}");
+            output.AppendLine($"LiteDB Multithreaded: {_threads.Count}, running for {Timer.Elapsed}");
             output.AppendLine($"Garbage Collector: gen0: {GC.CollectionCount(0)}, gen1: {GC.CollectionCount(1)}, gen2: {GC.CollectionCount(2)}");
             output.AppendLine($"Memory usage: {ram.ToString("n0")} Mb (max: {_maxRam.ToString("n0")} Mb)");
             output.AppendLine();
@@ -170,7 +168,7 @@ namespace LiteDB.Stress
                 var timer = howLong.TotalSeconds > 60 ?
                     ((int)howLong.TotalMinutes).ToString().PadLeft(2, ' ') + " minutes" :
                     ((int)howLong.TotalSeconds).ToString().PadLeft(2, ' ') + " seconds";
-                var result = thread.Value.Result != null ? $"[{thread.Value.Result.ToString()}]" : "";
+                var result = thread.Value.Result != null ? $"[{thread.Value.Result}]" : "";
                 var running = thread.Value.Elapsed.Elapsed.TotalSeconds > 1 ?
                     $"<LAST RUN {(int)thread.Value.Elapsed.Elapsed.TotalSeconds}s> " :
                     "";
@@ -193,7 +191,7 @@ namespace LiteDB.Stress
                 var name = task.Name.PadRight(15, ' ');
                 var count = _threads.Values.Where(x => x.Task == task).Sum(x => (long)x.Counter).ToString().PadLeft(5, ' ');
                 var sum = _threads.Values.Where(x => x.Task == task).Sum(x => x.ResultSum);
-                var ssum = sum == 0 ? "" : $"[{sum.ToString("n0")}] - ";
+                var ssum = sum == 0 ? "" : $"[{sum:n0}] - ";
                 var meanRuntime = TimeSpan.FromMilliseconds(_threads.Values
                     .Where(x => x.Task == task)
                     .Select(x => x.TotalRun.TotalMilliseconds)

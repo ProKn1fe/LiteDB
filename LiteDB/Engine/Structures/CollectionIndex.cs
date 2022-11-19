@@ -1,6 +1,5 @@
-﻿using System;
-using System.Text;
-using System.Text.RegularExpressions;
+﻿using System.Text;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -62,47 +61,47 @@ namespace LiteDB.Engine
         /// </summary>
         public bool IsEmpty
         {
-            get { return string.IsNullOrEmpty(this.Name); }
+            get { return string.IsNullOrEmpty(Name); }
         }
 
         public CollectionIndex(byte slot, byte indexType, string name, string expr, bool unique)
         {
-            this.Slot = slot;
-            this.IndexType = indexType;
-            this.Name = name;
-            this.Expression = expr;
-            this.Unique = unique;
-            this.FreeIndexPageList = uint.MaxValue;
+            Slot = slot;
+            IndexType = indexType;
+            Name = name;
+            Expression = expr;
+            Unique = unique;
+            FreeIndexPageList = uint.MaxValue;
 
-            this.BsonExpr = BsonExpression.Create(expr);
+            BsonExpr = BsonExpression.Create(expr);
         }
 
         public CollectionIndex(BufferReader reader)
         {
-            this.Slot = reader.ReadByte();
-            this.IndexType = reader.ReadByte();
-            this.Name = reader.ReadCString();
-            this.Expression = reader.ReadCString();
-            this.Unique = reader.ReadBoolean();
-            this.Head = reader.ReadPageAddress(); // 5
-            this.Tail = reader.ReadPageAddress(); // 5
-            this.MaxLevel = reader.ReadByte(); // 1
-            this.FreeIndexPageList = reader.ReadUInt32(); // 4
+            Slot = reader.ReadByte();
+            IndexType = reader.ReadByte();
+            Name = reader.ReadCString();
+            Expression = reader.ReadCString();
+            Unique = reader.ReadBoolean();
+            Head = reader.ReadPageAddress(); // 5
+            Tail = reader.ReadPageAddress(); // 5
+            MaxLevel = reader.ReadByte(); // 1
+            FreeIndexPageList = reader.ReadUInt32(); // 4
 
-            this.BsonExpr = BsonExpression.Create(this.Expression);
+            BsonExpr = BsonExpression.Create(Expression);
         }
 
         public void UpdateBuffer(BufferWriter writer)
         {
-            writer.Write(this.Slot);
-            writer.Write(this.IndexType);
-            writer.WriteCString(this.Name);
-            writer.WriteCString(this.Expression);
-            writer.Write(this.Unique);
-            writer.Write(this.Head);
-            writer.Write(this.Tail);
-            writer.Write(this.MaxLevel);
-            writer.Write(this.FreeIndexPageList);
+            writer.Write(Slot);
+            writer.Write(IndexType);
+            writer.WriteCString(Name);
+            writer.WriteCString(Expression);
+            writer.Write(Unique);
+            writer.Write(Head);
+            writer.Write(Tail);
+            writer.Write(MaxLevel);
+            writer.Write(FreeIndexPageList);
         }
 
         /// <summary>

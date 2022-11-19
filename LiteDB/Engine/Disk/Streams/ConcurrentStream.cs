@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using static LiteDB.Constants;
 
 namespace LiteDB.Engine
 {
@@ -64,7 +63,7 @@ namespace LiteDB.Engine
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-            if (this.CanWrite == false) throw new NotSupportedException("Current stream are readonly");
+            if (CanWrite == false) throw new NotSupportedException("Current stream are readonly");
 
             // lock internal stream and set position before write
             lock (_stream)

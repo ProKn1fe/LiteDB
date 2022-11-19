@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using static LiteDB.Constants;
 
 namespace LiteDB.Engine
 {
@@ -21,7 +17,7 @@ namespace LiteDB.Engine
         {
             var next = _sequences.AddOrUpdate(snapshot.CollectionName, (s) =>
             {
-                var lastId = this.GetLastId(snapshot);
+                var lastId = GetLastId(snapshot);
 
                 // emtpy collection, return 1
                 if (lastId.IsMinValue) return 1;
@@ -54,7 +50,7 @@ namespace LiteDB.Engine
         {
             _sequences.AddOrUpdate(snapshot.CollectionName, (s) =>
             {
-                var lastId = this.GetLastId(snapshot);
+                var lastId = GetLastId(snapshot);
 
                 // create new collection based with max value between last _id index key or new passed _id
                 if (lastId.IsNumber)

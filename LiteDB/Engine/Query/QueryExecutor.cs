@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -40,11 +40,11 @@ namespace LiteDB.Engine
         {
             if (_query.Into == null)
             {
-                return this.ExecuteQuery(_query.ExplainPlan);
+                return ExecuteQuery(_query.ExplainPlan);
             }
             else
             {
-                return this.ExecuteQueryInto(_query.Into, _query.IntoAutoId);
+                return ExecuteQueryInto(_query.Into, _query.IntoAutoId);
             }
         }
 
@@ -150,7 +150,7 @@ namespace LiteDB.Engine
         {
             IEnumerable<BsonDocument> GetResultset()
             {
-                using (var reader = this.ExecuteQuery(false))
+                using (var reader = ExecuteQuery(false))
                 {
                     while (reader.Read())
                     {

@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -351,7 +347,7 @@ namespace LiteDB
             var useSource = false;
             var fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            src.Append("{");
+            src.Append('{');
 
             while (!tokenizer.CheckEOF())
             {
@@ -359,7 +355,7 @@ namespace LiteDB
 
                 tokenizer.ReadToken().Expect(TokenType.Equals);
 
-                src.Append(":");
+                src.Append(':');
 
                 var value = ParseFullExpression(tokenizer, context, parameters, DocumentScope.Root);
 
@@ -386,7 +382,7 @@ namespace LiteDB
                 break;
             }
 
-            src.Append("}");
+            src.Append('}');
 
             var arrKeys = Expression.NewArrayInit(typeof(string), keys.ToArray());
             var arrValues = Expression.NewArrayInit(typeof(BsonValue), values.ToArray());
@@ -474,7 +470,7 @@ namespace LiteDB
 
             if (value != null)
             {
-                var isInt32 = Int32.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out var i32);
+                var isInt32 = int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out var i32);
                 if (isInt32)
                 {
                     var constant32 = Expression.Constant(new BsonValue(i32));
@@ -492,7 +488,7 @@ namespace LiteDB
                     };
                 }
 
-                var i64 = Int64.Parse(value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat);
+                var i64 = long.Parse(value, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat);
                 var constant64 = Expression.Constant(new BsonValue(i64));
 
                 return new BsonExpression
@@ -605,7 +601,7 @@ namespace LiteDB
             var useSource = false;
             var fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            src.Append("{");
+            src.Append('{');
 
             // test for empty array
             if (tokenizer.LookAhead().Type == TokenType.CloseBrace)
@@ -624,7 +620,7 @@ namespace LiteDB
 
                     tokenizer.ReadToken(); // update s.Current 
 
-                    src.Append(":");
+                    src.Append(':');
 
                     BsonExpression value;
 
@@ -755,7 +751,7 @@ namespace LiteDB
             var useSource = false;
             var fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            src.Append("[");
+            src.Append('[');
 
             // test for empty array
             if (tokenizer.LookAhead().Type == TokenType.CloseBracket)
@@ -1095,7 +1091,7 @@ namespace LiteDB
             }
             else if (ahead.Type == TokenType.OpenBracket) // array 
             {
-                src.Append("[");
+                src.Append('[');
 
                 tokenizer.ReadToken(); // read [
 
@@ -1154,7 +1150,7 @@ namespace LiteDB
                 // read ]
                 tokenizer.ReadToken().Expect(TokenType.CloseBracket);
 
-                src.Append("]");
+                src.Append(']');
 
                 return Expression.Call(method, expr, Expression.Constant(index), Expression.Constant(inner), context.Root, context.Collation, context.Parameters);
             }
@@ -1233,7 +1229,7 @@ namespace LiteDB
             {
                 tokenizer.ReadToken().Expect(TokenType.Comma);
 
-                src.Append(",");
+                src.Append(',');
 
                 // try more parameters ,
                 while (!tokenizer.CheckEOF())
@@ -1259,7 +1255,7 @@ namespace LiteDB
 
             // read )
             tokenizer.ReadToken().Expect(TokenType.CloseParenthesis);
-            src.Append(")");
+            src.Append(')');
 
             var method = BsonExpression.GetFunction(functionName, args.Count - 5);
 
@@ -1322,7 +1318,7 @@ namespace LiteDB
 
             if (field.Length > 0)
             {
-                source.Append(".");
+                source.Append('.');
 
                 // add bracket in result only if is complex type
                 if (field.IsWord())
@@ -1331,9 +1327,9 @@ namespace LiteDB
                 }
                 else
                 {
-                    source.Append("[");
+                    source.Append('[');
                     JsonSerializer.Serialize(field, source);
-                    source.Append("]");
+                    source.Append(']');
                 }
             }
 

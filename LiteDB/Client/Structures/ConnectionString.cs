@@ -1,8 +1,7 @@
 ﻿using LiteDB.Engine;
+
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -75,22 +74,22 @@ namespace LiteDB
             }
 
             // setting values to properties
-            this.Connection = _values.GetValue("connection", this.Connection);
-            this.Filename = _values.GetValue("filename", this.Filename).Trim();
+            Connection = _values.GetValue("connection", Connection);
+            Filename = _values.GetValue("filename", Filename).Trim();
 
-            this.Password = _values.GetValue("password", this.Password);
+            Password = _values.GetValue("password", Password);
 
-            if(this.Password == string.Empty)
+            if(Password == string.Empty)
             {
-                this.Password = null;
+                Password = null;
             }
 
-            this.InitialSize = _values.GetFileSize(@"initial size", this.InitialSize);
-            this.ReadOnly = _values.GetValue("readonly", this.ReadOnly);
+            InitialSize = _values.GetFileSize(@"initial size", InitialSize);
+            ReadOnly = _values.GetValue("readonly", ReadOnly);
 
-            this.Collation = _values.ContainsKey("collation") ? new Collation(_values.GetValue<string>("collation")) : this.Collation;
+            Collation = _values.ContainsKey("collation") ? new Collation(_values.GetValue<string>("collation")) : Collation;
 
-            this.Upgrade = _values.GetValue("upgrade", this.Upgrade);
+            Upgrade = _values.GetValue("upgrade", Upgrade);
         }
 
         /// <summary>
@@ -105,19 +104,19 @@ namespace LiteDB
         {
             var settings = new EngineSettings
             {
-                Filename = this.Filename,
-                Password = this.Password,
-                InitialSize = this.InitialSize,
-                ReadOnly = this.ReadOnly,
-                Collation = this.Collation
+                Filename = Filename,
+                Password = Password,
+                InitialSize = InitialSize,
+                ReadOnly = ReadOnly,
+                Collation = Collation
             };
 
             // create engine implementation as Connection Type
-            if (this.Connection == ConnectionType.Direct)
+            if (Connection == ConnectionType.Direct)
             {
                 return new LiteEngine(settings);
             }
-            else if (this.Connection == ConnectionType.Shared)
+            else if (Connection == ConnectionType.Shared)
             {
                 return new SharedEngine(settings);
             }

@@ -1,7 +1,4 @@
-﻿using System;
-using static LiteDB.Constants;
-
-namespace LiteDB.Engine
+﻿namespace LiteDB.Engine
 {
     internal class DataBlock
     {
@@ -46,16 +43,16 @@ namespace LiteDB.Engine
             _page = page;
             _segment = segment;
 
-            this.Position = new PageAddress(page.PageID, index);
+            Position = new PageAddress(page.PageID, index);
 
             // byte 00: Extend
-            this.Extend = segment.ReadBool(P_EXTEND);
+            Extend = segment.ReadBool(P_EXTEND);
 
             // byte 01-05: NextBlock (PageID, Index)
-            this.NextBlock = segment.ReadPageAddress(P_NEXT_BLOCK);
+            NextBlock = segment.ReadPageAddress(P_NEXT_BLOCK);
 
             // byte 06-EOL: Buffer
-            this.Buffer = segment.Slice(P_BUFFER, segment.Count - P_BUFFER);
+            Buffer = segment.Slice(P_BUFFER, segment.Count - P_BUFFER);
         }
 
         /// <summary>
@@ -66,10 +63,10 @@ namespace LiteDB.Engine
             _page = page;
             _segment = segment;
 
-            this.Position = new PageAddress(page.PageID, index);
+            Position = new PageAddress(page.PageID, index);
 
-            this.NextBlock = nextBlock;
-            this.Extend = extend;
+            NextBlock = nextBlock;
+            Extend = extend;
 
             // byte 00: Data Index
             segment.Write(extend, P_EXTEND);
@@ -78,14 +75,14 @@ namespace LiteDB.Engine
             segment.Write(nextBlock, P_NEXT_BLOCK);
 
             // byte 06-EOL: Buffer
-            this.Buffer = segment.Slice(P_BUFFER, segment.Count - P_BUFFER);
+            Buffer = segment.Slice(P_BUFFER, segment.Count - P_BUFFER);
 
             page.IsDirty = true;
         }
 
         public void SetNextBlock(PageAddress nextBlock)
         {
-            this.NextBlock = nextBlock;
+            NextBlock = nextBlock;
 
             // update segment buffer with NextBlock (uint + byte)
             _segment.Write(nextBlock, P_NEXT_BLOCK);
@@ -95,7 +92,7 @@ namespace LiteDB.Engine
 
         public override string ToString()
         {
-            return $"Pos: [{this.Position}] - Ext: [{this.Extend}] - Next: [{this.NextBlock}] - Buffer: [{this.Buffer}]";
+            return $"Pos: [{Position}] - Ext: [{Extend}] - Next: [{NextBlock}] - Buffer: [{Buffer}]";
         }
     }
 }

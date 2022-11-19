@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using static LiteDB.Constants;
-
-namespace LiteDB.Engine
+﻿namespace LiteDB.Engine
 {
     /// <summary>
     /// Implement similar as ArrayPool for byte array

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Linq;
 using System.Text;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -93,75 +91,75 @@ namespace LiteDB
         /// <summary>
         /// Copy Int16 bytes direct into buffer
         /// </summary>
-        public static unsafe void ToBytes(this Int16 value, byte[] array, int startIndex)
+        public static unsafe void ToBytes(this short value, byte[] array, int startIndex)
         {
             fixed (byte* ptr = &array[startIndex])
             {
-                *(Int16*)ptr = value;
+                *(short*)ptr = value;
             }
         }
 
         /// <summary>
         /// Copy Int32 bytes direct into buffer
         /// </summary>
-        public static unsafe void ToBytes(this Int32 value, byte[] array, int startIndex)
+        public static unsafe void ToBytes(this int value, byte[] array, int startIndex)
         {
             fixed (byte* ptr = &array[startIndex])
             {
-                *(Int32*)ptr = value;
+                *(int*)ptr = value;
             }
         }
 
         /// <summary>
         /// Copy Int64 bytes direct into buffer
         /// </summary>
-        public static unsafe void ToBytes(this Int64 value, byte[] array, int startIndex)
+        public static unsafe void ToBytes(this long value, byte[] array, int startIndex)
         {
             fixed (byte* ptr = &array[startIndex])
             {
-                *(Int64*)ptr = value;
+                *(long*)ptr = value;
             }
         }
 
         /// <summary>
         /// Copy UInt16 bytes direct into buffer
         /// </summary>
-        public static unsafe void ToBytes(this UInt16 value, byte[] array, int startIndex)
+        public static unsafe void ToBytes(this ushort value, byte[] array, int startIndex)
         {
             fixed (byte* ptr = &array[startIndex])
             {
-                *(UInt16*)ptr = value;
+                *(ushort*)ptr = value;
             }
         }
 
         /// <summary>
         /// Copy UInt32 bytes direct into buffer
         /// </summary>
-        public static unsafe void ToBytes(this UInt32 value, byte[] array, int startIndex)
+        public static unsafe void ToBytes(this uint value, byte[] array, int startIndex)
         {
             fixed (byte* ptr = &array[startIndex])
             {
-                *(UInt32*)ptr = value;
+                *(uint*)ptr = value;
             }
         }
 
         /// <summary>
         /// Copy Int64 bytes direct into buffer
         /// </summary>
-        public static unsafe void ToBytes(this UInt64 value, byte[] array, int startIndex)
+        public static unsafe void ToBytes(this ulong value, byte[] array, int startIndex)
         {
             fixed (byte* ptr = &array[startIndex])
             {
-                *(UInt64*)ptr = value;
+                *(ulong*)ptr = value;
             }
         }
 
         /// <summary>
         /// Copy Single bytes direct into buffer
         /// </summary>
-        public static unsafe void ToBytes(this Single value, byte[] array, int startIndex)
+        public static unsafe void ToBytes(this float value, byte[] array, int startIndex)
         {
-            ToBytes(*(UInt32*)(&value), array, startIndex);
+            ToBytes(*(uint*)(&value), array, startIndex);
 
             //fixed (byte* ptr = &array[startIndex])
             //{
@@ -172,9 +170,9 @@ namespace LiteDB
         /// <summary>
         /// Copy Double bytes direct into buffer
         /// </summary>
-        public static unsafe void ToBytes(this Double value, byte[] array, int startIndex)
+        public static unsafe void ToBytes(this double value, byte[] array, int startIndex)
         {
-            ToBytes(*(UInt64*)(&value), array, startIndex);
+            ToBytes(*(ulong*)(&value), array, startIndex);
 
             //fixed (byte* ptr = &array[startIndex])
             //{

@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static LiteDB.Constants;
-
-namespace LiteDB.Engine
+﻿namespace LiteDB.Engine
 {
     /// <summary>
     /// Represent an GroupBy definition (is based on OrderByDefinition)
@@ -20,9 +13,9 @@ namespace LiteDB.Engine
 
         public GroupBy(BsonExpression expression, BsonExpression select, BsonExpression having)
         {
-            this.Expression = expression;
-            this.Select = select;
-            this.Having = having;
+            Expression = expression;
+            Select = select;
+            Having = having;
         }
     }
 }

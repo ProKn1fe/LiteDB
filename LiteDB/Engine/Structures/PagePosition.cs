@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using static LiteDB.Constants;
-
-namespace LiteDB.Engine
+﻿namespace LiteDB.Engine
 {
     /// <summary>
     /// Represents a page position after save in disk. Used in WAL files where PageID do not match with PagePosition
@@ -24,13 +20,13 @@ namespace LiteDB.Engine
         /// <summary>
         /// Checks if current PagePosition is empty value
         /// </summary>
-        public bool IsEmpty => this.PageID == uint.MaxValue && this.Position == long.MaxValue;
+        public bool IsEmpty => PageID == uint.MaxValue && Position == long.MaxValue;
 
         public override bool Equals(object obj)
         {
             var other = (PagePosition)obj;
 
-            return this.PageID == other.PageID && this.Position == other.PageID;
+            return PageID == other.PageID && Position == other.PageID;
         }
 
         public override int GetHashCode()
@@ -38,22 +34,22 @@ namespace LiteDB.Engine
             unchecked
             {
                 int hash = 17;
-                hash = hash * 23 + (int)this.PageID;
-                hash = hash * 23 + (int)this.Position;
+                hash = hash * 23 + (int)PageID;
+                hash = hash * 23 + (int)Position;
                 return hash;
             }
         }
 
         public PagePosition(uint pageID, long position)
         {
-            this.PageID = pageID;
-            this.Position = position;
+            PageID = pageID;
+            Position = position;
         }
 
         public override string ToString()
         {
-            return this.IsEmpty ? "----:----" :
-                (this.PageID == uint.MaxValue ? "----" : this.PageID.ToString()) + ":" + this.Position.ToString();
+            return IsEmpty ? "----:----" :
+                (PageID == uint.MaxValue ? "----" : PageID.ToString()) + ":" + Position.ToString();
         }
     }
 }

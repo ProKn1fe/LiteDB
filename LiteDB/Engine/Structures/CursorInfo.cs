@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using static LiteDB.Constants;
+﻿using System.Diagnostics;
 
 namespace LiteDB.Engine
 {
@@ -14,8 +9,8 @@ namespace LiteDB.Engine
     {
         public CursorInfo(string collection, Query query)
         {
-            this.Collection = collection;
-            this.Query = query;
+            Collection = collection;
+            Query = query;
         }
 
         public string Collection { get; }

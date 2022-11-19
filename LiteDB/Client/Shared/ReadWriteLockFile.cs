@@ -1,15 +1,11 @@
 ﻿using LiteDB.Engine;
+
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
+
 using static LiteDB.Constants;
 
 
@@ -41,7 +37,7 @@ namespace LiteDB
 
             if (_stream.Length == 0)
             {
-                this.Initialize();
+                Initialize();
             }
         }
 
@@ -58,19 +54,19 @@ namespace LiteDB
             FileHelper.TryLock(_stream, _timeout, true);
 
             // read all file into local array
-            this.ReadBuffer();
+            ReadBuffer();
 
             // get free slot position on lock file
-            _slot = this.GetFreeSlot();
+            _slot = GetFreeSlot();
 
             // if it's possible to run now
-            if (this.CanRun(_slot, mode))
+            if (CanRun(_slot, mode))
             {
                 // write file with running = true
-                this.SetRunning(_slot, mode, true);
+                SetRunning(_slot, mode, true);
 
                 // write buffer
-                this.WriteBuffer();
+                WriteBuffer();
 
                 try
                 {
@@ -88,10 +84,10 @@ namespace LiteDB
             else
             {
                 // create item on queue
-                this.SetRunning(_slot, mode, false);
+                SetRunning(_slot, mode, false);
 
                 // write buffer into disk
-                this.WriteBuffer();
+                WriteBuffer();
 
                 // unlock file and get main looping to wait for my turn
                 FileHelper.TryUnlock(_stream);
@@ -110,24 +106,24 @@ namespace LiteDB
                 FileHelper.TryLock(_stream, _timeout, true);
 
                 // update local array
-                this.ReadBuffer();
+                ReadBuffer();
 
                 // checks if my slot are emtpy (control was taken from first timeout instance)
                 if (_buffer[_slot + P_OFFSET] == 0)
                 {
                     // add me again in end of queue (get new slot)
-                    _slot = this.GetFreeSlot();
+                    _slot = GetFreeSlot();
 
-                    this.SetRunning(_slot, mode, false);
+                    SetRunning(_slot, mode, false);
 
-                    this.WriteBuffer();
+                    WriteBuffer();
                 }
                 // check if is possible run now
-                else if (this.CanRun(_slot, mode))
+                else if (CanRun(_slot, mode))
                 {
-                    this.SetRunning(_slot, mode, true);
+                    SetRunning(_slot, mode, true);
 
-                    this.WriteBuffer();
+                    WriteBuffer();
 
                     running = true;
                 }
@@ -159,7 +155,7 @@ namespace LiteDB
 
             try
             {
-                if (this.TryTakeControl(mode, action) == false)
+                if (TryTakeControl(mode, action) == false)
                 {
                     throw LiteException.LockTimeout("shared", _timeout);
                 }
@@ -181,16 +177,16 @@ namespace LiteDB
 
             try
             {
-                this.ReadBuffer();
+                ReadBuffer();
 
                 // clear current slot position
                 _buffer[_slot + P_OFFSET] = 0;
 
                 // update start (and length) of queue
-                this.UpdateStartPosition();
+                UpdateStartPosition();
 
                 // write buffer into disk
-                this.WriteBuffer();
+                WriteBuffer();
             }
             finally
             {
@@ -255,7 +251,7 @@ namespace LiteDB
 
             if (mode == LockMode.Read)
             {
-                var lindex = this.GetPrevIndex(slot);
+                var lindex = GetPrevIndex(slot);
 
                 while(lindex != byte.MaxValue)
                 {
@@ -276,7 +272,7 @@ namespace LiteDB
                         return false;
                     }
 
-                    lindex = this.GetPrevIndex(lindex);
+                    lindex = GetPrevIndex(lindex);
                 }
             }
 
@@ -337,7 +333,7 @@ namespace LiteDB
         /// </summary>
         private bool TryTakeControl(LockMode mode, Action action)
         {
-            this.ReadBuffer();
+            ReadBuffer();
 
             if (_buffer[_slot + P_OFFSET] == 0)
             {
@@ -351,7 +347,7 @@ namespace LiteDB
                     action();
 
                     // add running instance in queue (at last position)
-                    _slot = this.GetFreeSlot();
+                    _slot = GetFreeSlot();
 
                     // clear all buffer
                     _buffer.Fill(0, 0, _buffer.Length);
@@ -361,9 +357,9 @@ namespace LiteDB
                     _buffer[P_LENGTH] = 1;
 
                     // this this instance as running
-                    this.SetRunning(_slot, mode, true);
+                    SetRunning(_slot, mode, true);
 
-                    this.WriteBuffer();
+                    WriteBuffer();
 
                     return true;
                 }
@@ -374,7 +370,7 @@ namespace LiteDB
 
                     _slot = byte.MaxValue;
 
-                    this.WriteBuffer();
+                    WriteBuffer();
 
                     return false;
                 }
@@ -403,14 +399,14 @@ namespace LiteDB
 
                     if (_buffer[P_POSITION] == i)
                     {
-                        sb.Append("[");
+                        sb.Append('[');
                         inside = true;
                         length++;
                     }
 
                     if (_buffer[P_LENGTH] == length)
                     {
-                        sb.Append("]");
+                        sb.Append(']');
                         inside = false;
                         length = -1;
                     }

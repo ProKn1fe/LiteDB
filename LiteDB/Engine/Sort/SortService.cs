@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -84,7 +78,7 @@ namespace LiteDB.Engine
         public void Insert(IEnumerable<KeyValuePair<BsonValue, PageAddress>> items)
         {
             // slit all items in sorted containers
-            foreach (var containerItems in this.SliptValues(items, _done))
+            foreach (var containerItems in SliptValues(items, _done))
             {
                 var container = new SortContainer(_pragmas.Collation, _containerSize);
 
@@ -185,7 +179,7 @@ namespace LiteDB.Engine
 
                     while (done.Running)
                     {
-                        yield return this.YieldValues(enumerator, done);
+                        yield return YieldValues(enumerator, done);
                     }
                 }
             }

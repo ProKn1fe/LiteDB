@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -26,7 +23,7 @@ namespace LiteDB
         /// <summary>
         /// Indicate which member is _id
         /// </summary>
-        public MemberMapper Id => this.Members.SingleOrDefault(x => x.FieldName == "_id");
+        public MemberMapper Id => Members.SingleOrDefault(x => x.FieldName == "_id");
 
         /// <summary>
         /// Get/Set a custom ctor function to create new entity instance
@@ -35,7 +32,7 @@ namespace LiteDB
 
         public EntityMapper(Type forType)
         {
-            this.ForType = forType;
+            ForType = forType;
         }
 
         /// <summary>
@@ -43,7 +40,7 @@ namespace LiteDB
         /// </summary>
         public MemberMapper GetMember(Expression expr)
         {
-            return this.Members.FirstOrDefault(x => x.MemberName == expr.GetPath());
+            return Members.FirstOrDefault(x => x.MemberName == expr.GetPath());
         }
     }
 }

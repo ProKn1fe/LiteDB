@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -46,7 +46,7 @@ namespace LiteDB.Engine
                 }
 
                 // rebuild entrie database using FileReader
-                this.RebuildContent(reader);
+                RebuildContent(reader);
 
                 // do checkpoint
                 _walIndex.Checkpoint(false, true);
@@ -101,7 +101,7 @@ namespace LiteDB.Engine
         internal void RebuildContent(IFileReader reader)
         {
             // begin transaction and get TransactionID
-            this.BeginTrans();
+            BeginTrans();
 
             try
             {
@@ -110,7 +110,7 @@ namespace LiteDB.Engine
                     // first create all user indexes (exclude _id index)
                     foreach (var index in reader.GetIndexes(collection))
                     {
-                        this.EnsureIndex(collection,
+                        EnsureIndex(collection,
                             index.Name,
                             BsonExpression.Create(index.Expression),
                             index.Unique);
@@ -120,17 +120,17 @@ namespace LiteDB.Engine
                     var docs = reader.GetDocuments(collection);
 
                     // insert all in documents
-                    this.Insert(collection, docs, BsonAutoId.ObjectId);
+                    Insert(collection, docs, BsonAutoId.ObjectId);
                 }
 
-                this.Commit();
+                Commit();
 
                 // wait async queue writer
                 _disk.Queue.Wait();
             }
             catch (Exception)
             {
-                this.Rollback();
+                Rollback();
 
                 throw;
             }

@@ -12,7 +12,7 @@ namespace LiteDB.Tests
             var path = Path.GetTempPath();
             var name = "test-" + Guid.NewGuid().ToString("d").Substring(0, 5) + ".db";
 
-            this.Filename = Path.Combine(path, name);
+            Filename = Path.Combine(path, name);
         }
 
         #region Dispose
@@ -43,15 +43,15 @@ namespace LiteDB.Tests
 
             // check file integrity
 
-            File.Delete(this.Filename);
+            File.Delete(Filename);
 
             _disposed = true;
         }
 
         #endregion
 
-        public long Size => new FileInfo(this.Filename).Length;
+        public long Size => new FileInfo(Filename).Length;
 
-        public string ReadAsText() => File.ReadAllText(this.Filename);
+        public string ReadAsText() => File.ReadAllText(Filename);
     }
 }

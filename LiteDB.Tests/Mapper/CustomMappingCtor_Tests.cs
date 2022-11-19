@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
+
 using FluentAssertions;
+
 using Xunit;
 
 namespace LiteDB.Tests.Mapper
@@ -14,8 +15,8 @@ namespace LiteDB.Tests.Mapper
 
             public User(int id, string name)
             {
-                this.Id = id;
-                this.Name = name;
+                Id = id;
+                Name = name;
             }
         }
 
@@ -38,14 +39,14 @@ namespace LiteDB.Tests.Mapper
             [BsonCtor]
             public MultiCtor(int id)
             {
-                this.Id = id;
-                this.DefinedOnlyInInt32 = "changed";
+                Id = id;
+                DefinedOnlyInInt32 = "changed";
             }
 
             public MultiCtor(int id, string name)
             {
-                this.Id = id;
-                this.Name = name;
+                Id = id;
+                Name = name;
             }
         }
 

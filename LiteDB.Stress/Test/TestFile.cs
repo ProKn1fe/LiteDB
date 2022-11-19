@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Xml;
 
 namespace LiteDB.Stress
@@ -23,19 +22,19 @@ namespace LiteDB.Stress
             var root = doc.DocumentElement;
             var children = root.SelectNodes("*");
 
-            this.Timeout = TimeSpanEx.Parse(root.GetAttribute("timeout"));
-            this.Filename = root.GetAttribute("filename");
-            this.Delete = bool.Parse(root.GetAttribute("delete"));
-            this.Output = Path.Combine(Path.GetDirectoryName(this.Filename), Path.GetFileNameWithoutExtension(this.Filename) + ".log");
+            Timeout = TimeSpanEx.Parse(root.GetAttribute("timeout"));
+            Filename = root.GetAttribute("filename");
+            Delete = bool.Parse(root.GetAttribute("delete"));
+            Output = Path.Combine(Path.GetDirectoryName(Filename), Path.GetFileNameWithoutExtension(Filename) + ".log");
 
-            this.Setup = new List<string>();
-            this.Tasks = new List<ITestItem>();
+            Setup = new List<string>();
+            Tasks = new List<ITestItem>();
 
             foreach(XmlElement el in children)
             {
                 if (el.Name == "setup")
                 {
-                    this.Setup.Add(el.InnerText);
+                    Setup.Add(el.InnerText);
                 }
                 else
                 {
@@ -43,7 +42,7 @@ namespace LiteDB.Stress
                         (ITestItem)new InsertTaskItem(el) :
                         (ITestItem)new SqlTaskItem(el);
 
-                    this.Tasks.Add(item);
+                    Tasks.Add(item);
                 }
             }
         }

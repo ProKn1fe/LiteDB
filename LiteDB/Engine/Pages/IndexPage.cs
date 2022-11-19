@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -16,9 +15,9 @@ namespace LiteDB.Engine
         public IndexPage(PageBuffer buffer)
             : base(buffer)
         {
-            ENSURE(this.PageType == PageType.Index, "page type must be index page");
+            ENSURE(PageType == PageType.Index, "page type must be index page");
 
-            if (this.PageType != PageType.Index) throw LiteException.InvalidPageType(PageType.Index, this);
+            if (PageType != PageType.Index) throw LiteException.InvalidPageType(PageType.Index, this);
         }
 
         /// <summary>
@@ -68,7 +67,7 @@ namespace LiteDB.Engine
         {
             foreach (var index in base.GetUsedIndexs())
             {
-                yield return this.GetIndexNode(index);
+                yield return GetIndexNode(index);
             }
         }
 

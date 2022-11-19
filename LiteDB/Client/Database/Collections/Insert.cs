@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -15,7 +13,7 @@ namespace LiteDB
             if (entity == null) throw new ArgumentNullException(nameof(entity));
 
             var doc = _mapper.ToDocument(entity);
-            var removed = this.RemoveDocId(doc);
+            var removed = RemoveDocId(doc);
 
             _engine.Insert(_collection, new[] { doc }, _autoId);
 
@@ -52,7 +50,7 @@ namespace LiteDB
         {
             if (entities == null) throw new ArgumentNullException(nameof(entities));
 
-            return _engine.Insert(_collection, this.GetBsonDocs(entities), _autoId);
+            return _engine.Insert(_collection, GetBsonDocs(entities), _autoId);
         }
 
         /// <summary>
@@ -63,7 +61,7 @@ namespace LiteDB
         {
             if (entities == null) throw new ArgumentNullException(nameof(entities));
 
-            return _engine.Insert(_collection, this.GetBsonDocs(entities), _autoId);
+            return _engine.Insert(_collection, GetBsonDocs(entities), _autoId);
         }
 
         /// <summary>
@@ -74,7 +72,7 @@ namespace LiteDB
             foreach (var document in documents)
             {
                 var doc = _mapper.ToDocument(document);
-                var removed = this.RemoveDocId(doc);
+                var removed = RemoveDocId(doc);
 
                 yield return doc;
 

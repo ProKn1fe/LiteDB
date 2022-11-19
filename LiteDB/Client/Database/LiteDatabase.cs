@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Threading;
+
 using LiteDB.Engine;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -102,7 +100,7 @@ namespace LiteDB
         /// </summary>
         public ILiteCollection<T> GetCollection<T>()
         {
-            return this.GetCollection<T>(null);
+            return GetCollection<T>(null);
         }
 
         /// <summary>
@@ -110,7 +108,7 @@ namespace LiteDB
         /// </summary>
         public ILiteCollection<T> GetCollection<T>(BsonAutoId autoId)
         {
-            return this.GetCollection<T>(null, autoId);
+            return GetCollection<T>(null, autoId);
         }
 
         /// <summary>
@@ -156,7 +154,7 @@ namespace LiteDB
         /// </summary>
         public ILiteStorage<string> FileStorage
         {
-            get { return _fs ?? (_fs = this.GetStorage<string>()); }
+            get { return _fs ?? (_fs = GetStorage<string>()); }
         }
 
         /// <summary>
@@ -177,7 +175,7 @@ namespace LiteDB
         public IEnumerable<string> GetCollectionNames()
         {
             // use $cols system collection with type = user only
-            var cols = this.GetCollection("$cols")
+            var cols = GetCollection("$cols")
                 .Query()
                 .Where("type = 'user'")
                 .ToDocuments()
@@ -194,7 +192,7 @@ namespace LiteDB
         {
             if (name.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(name));
 
-            return this.GetCollectionNames().Contains(name, StringComparer.OrdinalIgnoreCase);
+            return GetCollectionNames().Contains(name, StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -264,7 +262,7 @@ namespace LiteDB
                 index++;
             }
 
-            return this.Execute(command, p);
+            return Execute(command, p);
         }
 
         #endregion
@@ -365,13 +363,13 @@ namespace LiteDB
 
         public void Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         ~LiteDatabase()
         {
-            this.Dispose(false);
+            Dispose(false);
         }
 
         protected virtual void Dispose(bool disposing)

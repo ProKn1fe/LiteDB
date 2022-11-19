@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.Threading;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -25,18 +20,18 @@ namespace LiteDB
                 (CompareOptions)Enum.Parse(typeof(CompareOptions), parts[1]) : 
                 CompareOptions.None;
 
-            this.SortOptions = sortOptions;
-            this.Culture = new CultureInfo(culture);
+            SortOptions = sortOptions;
+            Culture = new CultureInfo(culture);
 
-            _compareInfo = this.Culture.CompareInfo;
+            _compareInfo = Culture.CompareInfo;
         }
 
         public Collation(int lcid, CompareOptions sortOptions)
         {
-            this.SortOptions = sortOptions;
-            this.Culture = CultureInfo.GetCultureInfo(lcid);
+            SortOptions = sortOptions;
+            Culture = CultureInfo.GetCultureInfo(lcid);
 
-            _compareInfo = this.Culture.CompareInfo;
+            _compareInfo = Culture.CompareInfo;
         }
 
         /// <summary>
@@ -64,7 +59,7 @@ namespace LiteDB
         /// </summary>
         public int Compare(string left, string right)
         {
-            var result = _compareInfo.Compare(left, right, this.SortOptions);
+            var result = _compareInfo.Compare(left, right, SortOptions);
 
             return result < 0 ? -1 : result > 0 ? +1 : 0;
         }
@@ -85,7 +80,7 @@ namespace LiteDB
 
         public bool Equals(BsonValue x, BsonValue y)
         {
-            return this.Compare(x, y) == 0;
+            return Compare(x, y) == 0;
         }
 
         public int GetHashCode(BsonValue obj)
@@ -95,7 +90,7 @@ namespace LiteDB
 
         public override string ToString()
         {
-            return this.Culture.Name + "/" + this.SortOptions.ToString();
+            return Culture.Name + "/" + SortOptions.ToString();
         }
     }
 }

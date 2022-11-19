@@ -1,7 +1,4 @@
-﻿using LiteDB.Engine;
-using Xunit;
-
-namespace LiteDB.Tests.Engine
+﻿namespace LiteDB.Tests.Engine
 {
     /*public class Create_Database_Tests
     {

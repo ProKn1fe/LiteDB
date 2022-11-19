@@ -1,8 +1,8 @@
 ﻿using LiteDB.Engine;
+
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Threading;
 
 #if DEBUG
 [assembly: InternalsVisibleTo("LiteDB.Tests")]

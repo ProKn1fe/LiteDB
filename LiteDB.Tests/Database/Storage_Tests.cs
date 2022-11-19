@@ -23,8 +23,8 @@ namespace LiteDB.Tests.Database
             _rnd.NextBytes(_smallFile);
             _rnd.NextBytes(_bigFile);
 
-            _smallHash = this.HashFile(_smallFile);
-            _bigHash = this.HashFile(_bigFile);
+            _smallHash = HashFile(_smallFile);
+            _bigHash = HashFile(_bigFile);
         }
 
         [Fact]
@@ -45,8 +45,8 @@ namespace LiteDB.Tests.Database
                 var f0 = fs.Find(x => x.Filename == "photo_small.png").First();
                 var f1 = fs.Find(x => x.Filename == "photo_big.png").First();
 
-                this.HashFile(f0.OpenRead()).Should().Be(_smallHash);
-                this.HashFile(f1.OpenRead()).Should().Be(_bigHash);
+                HashFile(f0.OpenRead()).Should().Be(_smallHash);
+                HashFile(f1.OpenRead()).Should().Be(_bigHash);
 
                 // now replace small content with big-content
                 var repl = fs.Upload(10, "new_photo.jpg", new MemoryStream(_bigFile));
@@ -71,7 +71,7 @@ namespace LiteDB.Tests.Database
         {
             var m = new MemoryStream();
             stream.CopyTo(m);
-            return this.HashFile(m.ToArray());
+            return HashFile(m.ToArray());
         }
 
         private string HashFile(byte[] input)

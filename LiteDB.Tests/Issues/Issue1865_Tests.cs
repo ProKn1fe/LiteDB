@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using Xunit;
-using System.Linq;
-using System.Security.Cryptography;
 
 namespace LiteDB.Tests.Issues
 {

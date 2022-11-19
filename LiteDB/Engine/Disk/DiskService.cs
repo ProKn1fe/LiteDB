@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -49,7 +46,7 @@ namespace LiteDB.Engine
             {
                 LOG($"creating new database: '{Path.GetFileName(_streamFactory.Name)}'", "DISK");
 
-                _header = this.Initialize(_streamPool.Writer, settings.Collation, settings.InitialSize);
+                _header = Initialize(_streamPool.Writer, settings.Collation, settings.InitialSize);
             }
             else
             {
@@ -74,7 +71,7 @@ namespace LiteDB.Engine
                     // return to pool before dispose 
                     _streamPool.Return(stream);
 
-                    this.Dispose();
+                    Dispose();
 
                     throw;
                 }
@@ -325,7 +322,7 @@ namespace LiteDB.Engine
             if (settings.Password == password) return;
 
             // rebuild file
-            this.ChangePasswordRebuild(password);
+            ChangePasswordRebuild(password);
 
             // change current settings password
             settings.Password = password;
@@ -348,7 +345,7 @@ namespace LiteDB.Engine
         /// </summary>
         private void ChangePasswordRebuild(string password)
         {
-            var source = this.Writer;
+            var source = Writer;
             var length = source.Length;
 
             // if destination stream are encrypted, came from end to begin
@@ -362,7 +359,7 @@ namespace LiteDB.Engine
                 source.Read(header, 0, PAGE_SIZE);
 
                 // create aes stream and initialize first page
-                var destination = new AesStream(password, this.Writer is AesStream ? (this.Writer as AesStream).BaseStream : this.Writer, true);
+                var destination = new AesStream(password, Writer is AesStream ? (Writer as AesStream).BaseStream : Writer, true);
 
                 var position = length - PAGE_SIZE;
                 var buffer = new byte[PAGE_SIZE];

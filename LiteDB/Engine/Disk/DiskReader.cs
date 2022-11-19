@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -38,8 +31,8 @@ namespace LiteDB.Engine
             ENSURE(position % PAGE_SIZE == 0, "invalid page position");
 
             var page = writable ?
-                _cache.GetWritablePage(position, (pos, buf) => this.ReadStream(_stream.Value, pos, buf)) :
-                _cache.GetReadablePage(position, (pos, buf) => this.ReadStream(_stream.Value, pos, buf));
+                _cache.GetWritablePage(position, (pos, buf) => ReadStream(_stream.Value, pos, buf)) :
+                _cache.GetReadablePage(position, (pos, buf) => ReadStream(_stream.Value, pos, buf));
 
             return page;
         }

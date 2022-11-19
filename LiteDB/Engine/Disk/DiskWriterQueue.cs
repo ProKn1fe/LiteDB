@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -55,7 +49,7 @@ namespace LiteDB.Engine
                 if (_queue.Count > 0 && (_task == null || _task.IsCompleted))
                 {
                     // https://blog.stephencleary.com/2013/08/startnew-is-dangerous.html
-                    _task = Task.Run(this.ExecuteQueue);
+                    _task = Task.Run(ExecuteQueue);
                 }
             }
         }
@@ -67,14 +61,11 @@ namespace LiteDB.Engine
         {
             lock (_queue)
             {
-                if (_task != null)
-                {
-                    _task.Wait();
-                }
+                _task?.Wait();
 
                 if (_queue.Count > 0)
                 {
-                    this.ExecuteQueue();
+                    ExecuteQueue();
                 }
             }
 
@@ -121,7 +112,7 @@ namespace LiteDB.Engine
             LOG($"disposing disk writer queue (with {_queue.Count} pages in queue)", "DISK");
 
             // run all items in queue before dispose
-            this.Wait();
+            Wait();
         }
     }
 }

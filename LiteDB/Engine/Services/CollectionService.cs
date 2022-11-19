@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using static LiteDB.Constants;
 
 namespace LiteDB.Engine
 {
@@ -44,7 +40,7 @@ namespace LiteDB.Engine
             }
             else if (addIfNotExists)
             {
-                this.Add(name, ref collectionPage);
+                Add(name, ref collectionPage);
             }
         }
 

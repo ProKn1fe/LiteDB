@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using Xunit;
 using System.Linq;
 
 namespace LiteDB.Tests.Issues
 {
-    
+
     public class Issue1651_Tests
     {
         public class Order : BaseEntity

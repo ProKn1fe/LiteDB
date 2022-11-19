@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using static LiteDB.Constants;
+﻿using System.Collections.Generic;
 
 namespace LiteDB.Engine
 {
@@ -34,17 +31,17 @@ namespace LiteDB.Engine
         public override IEnumerable<IndexNode> Execute(IndexService indexer, CollectionIndex index)
         {
             // if order are desc, swap start/end values
-            var start = this.Order == Query.Ascending ? _start : _end;
-            var end = this.Order == Query.Ascending ? _end : _start;
+            var start = Order == Query.Ascending ? _start : _end;
+            var end = Order == Query.Ascending ? _end : _start;
 
-            var startEquals = this.Order == Query.Ascending ? _startEquals : _endEquals;
-            var endEquals = this.Order == Query.Ascending ? _endEquals : _startEquals;
+            var startEquals = Order == Query.Ascending ? _startEquals : _endEquals;
+            var endEquals = Order == Query.Ascending ? _endEquals : _startEquals;
 
             // find first indexNode (or get from head/tail if Min/Max value)
             var first = 
                 start.Type == BsonType.MinValue ? indexer.GetNode(index.Head) :
                 start.Type == BsonType.MaxValue ? indexer.GetNode(index.Tail) :
-                indexer.Find(index, start, true, this.Order);
+                indexer.Find(index, start, true, Order);
 
             var node = first;
 
@@ -52,7 +49,7 @@ namespace LiteDB.Engine
             if (startEquals && node != null)
             {
                 // going backward in same value list to get first value
-                while (!node.GetNextPrev(0, -this.Order).IsEmpty && ((node = indexer.GetNode(node.GetNextPrev(0, -this.Order))).Key.CompareTo(start) == 0))
+                while (!node.GetNextPrev(0, -Order).IsEmpty && ((node = indexer.GetNode(node.GetNextPrev(0, -Order))).Key.CompareTo(start) == 0))
                 {
                     if (node.Key.IsMinValue || node.Key.IsMaxValue) break;
 
@@ -75,7 +72,7 @@ namespace LiteDB.Engine
                     yield return node;
                 }
 
-                node = indexer.GetNode(node.GetNextPrev(0, this.Order));
+                node = indexer.GetNode(node.GetNextPrev(0, Order));
             }
 
             // navigate using next[0] do next node - if less or equals returns
@@ -87,7 +84,7 @@ namespace LiteDB.Engine
                 {
                     yield return node;
                 }
-                else if (diff == -this.Order && !(node.Key.IsMinValue || node.Key.IsMaxValue))
+                else if (diff == -Order && !(node.Key.IsMinValue || node.Key.IsMaxValue))
                 {
                     yield return node;
                 }
@@ -96,7 +93,7 @@ namespace LiteDB.Engine
                     break;
                 }
 
-                node = indexer.GetNode(node.GetNextPrev(0, this.Order));
+                node = indexer.GetNode(node.GetNextPrev(0, Order));
             }
         }
 
@@ -104,23 +101,23 @@ namespace LiteDB.Engine
         {
             if (_start.IsMinValue && _endEquals == false)
             {
-                return string.Format("INDEX SCAN({0} < {1})", this.Name, _end);
+                return string.Format("INDEX SCAN({0} < {1})", Name, _end);
             }
             else if (_start.IsMinValue && _endEquals == true)
             {
-                return string.Format("INDEX SCAN({0} <= {1})", this.Name, _end);
+                return string.Format("INDEX SCAN({0} <= {1})", Name, _end);
             }
             else if (_end.IsMaxValue && _startEquals == false)
             {
-                return string.Format("INDEX SCAN({0} > {1})", this.Name, _start);
+                return string.Format("INDEX SCAN({0} > {1})", Name, _start);
             }
             else if (_end.IsMaxValue && _startEquals == true)
             {
-                return string.Format("INDEX SCAN({0} >= {1})", this.Name, _start);
+                return string.Format("INDEX SCAN({0} >= {1})", Name, _start);
             }
             else
             {
-                return string.Format("INDEX RANGE SCAN({0} BETWEEN {1} AND {2})", this.Name, _start, _end);
+                return string.Format("INDEX RANGE SCAN({0} BETWEEN {1} AND {2})", Name, _start, _end);
             }
         }
     }

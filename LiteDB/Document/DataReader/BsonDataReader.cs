@@ -1,9 +1,5 @@
-﻿using LiteDB.Engine;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -105,13 +101,13 @@ namespace LiteDB
 
         public void Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         ~BsonDataReader()
         {
-            this.Dispose(false);
+            Dispose(false);
         }
 
         protected virtual void Dispose(bool disposing)

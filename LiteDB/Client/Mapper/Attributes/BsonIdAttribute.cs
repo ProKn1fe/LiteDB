@@ -1,5 +1,4 @@
 ﻿using System;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -12,12 +11,12 @@ namespace LiteDB
 
         public BsonIdAttribute()
         {
-            this.AutoId = true;
+            AutoId = true;
         }
 
         public BsonIdAttribute(bool autoId)
         {
-            this.AutoId = autoId;
+            AutoId = autoId;
         }
     }
 }

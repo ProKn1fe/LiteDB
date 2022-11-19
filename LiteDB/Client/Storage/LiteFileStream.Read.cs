@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -28,7 +26,7 @@ namespace LiteDB
                 {
                     _positionInChunk = 0;
 
-                    _currentChunkData = this.GetChunkData(++_currentChunkIndex);
+                    _currentChunkData = GetChunkData(++_currentChunkIndex);
                 }
             }
 
@@ -58,7 +56,7 @@ namespace LiteDB
             _positionInChunk = (int)_streamPosition % MAX_CHUNK_SIZE;
 
             // get current chunk
-            _currentChunkData = this.GetChunkData(_currentChunkIndex);
+            _currentChunkData = GetChunkData(_currentChunkIndex);
         }
     }
 }

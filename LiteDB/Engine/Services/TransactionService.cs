@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Threading;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -67,8 +65,8 @@ namespace LiteDB.Engine
             _walIndex = walIndex;
             _monitor = monitor;
 
-            this.QueryOnly = queryOnly;
-            this.MaxTransactionSize = maxTransactionSize;
+            QueryOnly = queryOnly;
+            MaxTransactionSize = maxTransactionSize;
 
             // create new transactionID
             _transactionID = walIndex.NextTransactionID();
@@ -138,7 +136,7 @@ namespace LiteDB.Engine
                 // if any snapshot are writable, persist pages
                 if (_mode == LockMode.Write)
                 {
-                    this.PersistDirtyPages(false);
+                    PersistDirtyPages(false);
                 }
 
                 // clear local pages in all snapshots (read/write snapshosts)
@@ -262,7 +260,7 @@ namespace LiteDB.Engine
             if (_mode == LockMode.Write || _transPages.HeaderChanged)
             {
                 // persist all dirty page as commit mode (mark last page as IsConfirm)
-                var count = this.PersistDirtyPages(true);
+                var count = PersistDirtyPages(true);
 
                 // update wal-index (if any page was added into log disk)
                 if(count > 0)
@@ -293,7 +291,7 @@ namespace LiteDB.Engine
             // if transaction contains new pages, must return to database in another transaction
             if (_transPages.NewPages.Count > 0)
             {
-                this.ReturnNewPages();
+                ReturnNewPages();
             }
 
             // dispose all snaphosts

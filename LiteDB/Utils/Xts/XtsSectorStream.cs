@@ -24,15 +24,14 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-using System;
 using System.IO;
 
 namespace XTSSharp
 {
-	/// <summary>
-	/// Xts sector-based
-	/// </summary>
-	public class XtsSectorStream : SectorStream
+    /// <summary>
+    /// Xts sector-based
+    /// </summary>
+    public class XtsSectorStream : SectorStream
 	{
 		/// <summary>
 		/// The default sector size
@@ -87,11 +86,9 @@ namespace XTSSharp
 		{
 			base.Dispose(disposing);
 
-			if (_encryptor != null)
-				_encryptor.Dispose();
+			_encryptor?.Dispose();
 
-			if (_decryptor != null)
-				_decryptor.Dispose();
+			_decryptor?.Dispose();
 		}
 
 		/// <summary>

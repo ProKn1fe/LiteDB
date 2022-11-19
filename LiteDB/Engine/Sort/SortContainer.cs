@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -86,14 +80,14 @@ namespace LiteDB.Engine
         {
             if (stream != null)
             {
-                _reader = new BufferReader(this.GetSourceFromStream(stream), utcDate);
+                _reader = new BufferReader(GetSourceFromStream(stream), utcDate);
             }
             else
             {
                 _reader = new BufferReader(buffer, utcDate);
             }
 
-            this.MoveNext();
+            MoveNext();
         }
 
         public bool MoveNext()
@@ -107,7 +101,7 @@ namespace LiteDB.Engine
             var key = _reader.ReadIndexKey();
             var value = _reader.ReadPageAddress();
 
-            this.Current = new KeyValuePair<BsonValue, PageAddress>(key, value);
+            Current = new KeyValuePair<BsonValue, PageAddress>(key, value);
 
             _remaining--;
 
@@ -124,7 +118,7 @@ namespace LiteDB.Engine
 
             while (_readPosition < _size)
             {
-                stream.Position = this.Position + _readPosition;
+                stream.Position = Position + _readPosition;
 
                 stream.Read(bytes, 0, PAGE_SIZE);
 

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace LiteDB.Shell.Commands
+﻿namespace LiteDB.Shell.Commands
 {
     [Help(
         Name = "version",

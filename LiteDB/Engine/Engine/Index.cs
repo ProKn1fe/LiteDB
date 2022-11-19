@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -25,7 +23,7 @@ namespace LiteDB.Engine
 
             if (expression.Source == "$._id") return false; // always exists
 
-            return this.AutoTransaction(transaction =>
+            return AutoTransaction(transaction =>
             {
                 var snapshot = transaction.CreateSnapshot(LockMode.Write, collection, true);
                 var collectionPage = snapshot.CollectionPage;
@@ -102,7 +100,7 @@ namespace LiteDB.Engine
 
             if (name == "_id") throw LiteException.IndexDropId();
 
-            return this.AutoTransaction(transaction =>
+            return AutoTransaction(transaction =>
             {
                 var snapshot = transaction.CreateSnapshot(LockMode.Write, collection, false);
                 var col = snapshot.CollectionPage;

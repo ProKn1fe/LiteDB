@@ -1,8 +1,7 @@
 ﻿using LiteDB.Engine;
+
 using System;
 using System.Collections.Generic;
-using System.IO;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {

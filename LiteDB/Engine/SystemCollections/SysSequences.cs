@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using static LiteDB.Constants;
+﻿using System.Collections.Generic;
 
 namespace LiteDB.Engine
 {

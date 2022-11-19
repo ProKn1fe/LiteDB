@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml;
 
 namespace LiteDB.Stress
@@ -183,8 +181,8 @@ namespace LiteDB.Stress
 
         public InsertField(XmlElement el)
         {
-            this.Name = el.Name;
-            this.Type = el.GetAttribute("type").ToLower() switch
+            Name = el.Name;
+            Type = el.GetAttribute("type").ToLower() switch
             {
                 "name" => InsertFieldType.Name,
                 "int" => InsertFieldType.Int,
@@ -198,35 +196,35 @@ namespace LiteDB.Stress
 
             var range = el.GetAttribute("range");
 
-            if (this.Type == InsertFieldType.Int || this.Type == InsertFieldType.Binary)
+            if (Type == InsertFieldType.Int || Type == InsertFieldType.Binary)
             {
-                this.StartIntRange = int.Parse(range.Split('~').First());
-                this.EndIntRange = int.Parse(range.Split('~').Last());
+                StartIntRange = int.Parse(range.Split('~').First());
+                EndIntRange = int.Parse(range.Split('~').Last());
             }
-            else if (this.Type == InsertFieldType.Date)
+            else if (Type == InsertFieldType.Date)
             {
-                this.StartDateRange = DateTime.Parse(range.Split('~').First());
+                StartDateRange = DateTime.Parse(range.Split('~').First());
                 var endDateRange = DateTime.Parse(range.Split('~').Last());
-                this.DaysDateRange = (int)endDateRange.Subtract(this.StartDateRange).TotalDays;
+                DaysDateRange = (int)endDateRange.Subtract(StartDateRange).TotalDays;
             }
 
-            this.Value = this.Type == InsertFieldType.Json ?
+            Value = Type == InsertFieldType.Json ?
                 JsonSerializer.Deserialize(el.InnerText) :
                 null;
         }
 
         public BsonValue GetValue()
         {
-            switch(this.Type)
+            switch(Type)
             {
                 case InsertFieldType.Name: return _firstNames[_rnd.Next(0, _firstNames.Length - 1)] + " " + _lastNames[_rnd.Next(0, _lastNames.Length - 1)];
-                case InsertFieldType.Int: return _rnd.Next(this.StartIntRange, this.EndIntRange);
+                case InsertFieldType.Int: return _rnd.Next(StartIntRange, EndIntRange);
                 case InsertFieldType.Guid: return Guid.NewGuid();
                 case InsertFieldType.Bool: return _rnd.NextDouble() > .5;
                 case InsertFieldType.Now: return DateTime.Now;
-                case InsertFieldType.Binary: return new byte[_rnd.Next(this.StartIntRange, this.EndIntRange)];
-                case InsertFieldType.Date: return this.StartDateRange.AddDays(_rnd.Next(this.DaysDateRange));
-                default: return this.Value;
+                case InsertFieldType.Binary: return new byte[_rnd.Next(StartIntRange, EndIntRange)];
+                case InsertFieldType.Date: return StartDateRange.AddDays(_rnd.Next(DaysDateRange));
+                default: return Value;
             }
         }
     }

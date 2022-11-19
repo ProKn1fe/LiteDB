@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using static LiteDB.Constants;
+﻿using System.Diagnostics;
 
 namespace LiteDB.Engine
 {
@@ -28,13 +25,13 @@ namespace LiteDB.Engine
         /// <summary>
         /// Returns true if this PageAdress is empty value
         /// </summary>
-        public bool IsEmpty => this.PageID == uint.MaxValue && this.Index == byte.MaxValue;
+        public bool IsEmpty => PageID == uint.MaxValue && Index == byte.MaxValue;
 
         public override bool Equals(object obj)
         {
             var other = (PageAddress)obj;
 
-            return this.PageID == other.PageID && this.Index == other.Index;
+            return PageID == other.PageID && Index == other.Index;
         }
 
         public static bool operator ==(PageAddress lhs, PageAddress rhs)
@@ -52,21 +49,21 @@ namespace LiteDB.Engine
             unchecked
             {
                 int hash = 17;
-                hash = hash * 23 + (int)this.PageID;
-                hash = hash * 23 + this.Index;
+                hash = hash * 23 + (int)PageID;
+                hash = hash * 23 + Index;
                 return hash;
             }
         }
 
         public PageAddress(uint pageID, byte index)
         {
-            this.PageID = pageID;
-            this.Index = index;
+            PageID = pageID;
+            Index = index;
         }
 
         public override string ToString()
         {
-            return this.IsEmpty ? "(empty)" : this.PageID.ToString().PadLeft(4, '0') + ":" + this.Index.ToString().PadLeft(2, '0');
+            return IsEmpty ? "(empty)" : PageID.ToString().PadLeft(4, '0') + ":" + Index.ToString().PadLeft(2, '0');
         }
     }
 }

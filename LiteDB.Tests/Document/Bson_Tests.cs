@@ -90,7 +90,7 @@ namespace LiteDB.Tests.Document
         [Fact]
         public void Bson_Partial_Deserialize()
         {
-            var src = this.CreateDoc();
+            var src = CreateDoc();
             var bson = BsonSerializer.Serialize(src);
 
             // read only _id and string

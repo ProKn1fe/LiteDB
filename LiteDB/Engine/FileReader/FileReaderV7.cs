@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
-using static LiteDB.Constants;
 
 namespace LiteDB.Engine
 {
@@ -28,7 +25,7 @@ namespace LiteDB.Engine
             _stream = stream;
 
             // only userVersion was avaiable in old file format versions
-            _header = this.ReadPage(0);
+            _header = ReadPage(0);
 
             if (password == null && _header["salt"].AsBinary.IsFullZero() == false)
             {
@@ -68,7 +65,7 @@ namespace LiteDB.Engine
         public IEnumerable<IndexInfo> GetIndexes(string collection)
         {
             var pageID = (uint)_header["collections"].AsDocument[collection].AsInt32;
-            var page = this.ReadPage(pageID);
+            var page = ReadPage(pageID);
 
             foreach(var index in page["indexes"].AsArray)
             {
@@ -88,14 +85,14 @@ namespace LiteDB.Engine
         public IEnumerable<BsonDocument> GetDocuments(string collection)
         {
             var colPageID = (uint)_header["collections"].AsDocument[collection].AsInt32;
-            var col = this.ReadPage(colPageID);
+            var col = ReadPage(colPageID);
             var headPageID = (uint)col["indexes"][0]["headPageID"].AsInt32;
 
-            var indexPages = this.VisitIndexPages(headPageID);
+            var indexPages = VisitIndexPages(headPageID);
 
             foreach(var indexPageID in indexPages)
             {
-                var indexPage = this.ReadPage(indexPageID);
+                var indexPage = ReadPage(indexPageID);
 
                 foreach(var node in indexPage["nodes"].AsArray)
                 {
@@ -105,7 +102,7 @@ namespace LiteDB.Engine
                     if (dataBlock["pageID"].AsInt32 != -1)
                     {
                         // read dataPage and data block
-                        var dataPage = this.ReadPage((uint)dataBlock["pageID"].AsInt32);
+                        var dataPage = ReadPage((uint)dataBlock["pageID"].AsInt32);
 
                         if (dataPage["pageType"].AsInt32 != 4) continue;
 
@@ -116,7 +113,7 @@ namespace LiteDB.Engine
                         // read byte[] from block or from extend pages
                         var data = block["extendPageID"] == -1 ?
                             block["data"].AsBinary :
-                            this.ReadExtendData((uint)block["extendPageID"].AsInt32);
+                            ReadExtendData((uint)block["extendPageID"].AsInt32);
 
                         if (data.Length == 0) continue;
 
@@ -350,7 +347,7 @@ namespace LiteDB.Engine
             {
                 while(extendPageID != uint.MaxValue)
                 {
-                    var page = this.ReadPage(extendPageID);
+                    var page = ReadPage(extendPageID);
 
                     if (page["pageType"].AsInt32 != 5) return new byte[0];
 
@@ -377,7 +374,7 @@ namespace LiteDB.Engine
 
                 toVisit.Remove(indexPageID);
 
-                var indexPage = this.ReadPage(indexPageID);
+                var indexPage = ReadPage(indexPageID);
 
                 if (indexPage == null || indexPage["pageType"] != 3) continue;
 

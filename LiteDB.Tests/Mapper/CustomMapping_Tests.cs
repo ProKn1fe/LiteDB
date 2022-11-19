@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using FluentAssertions;
+﻿using FluentAssertions;
+
 using Xunit;
 
 namespace LiteDB.Tests.Mapper
@@ -14,8 +13,8 @@ namespace LiteDB.Tests.Mapper
 
             public UserWithCustomId(int key, string name)
             {
-                this.Key = key;
-                this.Name = name;
+                Key = key;
+                Name = name;
             }
         }
 

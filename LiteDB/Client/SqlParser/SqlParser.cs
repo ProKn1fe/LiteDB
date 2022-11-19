@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+
 using LiteDB.Engine;
+
 using static LiteDB.Constants;
 
 namespace LiteDB
@@ -35,22 +34,22 @@ namespace LiteDB
             {
                 case "SELECT": 
                 case "EXPLAIN":
-                    return this.ParseSelect();
-                case "INSERT": return this.ParseInsert();
-                case "DELETE": return this.ParseDelete();
-                case "UPDATE": return this.ParseUpdate();
-                case "DROP": return this.ParseDrop();
-                case "RENAME": return this.ParseRename();
-                case "CREATE": return this.ParseCreate();
+                    return ParseSelect();
+                case "INSERT": return ParseInsert();
+                case "DELETE": return ParseDelete();
+                case "UPDATE": return ParseUpdate();
+                case "DROP": return ParseDrop();
+                case "RENAME": return ParseRename();
+                case "CREATE": return ParseCreate();
 
-                case "CHECKPOINT": return this.ParseCheckpoint();
-                case "REBUILD": return this.ParseRebuild();
+                case "CHECKPOINT": return ParseCheckpoint();
+                case "REBUILD": return ParseRebuild();
 
-                case "BEGIN": return this.ParseBegin();
-                case "ROLLBACK": return this.ParseRollback();
-                case "COMMIT": return this.ParseCommit();
+                case "BEGIN": return ParseBegin();
+                case "ROLLBACK": return ParseRollback();
+                case "COMMIT": return ParseCommit();
 
-                case "PRAGMA": return this.ParsePragma();
+                case "PRAGMA": return ParsePragma();
 
                 default:  throw LiteException.UnexpectedToken(ahead);
             }

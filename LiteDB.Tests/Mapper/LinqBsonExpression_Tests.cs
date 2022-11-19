@@ -291,7 +291,7 @@ namespace LiteDB.Tests.Mapper
             TestExpr<User>(x => (int)x.Salary, "INT32(Salary)");
             TestExpr<User>(x => (double)x.Id, "_id");
             TestExpr(x => Convert.ToInt32("123"), "INT32(@p0)", "123");
-            TestExpr(x => Int32.Parse("123"), "INT32(@p0)", "123");
+            TestExpr(x => int.Parse("123"), "INT32(@p0)", "123");
         }
 
         [Fact]
@@ -316,8 +316,8 @@ namespace LiteDB.Tests.Mapper
             // Equals
             TestExpr<User>(x => x.Name.Equals("John"), "Name = @p0", "John");
             TestExpr<User>(x => x.CreatedOn.Equals(new DateTime(2019, 1, 1)), "CreatedOn = DATETIME(@p0, @p1, @p2)", 2019, 1, 1);
-            TestExpr<Account>(x => x.Id.Equals(Guid.Empty), $"_id = GUID(\"{Guid.Empty.ToString()}\")");
-            TestExpr<Product>(x => x.Id.Equals(ObjectId.Empty), $"_id = OBJECTID(\"{ObjectId.Empty.ToString()}\")");
+            TestExpr<Account>(x => x.Id.Equals(Guid.Empty), $"_id = GUID(\"{Guid.Empty}\")");
+            TestExpr<Product>(x => x.Id.Equals(ObjectId.Empty), $"_id = OBJECTID(\"{ObjectId.Empty}\")");
             TestExpr<User>(x => x.Salary.Equals(2000.0D), "Salary = @p0", 2000.0D);
 
             // string members
@@ -550,19 +550,19 @@ namespace LiteDB.Tests.Mapper
         [DebuggerHidden]
         private BsonExpression TestExpr(Expression<Func<object, object>> expr, BsonExpression expect, params BsonValue[] args)
         {
-            return this.Test<object, object>(expr, expect, args);
+            return Test<object, object>(expr, expect, args);
         }
 
         [DebuggerHidden]
         private BsonExpression TestExpr<T>(Expression<Func<T, object>> expr, BsonExpression expect, params BsonValue[] args)
         {
-            return this.Test<T, object>(expr, expect, args);
+            return Test<T, object>(expr, expect, args);
         }
 
         [DebuggerHidden]
         private BsonExpression TestPredicate<T>(Expression<Func<T, bool>> expr, BsonExpression expect, params BsonValue[] args)
         {
-            return this.Test<T, bool>(expr, expect, args);
+            return Test<T, bool>(expr, expect, args);
         }
 
         /// <summary>
@@ -574,7 +574,7 @@ namespace LiteDB.Tests.Mapper
         {
             var test = fn();
 
-            this.Invoking(x => this.TestExpr<T>(test, "$")).Should().Throw<TException>();
+            this.Invoking(x => TestExpr<T>(test, "$")).Should().Throw<TException>();
         }
 
         #endregion

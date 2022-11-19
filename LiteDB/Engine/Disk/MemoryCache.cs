@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -51,7 +46,7 @@ namespace LiteDB.Engine
         {
             _segmentSizes = memorySegmentSizes;
 
-            this.Extend();
+            Extend();
         }
 
         #region Readable Pages
@@ -65,7 +60,7 @@ namespace LiteDB.Engine
             var page = _readable.GetOrAdd(position, (k) =>
             {
                 // get new page from _free pages (or extend)
-                var newPage = this.GetFreePage();
+                var newPage = GetFreePage();
 
                 newPage.Position = position;
 
@@ -95,7 +90,7 @@ namespace LiteDB.Engine
         public PageBuffer GetWritablePage(long position, Action<long, BufferSlice> factory)
         {
             // write pages always contains a new buffer array
-            var writable = this.NewPage(position);
+            var writable = NewPage(position);
 
             // if requested page already in cache, just copy buffer and avoid load from stream
             if (_readable.TryGetValue(position, out var clean))
@@ -115,7 +110,7 @@ namespace LiteDB.Engine
         /// </summary>
         public PageBuffer NewPage()
         {
-            return this.NewPage(long.MaxValue);
+            return NewPage(long.MaxValue);
         }
 
         /// <summary>
@@ -123,7 +118,7 @@ namespace LiteDB.Engine
         /// </summary>
         private PageBuffer NewPage(long position)
         {
-            var page = this.GetFreePage();
+            var page = GetFreePage();
 
             // set page position and page as writable
             page.Position = position;
@@ -206,7 +201,7 @@ namespace LiteDB.Engine
             // if page was not added into readable list move page to free list
             if (added == false)
             {
-                this.DiscardPage(page);
+                DiscardPage(page);
             }
 
             // return page that are in _readble list
@@ -226,7 +221,7 @@ namespace LiteDB.Engine
             foreach (var page in pages)
             {
                 // complete discard page and content
-                this.DiscardPage(page);
+                DiscardPage(page);
             }
         }
 
@@ -238,10 +233,10 @@ namespace LiteDB.Engine
             foreach (var page in pages)
             {
                 // if page was not modified, try move to readable list
-                if (this.TryMoveToReadable(page) == false)
+                if (TryMoveToReadable(page) == false)
                 {
                     // if already in readable list, just discard
-                    this.DiscardPage(page);
+                    DiscardPage(page);
                 }
             }
         }
@@ -287,12 +282,12 @@ namespace LiteDB.Engine
                 // ensure only 1 single thread call extend method
                 lock(_free)
                 {
-                    if (_free.Count > 0) return this.GetFreePage();
+                    if (_free.Count > 0) return GetFreePage();
 
-                    this.Extend();
+                    Extend();
                 }
 
-                return this.GetFreePage();
+                return GetFreePage();
             }
         }
 
@@ -391,7 +386,7 @@ namespace LiteDB.Engine
         /// <summary>
         /// Get how many pages are used as Writable at this moment
         /// </summary>
-        public int WritablePages => this.ExtendPages - // total memory
+        public int WritablePages => ExtendPages - // total memory
             _free.Count - _readable.Count; // allocated pages
 
         /// <summary>
@@ -407,7 +402,7 @@ namespace LiteDB.Engine
         {
             var counter = 0;
 
-            ENSURE(this.PagesInUse == 0, "must have no pages in used when call Clear() cache");
+            ENSURE(PagesInUse == 0, "must have no pages in used when call Clear() cache");
 
             foreach (var page in _readable.Values)
             {

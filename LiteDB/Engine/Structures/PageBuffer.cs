@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
+﻿using System.Threading;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -40,10 +32,10 @@ namespace LiteDB.Engine
         public PageBuffer(byte[] buffer, int offset, int uniqueID)
             : base(buffer, offset, PAGE_SIZE)
         {
-            this.UniqueID = uniqueID;
-            this.Position = long.MaxValue;
-            this.ShareCounter = 0;
-            this.Timestamp = 0;
+            UniqueID = uniqueID;
+            Position = long.MaxValue;
+            ShareCounter = 0;
+            Timestamp = 0;
         }
 
         /// <summary>
@@ -51,26 +43,26 @@ namespace LiteDB.Engine
         /// </summary>
         public void Release()
         {
-            ENSURE(this.ShareCounter > 0, "share counter must be > 0 in Release()");
+            ENSURE(ShareCounter > 0, "share counter must be > 0 in Release()");
 
-            Interlocked.Decrement(ref this.ShareCounter);
+            Interlocked.Decrement(ref ShareCounter);
         }
 
 #if DEBUG
         ~PageBuffer()
         {
-            ENSURE(this.ShareCounter == 0, $"share count must be 0 in destroy PageBuffer (current: {this.ShareCounter})");
+            ENSURE(ShareCounter == 0, $"share count must be 0 in destroy PageBuffer (current: {ShareCounter})");
         }
 #endif
 
         public override string ToString()
         {
-            var p = this.Position == long.MaxValue ? "<empty>" : this.Position.ToString();
-            var s = this.ShareCounter == BUFFER_WRITABLE ? "<writable>" : this.ShareCounter.ToString();
+            var p = Position == long.MaxValue ? "<empty>" : Position.ToString();
+            var s = ShareCounter == BUFFER_WRITABLE ? "<writable>" : ShareCounter.ToString();
             var pageID = this.ReadUInt32(0);
             var pageType = this[4];
 
-            return $"ID: {this.UniqueID} - Position: {p} - Shared: {s} - ({base.ToString()}) :: Content: [{pageID.ToString("0:0000")}/{(PageType)pageType}]";
+            return $"ID: {UniqueID} - Position: {p} - Shared: {s} - ({base.ToString()}) :: Content: [{pageID:0:0000}/{(PageType)pageType}]";
         }
     }
 }

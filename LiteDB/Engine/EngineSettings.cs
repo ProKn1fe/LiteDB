@@ -1,13 +1,5 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using static LiteDB.Constants;
 
 namespace LiteDB.Engine
 {
@@ -51,21 +43,21 @@ namespace LiteDB.Engine
         /// </summary>
         internal IStreamFactory CreateDataFactory()
         {
-            if (this.DataStream != null)
+            if (DataStream != null)
             {
-                return new StreamFactory(this.DataStream, this.Password);
+                return new StreamFactory(DataStream, Password);
             }
-            else if (this.Filename == ":memory:")
+            else if (Filename == ":memory:")
             {
-                return new StreamFactory(new MemoryStream(), this.Password);
+                return new StreamFactory(new MemoryStream(), Password);
             }
-            else if (this.Filename == ":temp:")
+            else if (Filename == ":temp:")
             {
-                return new StreamFactory(new TempStream(), this.Password);
+                return new StreamFactory(new TempStream(), Password);
             }
-            else if (!string.IsNullOrEmpty(this.Filename))
+            else if (!string.IsNullOrEmpty(Filename))
             {
-                return new FileStreamFactory(this.Filename, this.Password, false);
+                return new FileStreamFactory(Filename, Password, false);
             }
 
             throw new ArgumentException("EngineSettings must have Filename or DataStream as data source");
@@ -76,17 +68,17 @@ namespace LiteDB.Engine
         /// </summary>
         internal IStreamFactory CreateTempFactory()
         {
-            if (this.DataStream is MemoryStream || this.Filename == ":memory:" || this.ReadOnly)
+            if (DataStream is MemoryStream || Filename == ":memory:" || ReadOnly)
             {
                 return new StreamFactory(new MemoryStream(), null);
             }
-            else if (this.Filename == ":temp:")
+            else if (Filename == ":temp:")
             {
                 return new StreamFactory(new TempStream(), null);
             }
-            else if (!string.IsNullOrEmpty(this.Filename))
+            else if (!string.IsNullOrEmpty(Filename))
             {
-                var tempName = FileHelper.GetSufixFile(this.Filename, "-tmp", true);
+                var tempName = FileHelper.GetSufixFile(Filename, "-tmp", true);
 
                 return new FileStreamFactory(tempName, null, true);
             }

@@ -19,7 +19,7 @@ namespace LiteDB.Tests
 
         public int CompareTo(Zip other)
         {
-            return this.Id.CompareTo(other.Id);
+            return Id.CompareTo(other.Id);
         }
 
         public bool Equals(Zip x, Zip y)
@@ -32,7 +32,7 @@ namespace LiteDB.Tests
 
         public int GetHashCode(Zip obj)
         {
-            return this.Id.GetHashCode();
+            return Id.GetHashCode();
         }
 
         public override string ToString()

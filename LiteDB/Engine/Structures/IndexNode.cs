@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using static LiteDB.Constants;
+﻿using static LiteDB.Constants;
 
 namespace LiteDB.Engine
 {
@@ -23,7 +20,7 @@ namespace LiteDB.Engine
         private const int P_DATA_BLOCK = 2; // 02-06 [PageAddress]
         private const int P_NEXT_NODE = 7; // 07-11 [PageAddress]
         private const int P_PREV_NEXT = 12; // 12-(_level * 5 [PageAddress] * 2 [prev-next])
-        private int P_KEY => P_PREV_NEXT + (this.Level * PageAddress.SIZE * 2); // just after NEXT
+        private int P_KEY => P_PREV_NEXT + (Level * PageAddress.SIZE * 2); // just after NEXT
 
         private readonly IndexPage _page;
         private readonly BufferSlice _segment;
@@ -106,22 +103,22 @@ namespace LiteDB.Engine
             _page = page;
             _segment = segment;
 
-            this.Position = new PageAddress(page.PageID, index);
-            this.Slot = segment.ReadByte(P_SLOT);
-            this.Level = segment.ReadByte(P_LEVEL);
-            this.DataBlock = segment.ReadPageAddress(P_DATA_BLOCK);
-            this.NextNode = segment.ReadPageAddress(P_NEXT_NODE);
+            Position = new PageAddress(page.PageID, index);
+            Slot = segment.ReadByte(P_SLOT);
+            Level = segment.ReadByte(P_LEVEL);
+            DataBlock = segment.ReadPageAddress(P_DATA_BLOCK);
+            NextNode = segment.ReadPageAddress(P_NEXT_NODE);
 
-            this.Next = new PageAddress[this.Level];
-            this.Prev = new PageAddress[this.Level];
+            Next = new PageAddress[Level];
+            Prev = new PageAddress[Level];
 
-            for (var i = 0; i < this.Level; i++)
+            for (var i = 0; i < Level; i++)
             {
-                this.Prev[i] = segment.ReadPageAddress(P_PREV_NEXT + (i * PageAddress.SIZE * 2));
-                this.Next[i] = segment.ReadPageAddress(P_PREV_NEXT + (i * PageAddress.SIZE * 2) + PageAddress.SIZE);
+                Prev[i] = segment.ReadPageAddress(P_PREV_NEXT + (i * PageAddress.SIZE * 2));
+                Next[i] = segment.ReadPageAddress(P_PREV_NEXT + (i * PageAddress.SIZE * 2) + PageAddress.SIZE);
             }
 
-            this.Key = segment.ReadIndexKey(P_KEY);
+            Key = segment.ReadIndexKey(P_KEY);
         }
 
         /// <summary>
@@ -132,25 +129,25 @@ namespace LiteDB.Engine
             _page = page;
             _segment = segment;
 
-            this.Position = new PageAddress(page.PageID, index);
-            this.Slot = slot;
-            this.Level = level;
-            this.DataBlock = dataBlock;
-            this.NextNode = PageAddress.Empty;
-            this.Next = new PageAddress[level];
-            this.Prev = new PageAddress[level];
-            this.Key = key;
+            Position = new PageAddress(page.PageID, index);
+            Slot = slot;
+            Level = level;
+            DataBlock = dataBlock;
+            NextNode = PageAddress.Empty;
+            Next = new PageAddress[level];
+            Prev = new PageAddress[level];
+            Key = key;
 
             // persist in buffer read only data
             segment.Write(slot, P_SLOT);
             segment.Write(level, P_LEVEL);
             segment.Write(dataBlock, P_DATA_BLOCK);
-            segment.Write(this.NextNode, P_NEXT_NODE);
+            segment.Write(NextNode, P_NEXT_NODE);
 
             for (var i = 0; i < level; i++)
             {
-                this.SetPrev((byte)i, PageAddress.Empty);
-                this.SetNext((byte)i, PageAddress.Empty);
+                SetPrev((byte)i, PageAddress.Empty);
+                SetNext((byte)i, PageAddress.Empty);
             }
 
             segment.WriteIndexKey(key, P_KEY);
@@ -166,16 +163,16 @@ namespace LiteDB.Engine
             _page = null;
             _segment = new BufferSlice(new byte[0], 0, 0);
 
-            this.Position = new PageAddress(0, 0);
-            this.Slot = 0;
-            this.Level = 0;
-            this.DataBlock = PageAddress.Empty;
-            this.NextNode = PageAddress.Empty;
-            this.Next = new PageAddress[0];
-            this.Prev = new PageAddress[0];
+            Position = new PageAddress(0, 0);
+            Slot = 0;
+            Level = 0;
+            DataBlock = PageAddress.Empty;
+            NextNode = PageAddress.Empty;
+            Next = new PageAddress[0];
+            Prev = new PageAddress[0];
 
             // index node key IS document
-            this.Key = doc;
+            Key = doc;
         }
 
         /// <summary>
@@ -183,7 +180,7 @@ namespace LiteDB.Engine
         /// </summary>
         public void SetNextNode(PageAddress value)
         {
-            this.NextNode = value;
+            NextNode = value;
 
             _segment.Write(value, P_NEXT_NODE);
 
@@ -195,9 +192,9 @@ namespace LiteDB.Engine
         /// </summary>
         public void SetPrev(byte level, PageAddress value)
         {
-            ENSURE(level <= this.Level, "out of index in level");
+            ENSURE(level <= Level, "out of index in level");
 
-            this.Prev[level] = value;
+            Prev[level] = value;
 
             _segment.Write(value, P_PREV_NEXT + (level * PageAddress.SIZE * 2));
 
@@ -209,9 +206,9 @@ namespace LiteDB.Engine
         /// </summary>
         public void SetNext(byte level, PageAddress value)
         {
-            ENSURE(level <= this.Level, "out of index in level");
+            ENSURE(level <= Level, "out of index in level");
 
-            this.Next[level] = value;
+            Next[level] = value;
 
             _segment.Write(value, P_PREV_NEXT + (level * PageAddress.SIZE * 2) + PageAddress.SIZE);
 
@@ -223,12 +220,12 @@ namespace LiteDB.Engine
         /// </summary>
         public PageAddress GetNextPrev(byte level, int order)
         {
-            return order == Query.Ascending ? this.Next[level] : this.Prev[level];
+            return order == Query.Ascending ? Next[level] : Prev[level];
         }
 
         public override string ToString()
         {
-            return $"Pos: [{this.Position}] - Key: {this.Key}";
+            return $"Pos: [{Position}] - Key: {Key}";
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using static LiteDB.Constants;
+﻿using static LiteDB.Constants;
 
 namespace LiteDB.Engine
 {
@@ -35,7 +34,7 @@ namespace LiteDB.Engine
         {
             var node = _indexer.GetNode(rawId);
 
-            return this.Load(node);
+            return Load(node);
         }
     }
 }

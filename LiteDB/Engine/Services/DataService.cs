@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -47,10 +47,7 @@ namespace LiteDB.Engine
                     //LiteEngine.TS.Stop();
                     var dataBlock = dataPage.InsertBlock(bytesToCopy, blockIndex++ > 0);
 
-                    if (lastBlock != null)
-                    {
-                        lastBlock.SetNextBlock(dataBlock.Position);
-                    }
+                    lastBlock?.SetNextBlock(dataBlock.Position);
 
                     if (firstBlock.IsEmpty) firstBlock = dataBlock.Position;
 
@@ -122,10 +119,7 @@ namespace LiteDB.Engine
                         var dataPage = _snapshot.GetFreeDataPage(bytesToCopy + DataBlock.DATA_BLOCK_FIXED_SIZE);
                         var insertBlock = dataPage.InsertBlock(bytesToCopy, true);
 
-                        if (lastBlock != null)
-                        {
-                            lastBlock.SetNextBlock(insertBlock.Position);
-                        }
+                        lastBlock?.SetNextBlock(insertBlock.Position);
 
                         _snapshot.AddOrRemoveFreeDataList(dataPage);
 
@@ -144,7 +138,7 @@ namespace LiteDB.Engine
 
                     lastBlock.SetNextBlock(PageAddress.Empty);
 
-                    this.Delete(nextBlockAddress);
+                    Delete(nextBlockAddress);
                 }
             }
 

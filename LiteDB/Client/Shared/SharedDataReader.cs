@@ -1,8 +1,4 @@
-﻿using LiteDB.Engine;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
+﻿using System;
 
 namespace LiteDB
 {
@@ -31,13 +27,13 @@ namespace LiteDB
 
         public void Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         ~SharedDataReader()
         {
-            this.Dispose(false);
+            Dispose(false);
         }
 
         protected virtual void Dispose(bool disposing)

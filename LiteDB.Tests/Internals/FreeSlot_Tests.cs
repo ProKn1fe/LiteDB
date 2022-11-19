@@ -1,6 +1,7 @@
-﻿using System.Linq;
-using FluentAssertions;
+﻿using FluentAssertions;
+
 using LiteDB.Engine;
+
 using Xunit;
 
 namespace LiteDB.Internals

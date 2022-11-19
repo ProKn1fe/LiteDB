@@ -46,25 +46,25 @@ namespace LiteDB.Engine
         public QueryPlan ProcessQuery()
         {
             // split where expressions into TERMs (splited by AND operator)
-            this.SplitWherePredicateInTerms();
+            SplitWherePredicateInTerms();
 
             // do terms optimizations
-            this.OptimizeTerms();
+            OptimizeTerms();
 
             // define Fields
-            this.DefineQueryFields();
+            DefineQueryFields();
 
             // define Index, IndexCost, IndexExpression, IsIndexKeyOnly + Where (filters - index)
-            this.DefineIndex();
+            DefineIndex();
 
             // define OrderBy
-            this.DefineOrderBy();
+            DefineOrderBy();
 
             // define GroupBy
-            this.DefineGroupBy();
+            DefineGroupBy();
 
             // define IncludeBefore + IncludeAfter
-            this.DefineIncludes();
+            DefineIncludes();
 
             return _queryPlan;
         }
@@ -174,7 +174,7 @@ namespace LiteDB.Engine
             if (_queryPlan.Index == null)
             {
                 // try select best index (if return null, there is no good choice)
-                var indexCost = this.ChooseIndex(_queryPlan.Fields);
+                var indexCost = ChooseIndex(_queryPlan.Fields);
 
                 // if found an index, use-it
                 if (indexCost != null)

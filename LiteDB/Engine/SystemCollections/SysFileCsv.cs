@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using static LiteDB.Constants;
 
 namespace LiteDB.Engine
 {
@@ -18,7 +17,7 @@ namespace LiteDB.Engine
 
         public override IEnumerable<BsonDocument> Input(BsonValue options)
         {
-            var filename = GetOption(options, "filename")?.AsString ?? throw new LiteException(0, $"Collection ${this.Name} requires string as 'filename' or a document field 'filename'");
+            var filename = GetOption(options, "filename")?.AsString ?? throw new LiteException(0, $"Collection ${Name} requires string as 'filename' or a document field 'filename'");
             var encoding = GetOption(options, "encoding", "utf-8").AsString;
             var delimiter = GetOption(options, "delimiter", ",").AsString[0];
 
@@ -39,7 +38,7 @@ namespace LiteDB.Engine
                     {
                         while (true)
                         {
-                            var key = this.ReadString(reader, delimiter, out var newLine);
+                            var key = ReadString(reader, delimiter, out var newLine);
 
                             if (key == null) break;
 
@@ -55,7 +54,7 @@ namespace LiteDB.Engine
 
                     while(true)
                     {
-                        var value = this.ReadString(reader, delimiter, out var newLine);
+                        var value = ReadString(reader, delimiter, out var newLine);
 
                         if (value == null) yield break;
 
@@ -129,7 +128,7 @@ namespace LiteDB.Engine
 
                         if (idxValue++ > 0) writer.Write(delimiter);
 
-                        this.WriteValue(value, writer);
+                        WriteValue(value, writer);
                     }
                 }
 
@@ -140,8 +139,8 @@ namespace LiteDB.Engine
             }
             finally
             {
-                if (writer != null) writer.Dispose();
-                if (fs != null) fs.Dispose();
+                writer?.Dispose();
+                fs?.Dispose();
             }
 
             return index;
@@ -168,13 +167,13 @@ namespace LiteDB.Engine
                     writer.Write($"\"{Convert.ToBase64String(value.AsBinary)}\"");
                     break;
                 case BsonType.ObjectId:
-                    writer.Write($"\"{value.AsObjectId.ToString()}\"");
+                    writer.Write($"\"{value.AsObjectId}\"");
                     break;
                 case BsonType.Guid:
-                    writer.Write($"\"{value.AsGuid.ToString()}\"");
+                    writer.Write($"\"{value.AsGuid}\"");
                     break;
                 case BsonType.DateTime:
-                    writer.Write($"\"{value.AsDateTime.ToUniversalTime().ToString("o")}\"");
+                    writer.Write($"\"{value.AsDateTime.ToUniversalTime():o}\"");
                     break;
                 default:
                     writer.Write(value.ToString());

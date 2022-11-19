@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using static LiteDB.Constants;
+﻿using System.Linq.Expressions;
 
 namespace LiteDB
 {
@@ -18,7 +11,7 @@ namespace LiteDB
 
         protected override Expression VisitParameter(ParameterExpression node)
         {
-            this.IsParameter = true;
+            IsParameter = true;
 
             return base.VisitParameter(node);
         }

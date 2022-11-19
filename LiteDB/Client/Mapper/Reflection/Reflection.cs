@@ -1,12 +1,9 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -127,7 +124,7 @@ namespace LiteDB
         // getting `bsonDocument.Item[string]` property access
         public static readonly PropertyInfo DocumentItemProperty =
             typeof(BsonDocument).GetProperties()
-            .Where(x => x.Name == "Item" && x.GetGetMethod().GetParameters().First().ParameterType == typeof(String))
+            .Where(x => x.Name == "Item" && x.GetGetMethod().GetParameters().First().ParameterType == typeof(string))
             .First();
 
         public static bool IsNullable(Type type)
@@ -219,18 +216,18 @@ namespace LiteDB
         {
             return
                 type == typeof(string) ||
-                type == typeof(Boolean) ||
-                type == typeof(Byte) ||
-                type == typeof(SByte) ||
-                type == typeof(Int16) ||
-                type == typeof(Int32) ||
-                type == typeof(Int64) ||
-                type == typeof(UInt16) ||
-                type == typeof(UInt32) ||
-                type == typeof(UInt64) ||
-                type == typeof(Double) ||
-                type == typeof(Single) ||
-                type == typeof(Decimal) ||
+                type == typeof(bool) ||
+                type == typeof(byte) ||
+                type == typeof(sbyte) ||
+                type == typeof(short) ||
+                type == typeof(int) ||
+                type == typeof(long) ||
+                type == typeof(ushort) ||
+                type == typeof(uint) ||
+                type == typeof(ulong) ||
+                type == typeof(double) ||
+                type == typeof(float) ||
+                type == typeof(decimal) ||
                 type == typeof(ObjectId) ||
                 type == typeof(DateTime) ||
                 type == typeof(Guid);

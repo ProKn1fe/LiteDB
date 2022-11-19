@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -35,7 +34,7 @@ namespace LiteDB
 
             if (token.Type == TokenType.EOF) return BsonValue.Null;
 
-            var value = this.ReadValue(token);
+            var value = ReadValue(token);
 
             return value;
         }
@@ -52,7 +51,7 @@ namespace LiteDB
 
             while (token.Type != TokenType.CloseBracket)
             {
-                yield return this.ReadValue(token);
+                yield return ReadValue(token);
 
                 token = _tokenizer.ReadToken();
 
@@ -73,8 +72,8 @@ namespace LiteDB
             switch (token.Type)
             {
                 case TokenType.String: return value;
-                case TokenType.OpenBrace: return this.ReadObject();
-                case TokenType.OpenBracket: return this.ReadArray();
+                case TokenType.OpenBrace: return ReadObject();
+                case TokenType.OpenBracket: return ReadArray();
                 case TokenType.Minus:
                     // read next token (must be a number)
                     var number = _tokenizer.ReadToken(false).Expect(TokenType.Int, TokenType.Double);
@@ -86,10 +85,10 @@ namespace LiteDB
                     else
                         break;
                 case TokenType.Int:
-                    if (Int32.TryParse(value, NumberStyles.Any, _numberFormat, out int result))
+                    if (int.TryParse(value, NumberStyles.Any, _numberFormat, out int result))
                         return new BsonValue(result);
                     else
-                        return new BsonValue(Int64.Parse(value, NumberStyles.Any, _numberFormat));
+                        return new BsonValue(long.Parse(value, NumberStyles.Any, _numberFormat));
                 case TokenType.Double: return new BsonValue(Convert.ToDouble(value, _numberFormat));
                 case TokenType.Word:
                     switch (value.ToLower())
@@ -125,13 +124,13 @@ namespace LiteDB
                 // check if not a special data type - only if is first attribute
                 if (key[0] == '$' && obj.Count == 0)
                 {
-                    var val = this.ReadExtendedDataType(key, token.Value);
+                    var val = ReadExtendedDataType(key, token.Value);
 
                     // if val is null then it's not a extended data type - it's just a object with $ attribute
                     if (!val.IsNull) return val;
                 }
 
-                obj[key] = this.ReadValue(token); // read "," or "}"
+                obj[key] = ReadValue(token); // read "," or "}"
 
                 token = _tokenizer.ReadToken();
 
@@ -152,7 +151,7 @@ namespace LiteDB
 
             while (token.Type != TokenType.CloseBracket)
             {
-                var value = this.ReadValue(token);
+                var value = ReadValue(token);
 
                 arr.Add(value);
 

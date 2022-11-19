@@ -1,7 +1,7 @@
 ﻿using LiteDB.Engine;
+
 using System;
 using System.Collections.Generic;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -52,8 +52,8 @@ namespace LiteDB
                 if (_id != null && _id.AutoId)
                 {
                     _autoId =
-                        _id.DataType == typeof(Int32) || _id.DataType == typeof(Int32?) ? BsonAutoId.Int32 :
-                        _id.DataType == typeof(Int64) || _id.DataType == typeof(Int64?) ? BsonAutoId.Int64 :
+                        _id.DataType == typeof(int) || _id.DataType == typeof(int?) ? BsonAutoId.Int32 :
+                        _id.DataType == typeof(long) || _id.DataType == typeof(long?) ? BsonAutoId.Int64 :
                         _id.DataType == typeof(Guid) || _id.DataType == typeof(Guid?) ? BsonAutoId.Guid :
                         BsonAutoId.ObjectId;
                 }

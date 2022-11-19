@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -15,14 +13,14 @@ namespace LiteDB
 
             if (_buffer.Length >= MAX_CHUNK_SIZE)
             {
-                this.WriteChunks(false);
+                WriteChunks(false);
             }
         }
 
         public override void Flush()
         {
             // write last unsaved chunks
-            this.WriteChunks(true);
+            WriteChunks(true);
         }
 
         /// <summary>

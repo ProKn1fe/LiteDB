@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using static LiteDB.Constants;
+﻿using System.Collections.Generic;
 
 namespace LiteDB.Engine
 {
@@ -22,8 +19,8 @@ namespace LiteDB.Engine
 
         internal Index(string name, int order)
         {
-            this.Name = name;
-            this.Order = order;
+            Name = name;
+            Order = order;
         }
 
         #region Executing Index Search
@@ -44,12 +41,12 @@ namespace LiteDB.Engine
         public virtual IEnumerable<IndexNode> Run(CollectionPage col, IndexService indexer)
         {
             // get index for this query
-            var index = col.GetCollectionIndex(this.Name);
+            var index = col.GetCollectionIndex(Name);
 
-            if (index == null) throw LiteException.IndexNotFound(this.Name);
+            if (index == null) throw LiteException.IndexNotFound(Name);
 
             // execute query to get all IndexNodes
-            return this.Execute(indexer, index)
+            return Execute(indexer, index)
                 .DistinctBy(x => x.DataBlock, null);
         }
 

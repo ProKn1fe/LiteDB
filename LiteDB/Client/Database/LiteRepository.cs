@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Linq.Expressions;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -226,7 +224,7 @@ namespace LiteDB
         /// </summary>
         public List<T> Fetch<T>(BsonExpression predicate, string collectionName = null)
         {
-            return this.Query<T>(collectionName)
+            return Query<T>(collectionName)
                 .Where(predicate)
                 .ToList();
         }
@@ -236,7 +234,7 @@ namespace LiteDB
         /// </summary>
         public List<T> Fetch<T>(Expression<Func<T, bool>> predicate, string collectionName = null)
         {
-            return this.Query<T>(collectionName)
+            return Query<T>(collectionName)
                 .Where(predicate)
                 .ToList();
         }
@@ -246,7 +244,7 @@ namespace LiteDB
         /// </summary>
         public T First<T>(BsonExpression predicate, string collectionName = null)
         {
-            return this.Query<T>(collectionName)
+            return Query<T>(collectionName)
                 .Where(predicate)
                 .First();
         }
@@ -256,7 +254,7 @@ namespace LiteDB
         /// </summary>
         public T First<T>(Expression<Func<T, bool>> predicate, string collectionName = null)
         {
-            return this.Query<T>(collectionName)
+            return Query<T>(collectionName)
                 .Where(predicate)
                 .First();
         }
@@ -266,7 +264,7 @@ namespace LiteDB
         /// </summary>
         public T FirstOrDefault<T>(BsonExpression predicate, string collectionName = null)
         {
-            return this.Query<T>(collectionName)
+            return Query<T>(collectionName)
                 .Where(predicate)
                 .FirstOrDefault();
         }
@@ -276,7 +274,7 @@ namespace LiteDB
         /// </summary>
         public T FirstOrDefault<T>(Expression<Func<T, bool>> predicate, string collectionName = null)
         {
-            return this.Query<T>(collectionName)
+            return Query<T>(collectionName)
                 .Where(predicate)
                 .FirstOrDefault();
         }
@@ -286,7 +284,7 @@ namespace LiteDB
         /// </summary>
         public T Single<T>(BsonExpression predicate, string collectionName = null)
         {
-            return this.Query<T>(collectionName)
+            return Query<T>(collectionName)
                 .Where(predicate)
                 .Single();
         }
@@ -296,7 +294,7 @@ namespace LiteDB
         /// </summary>
         public T Single<T>(Expression<Func<T, bool>> predicate, string collectionName = null)
         {
-            return this.Query<T>(collectionName)
+            return Query<T>(collectionName)
                 .Where(predicate)
                 .Single();
         }
@@ -306,7 +304,7 @@ namespace LiteDB
         /// </summary>
         public T SingleOrDefault<T>(BsonExpression predicate, string collectionName = null)
         {
-            return this.Query<T>(collectionName)
+            return Query<T>(collectionName)
                 .Where(predicate)
                 .SingleOrDefault();
         }
@@ -316,7 +314,7 @@ namespace LiteDB
         /// </summary>
         public T SingleOrDefault<T>(Expression<Func<T, bool>> predicate, string collectionName = null)
         {
-            return this.Query<T>(collectionName)
+            return Query<T>(collectionName)
                 .Where(predicate)
                 .SingleOrDefault();
         }
@@ -325,13 +323,13 @@ namespace LiteDB
 
         public void Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         ~LiteRepository()
         {
-            this.Dispose(false);
+            Dispose(false);
         }
 
         protected virtual void Dispose(bool disposing)

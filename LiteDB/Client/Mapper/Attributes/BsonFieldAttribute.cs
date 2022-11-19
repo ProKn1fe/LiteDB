@@ -1,5 +1,4 @@
 ﻿using System;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -12,7 +11,7 @@ namespace LiteDB
 
         public BsonFieldAttribute(string name)
         {
-            this.Name = name;
+            Name = name;
         }
 
         public BsonFieldAttribute()

@@ -1,9 +1,10 @@
 ﻿using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
+
 using FluentAssertions;
+
 using Xunit;
 
 namespace LiteDB.Tests.Engine

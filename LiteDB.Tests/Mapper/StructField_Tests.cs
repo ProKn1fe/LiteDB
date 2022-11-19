@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using FluentAssertions;
+﻿using System.IO;
+
 using Xunit;
 
 namespace LiteDB.Tests.Mapper

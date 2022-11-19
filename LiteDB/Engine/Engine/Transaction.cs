@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -40,7 +37,7 @@ namespace LiteDB.Engine
 
                 if (transaction.State == TransactionState.Active)
                 {
-                    this.CommitAndReleaseTransaction(transaction);
+                    CommitAndReleaseTransaction(transaction);
 
                     return true;
                 }
@@ -81,7 +78,7 @@ namespace LiteDB.Engine
 
                 // if this transaction was auto-created for this operation, commit & dispose now
                 if (isNew)
-                    this.CommitAndReleaseTransaction(transaction);
+                    CommitAndReleaseTransaction(transaction);
 
                 return result;
             }

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -18,7 +16,7 @@ namespace LiteDB
         {
             if (array == null) throw new ArgumentNullException(nameof(array));
 
-            this.AddRange(array);
+            AddRange(array);
         }
 
         public BsonArray(params BsonValue[] array)
@@ -26,7 +24,7 @@ namespace LiteDB
         {
             if (array == null) throw new ArgumentNullException(nameof(array));
 
-            this.AddRange(array);
+            AddRange(array);
         }
 
         public BsonArray(IEnumerable<BsonValue> items)
@@ -34,7 +32,7 @@ namespace LiteDB
         {
             if (items == null) throw new ArgumentNullException(nameof(items));
 
-            this.AddRange(items);
+            AddRange(items);
         }
 
         public new IList<BsonValue> RawValue => (IList<BsonValue>)base.RawValue;
@@ -43,19 +41,19 @@ namespace LiteDB
         {
             get
             {
-                return this.RawValue[index];
+                return RawValue[index];
             }
             set
             {
-                this.RawValue[index] = value ?? BsonValue.Null;
+                RawValue[index] = value ?? BsonValue.Null;
             }
         }
 
-        public int Count => this.RawValue.Count;
+        public int Count => RawValue.Count;
 
         public bool IsReadOnly => false;
 
-        public void Add(BsonValue item) => this.RawValue.Add(item ?? BsonValue.Null);
+        public void Add(BsonValue item) => RawValue.Add(item ?? BsonValue.Null);
 
         public void AddRange<TCollection>(TCollection collection)
             where TCollection : ICollection<BsonValue>
@@ -84,29 +82,29 @@ namespace LiteDB
 
             foreach (var item in items)
             {
-                this.Add(item ?? BsonValue.Null);
+                Add(item ?? BsonValue.Null);
             }
         }
 
-        public void Clear() => this.RawValue.Clear();
+        public void Clear() => RawValue.Clear();
 
-        public bool Contains(BsonValue item) => this.RawValue.Contains(item ?? BsonValue.Null);
+        public bool Contains(BsonValue item) => RawValue.Contains(item ?? BsonValue.Null);
 
-        public void CopyTo(BsonValue[] array, int arrayIndex) => this.RawValue.CopyTo(array, arrayIndex);
+        public void CopyTo(BsonValue[] array, int arrayIndex) => RawValue.CopyTo(array, arrayIndex);
 
-        public IEnumerator<BsonValue> GetEnumerator() => this.RawValue.GetEnumerator();
+        public IEnumerator<BsonValue> GetEnumerator() => RawValue.GetEnumerator();
 
-        public int IndexOf(BsonValue item) => this.RawValue.IndexOf(item ?? BsonValue.Null);
+        public int IndexOf(BsonValue item) => RawValue.IndexOf(item ?? BsonValue.Null);
 
-        public void Insert(int index, BsonValue item) => this.RawValue.Insert(index, item ?? BsonValue.Null);
+        public void Insert(int index, BsonValue item) => RawValue.Insert(index, item ?? BsonValue.Null);
 
-        public bool Remove(BsonValue item) => this.RawValue.Remove(item);
+        public bool Remove(BsonValue item) => RawValue.Remove(item);
 
-        public void RemoveAt(int index) => this.RawValue.RemoveAt(index);
+        public void RemoveAt(int index) => RawValue.RemoveAt(index);
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            foreach (var value in this.RawValue)
+            foreach (var value in RawValue)
             {
                 yield return value;
             }
@@ -115,20 +113,20 @@ namespace LiteDB
         public override int CompareTo(BsonValue other)
         {
             // if types are different, returns sort type order
-            if (other.Type != BsonType.Array) return this.Type.CompareTo(other.Type);
+            if (other.Type != BsonType.Array) return Type.CompareTo(other.Type);
 
             var otherArray = other.AsArray;
 
             var result = 0;
             var i = 0;
-            var stop = Math.Min(this.Count, otherArray.Count);
+            var stop = Math.Min(Count, otherArray.Count);
 
             // compare each element
             for (; 0 == result && i < stop; i++)
                 result = this[i].CompareTo(otherArray[i]);
 
             if (result != 0) return result;
-            if (i == this.Count) return i == otherArray.Count ? 0 : -1;
+            if (i == Count) return i == otherArray.Count ? 0 : -1;
             return 1;
         }
 
@@ -139,11 +137,11 @@ namespace LiteDB
             if (recalc == false && _length > 0) return _length;
 
             var length = 5;
-            var array = this.RawValue;
+            var array = RawValue;
             
             for (var i = 0; i < array.Count; i++)
             {
-                length += this.GetBytesCountElement(i.ToString(), array[i]);
+                length += GetBytesCountElement(i.ToString(), array[i]);
             }
 
             return _length = length;

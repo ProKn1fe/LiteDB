@@ -16,7 +16,7 @@ namespace LiteDB.Tests
 
         public int CompareTo(Person other)
         {
-            return this.Id.CompareTo(other.Id);
+            return Id.CompareTo(other.Id);
         }
 
         public bool Equals(Person x, Person y)

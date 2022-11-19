@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
-using static LiteDB.Constants;
 
 namespace LiteDB.Engine
 {
@@ -22,7 +18,7 @@ namespace LiteDB.Engine
 
         public override IEnumerable<BsonDocument> Input(BsonValue options)
         {
-            var format = this.GetFormat(options);
+            var format = GetFormat(options);
 
             if (_formats.TryGetValue(format, out var factory))
             {
@@ -34,7 +30,7 @@ namespace LiteDB.Engine
 
         public override int Output(IEnumerable<BsonDocument> source, BsonValue options)
         {
-            var format = this.GetFormat(options);
+            var format = GetFormat(options);
 
             if (_formats.TryGetValue(format, out var factory))
             {

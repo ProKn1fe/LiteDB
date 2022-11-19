@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -103,9 +102,9 @@ namespace LiteDB
 
         public Token(TokenType tokenType, string value, long position)
         {
-            this.Position = position;
-            this.Value = value;
-            this.Type = tokenType;
+            Position = position;
+            Value = value;
+            Type = tokenType;
         }
 
         public TokenType Type { get; private set; }
@@ -117,7 +116,7 @@ namespace LiteDB
         /// </summary>
         public Token Expect(TokenType type)
         {
-            if (this.Type != type)
+            if (Type != type)
             {
                 throw LiteException.UnexpectedToken(this);
             }
@@ -130,7 +129,7 @@ namespace LiteDB
         /// </summary>
         public Token Expect(TokenType type1, TokenType type2)
         {
-            if (this.Type != type1 && this.Type != type2)
+            if (Type != type1 && Type != type2)
             {
                 throw LiteException.UnexpectedToken(this);
             }
@@ -143,7 +142,7 @@ namespace LiteDB
         /// </summary>
         public Token Expect(TokenType type1, TokenType type2, TokenType type3)
         {
-            if (this.Type != type1 && this.Type != type2 && this.Type != type3)
+            if (Type != type1 && Type != type2 && Type != type3)
             {
                 throw LiteException.UnexpectedToken(this);
             }
@@ -153,7 +152,7 @@ namespace LiteDB
 
         public Token Expect(string value, bool ignoreCase = true)
         {
-            if (!this.Is(value, ignoreCase))
+            if (!Is(value, ignoreCase))
             {
                 throw LiteException.UnexpectedToken(this, value);
             }
@@ -164,15 +163,15 @@ namespace LiteDB
         public bool Is(string value, bool ignoreCase = true)
         {
             return 
-                this.Type == TokenType.Word &&
-                value.Equals(this.Value, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+                Type == TokenType.Word &&
+                value.Equals(Value, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
         }
 
         public bool IsOperand
         {
             get
             {
-                switch (this.Type)
+                switch (Type)
                 {
                     case TokenType.Percent:
                     case TokenType.Slash:
@@ -196,7 +195,7 @@ namespace LiteDB
 
         public override string ToString()
         {
-            return this.Value + " (" + this.Type + ")";
+            return Value + " (" + Type + ")";
         }
     }
 
@@ -222,7 +221,7 @@ namespace LiteDB
         /// </summary>
         public bool CheckEOF()
         {
-            if (_eof) throw LiteException.UnexpectedToken(this.Current);
+            if (_eof) throw LiteException.UnexpectedToken(Current);
 
             return false;
         }
@@ -236,8 +235,8 @@ namespace LiteDB
         {
             _reader = reader;
 
-            this.Position = 0;
-            this.ReadChar();
+            Position = 0;
+            ReadChar();
         }
 
         /// <summary>
@@ -262,7 +261,7 @@ namespace LiteDB
 
             var c = _reader.Read();
 
-            this.Position++;
+            Position++;
 
             if (c == -1)
             {
@@ -286,13 +285,13 @@ namespace LiteDB
             {
                 if (eatWhitespace && _ahead.Type == TokenType.Whitespace)
                 {
-                    _ahead = this.ReadNext(eatWhitespace);
+                    _ahead = ReadNext(eatWhitespace);
                 }
 
                 return _ahead;
             }
 
-            return _ahead = this.ReadNext(eatWhitespace);
+            return _ahead = ReadNext(eatWhitespace);
         }
 
         /// <summary>
@@ -302,17 +301,17 @@ namespace LiteDB
         {
             if (_ahead == null)
             {
-                return this.Current = this.ReadNext(eatWhitespace);
+                return Current = ReadNext(eatWhitespace);
             }
 
             if (eatWhitespace && _ahead.Type == TokenType.Whitespace)
             {
-                _ahead = this.ReadNext(eatWhitespace);
+                _ahead = ReadNext(eatWhitespace);
             }
 
-            this.Current = _ahead;
+            Current = _ahead;
             _ahead = null;
-            return this.Current;
+            return Current;
         }
 
         /// <summary>
@@ -321,11 +320,11 @@ namespace LiteDB
         private Token ReadNext(bool eatWhitespace)
         {
             // remove whitespace before get next token
-            if (eatWhitespace) this.EatWhitespace();
+            if (eatWhitespace) EatWhitespace();
 
             if (_eof)
             {
-                return new Token(TokenType.EOF, null, this.Position);
+                return new Token(TokenType.EOF, null, Position);
             }
 
             Token token = null;
@@ -333,171 +332,171 @@ namespace LiteDB
             switch (_char)
             {
                 case '{':
-                    token = new Token(TokenType.OpenBrace, "{", this.Position);
-                    this.ReadChar();
+                    token = new Token(TokenType.OpenBrace, "{", Position);
+                    ReadChar();
                     break;
 
                 case '}':
-                    token = new Token(TokenType.CloseBrace, "}", this.Position);
-                    this.ReadChar();
+                    token = new Token(TokenType.CloseBrace, "}", Position);
+                    ReadChar();
                     break;
 
                 case '[':
-                    token = new Token(TokenType.OpenBracket, "[", this.Position);
-                    this.ReadChar();
+                    token = new Token(TokenType.OpenBracket, "[", Position);
+                    ReadChar();
                     break;
 
                 case ']':
-                    token = new Token(TokenType.CloseBracket, "]", this.Position);
-                    this.ReadChar();
+                    token = new Token(TokenType.CloseBracket, "]", Position);
+                    ReadChar();
                     break;
 
                 case '(':
-                    token = new Token(TokenType.OpenParenthesis, "(", this.Position);
-                    this.ReadChar();
+                    token = new Token(TokenType.OpenParenthesis, "(", Position);
+                    ReadChar();
                     break;
 
                 case ')':
-                    token = new Token(TokenType.CloseParenthesis, ")", this.Position);
-                    this.ReadChar();
+                    token = new Token(TokenType.CloseParenthesis, ")", Position);
+                    ReadChar();
                     break;
 
                 case ',':
-                    token = new Token(TokenType.Comma, ",", this.Position);
-                    this.ReadChar();
+                    token = new Token(TokenType.Comma, ",", Position);
+                    ReadChar();
                     break;
 
                 case ':':
-                    token = new Token(TokenType.Colon, ":", this.Position);
-                    this.ReadChar();
+                    token = new Token(TokenType.Colon, ":", Position);
+                    ReadChar();
                     break;
 
                 case ';':
-                    token = new Token(TokenType.SemiColon, ";", this.Position);
-                    this.ReadChar();
+                    token = new Token(TokenType.SemiColon, ";", Position);
+                    ReadChar();
                     break;
 
                 case '@':
-                    token = new Token(TokenType.At, "@", this.Position);
-                    this.ReadChar();
+                    token = new Token(TokenType.At, "@", Position);
+                    ReadChar();
                     break;
 
                 case '#':
-                    token = new Token(TokenType.Hashtag, "#", this.Position);
-                    this.ReadChar();
+                    token = new Token(TokenType.Hashtag, "#", Position);
+                    ReadChar();
                     break;
 
                 case '~':
-                    token = new Token(TokenType.Til, "~", this.Position);
-                    this.ReadChar();
+                    token = new Token(TokenType.Til, "~", Position);
+                    ReadChar();
                     break;
 
                 case '.':
-                    token = new Token(TokenType.Period, ".", this.Position);
-                    this.ReadChar();
+                    token = new Token(TokenType.Period, ".", Position);
+                    ReadChar();
                     break;
 
                 case '&':
-                    token = new Token(TokenType.Ampersand, "&", this.Position);
-                    this.ReadChar();
+                    token = new Token(TokenType.Ampersand, "&", Position);
+                    ReadChar();
                     break;
 
                 case '$':
-                    this.ReadChar();
+                    ReadChar();
                     if (IsWordChar(_char, true))
                     {
-                        token = new Token(TokenType.Word, "$" + this.ReadWord(), this.Position);
+                        token = new Token(TokenType.Word, "$" + ReadWord(), Position);
                     }
                     else
                     {
-                        token = new Token(TokenType.Dollar, "$", this.Position);
+                        token = new Token(TokenType.Dollar, "$", Position);
                     }
                     break;
 
                 case '!':
-                    this.ReadChar();
+                    ReadChar();
                     if (_char == '=')
                     {
-                        token = new Token(TokenType.NotEquals, "!=", this.Position);
-                        this.ReadChar();
+                        token = new Token(TokenType.NotEquals, "!=", Position);
+                        ReadChar();
                     }
                     else
                     {
-                        token = new Token(TokenType.Exclamation, "!", this.Position);
+                        token = new Token(TokenType.Exclamation, "!", Position);
                     }
                     break;
 
                 case '=':
-                    token = new Token(TokenType.Equals, "=", this.Position);
-                    this.ReadChar();
+                    token = new Token(TokenType.Equals, "=", Position);
+                    ReadChar();
                     break;
 
                 case '>':
-                    this.ReadChar();
+                    ReadChar();
                     if (_char == '=')
                     {
-                        token = new Token(TokenType.GreaterOrEquals, ">=", this.Position);
-                        this.ReadChar();
+                        token = new Token(TokenType.GreaterOrEquals, ">=", Position);
+                        ReadChar();
                     }
                     else
                     {
-                        token = new Token(TokenType.Greater, ">", this.Position);
+                        token = new Token(TokenType.Greater, ">", Position);
                     }
                     break;
 
                 case '<':
-                    this.ReadChar();
+                    ReadChar();
                     if (_char == '=')
                     {
-                        token = new Token(TokenType.LessOrEquals, "<=", this.Position);
-                        this.ReadChar();
+                        token = new Token(TokenType.LessOrEquals, "<=", Position);
+                        ReadChar();
                     }
                     else
                     {
-                        token = new Token(TokenType.Less, "<", this.Position);
+                        token = new Token(TokenType.Less, "<", Position);
                     }
                     break;
 
                 case '-':
-                    this.ReadChar();
+                    ReadChar();
                     if (_char == '-')
                     {
-                        this.ReadLine();
-                        token = this.ReadNext(eatWhitespace);
+                        ReadLine();
+                        token = ReadNext(eatWhitespace);
                     }
                     else
                     {
-                        token = new Token(TokenType.Minus, "-", this.Position);
+                        token = new Token(TokenType.Minus, "-", Position);
                     }
                     break;
 
                 case '+':
-                    token = new Token(TokenType.Plus, "+", this.Position);
-                    this.ReadChar();
+                    token = new Token(TokenType.Plus, "+", Position);
+                    ReadChar();
                     break;
 
                 case '*':
-                    token = new Token(TokenType.Asterisk, "*", this.Position);
-                    this.ReadChar();
+                    token = new Token(TokenType.Asterisk, "*", Position);
+                    ReadChar();
                     break;
 
                 case '/':
-                    token = new Token(TokenType.Slash, "/", this.Position);
-                    this.ReadChar();
+                    token = new Token(TokenType.Slash, "/", Position);
+                    ReadChar();
                     break;
                 case '\\':
-                    token = new Token(TokenType.Backslash, @"\", this.Position);
-                    this.ReadChar();
+                    token = new Token(TokenType.Backslash, @"\", Position);
+                    ReadChar();
                     break;
 
                 case '%':
-                    token = new Token(TokenType.Percent, "%", this.Position);
-                    this.ReadChar();
+                    token = new Token(TokenType.Percent, "%", Position);
+                    ReadChar();
                     break;
 
                 case '\"':
                 case '\'':
-                    token = new Token(TokenType.String, this.ReadString(_char), this.Position);
+                    token = new Token(TokenType.String, ReadString(_char), Position);
                     break;
 
                 case '0':
@@ -511,8 +510,8 @@ namespace LiteDB
                 case '8':
                 case '9':
                     var dbl = false;
-                    var number = this.ReadNumber(ref dbl);
-                    token = new Token(dbl ? TokenType.Double : TokenType.Int, number, this.Position);
+                    var number = ReadNumber(ref dbl);
+                    token = new Token(dbl ? TokenType.Double : TokenType.Int, number, Position);
                     break;
 
                 case ' ':
@@ -523,25 +522,25 @@ namespace LiteDB
                     while(char.IsWhiteSpace(_char) && !_eof)
                     {
                         sb.Append(_char);
-                        this.ReadChar();
+                        ReadChar();
                     }
-                    token = new Token(TokenType.Whitespace, sb.ToString(), this.Position);
+                    token = new Token(TokenType.Whitespace, sb.ToString(), Position);
                     break;
 
                 default:
                     // test if first char is an word 
                     if (IsWordChar(_char, true))
                     {
-                        token = new Token(TokenType.Word, this.ReadWord(), this.Position);
+                        token = new Token(TokenType.Word, ReadWord(), Position);
                     }
                     else
                     {
-                        this.ReadChar();
+                        ReadChar();
                     }
                     break;
             }
 
-            return token ?? new Token(TokenType.Unknown, _char.ToString(), this.Position);
+            return token ?? new Token(TokenType.Unknown, _char.ToString(), Position);
         }
 
         /// <summary>
@@ -551,7 +550,7 @@ namespace LiteDB
         {
             while (char.IsWhiteSpace(_char) && !_eof)
             {
-                this.ReadChar();
+                ReadChar();
             }
         }
 
@@ -563,12 +562,12 @@ namespace LiteDB
             var sb = new StringBuilder();
             sb.Append(_char);
 
-            this.ReadChar();
+            ReadChar();
 
             while (!_eof && IsWordChar(_char, false))
             {
                 sb.Append(_char);
-                this.ReadChar();
+                ReadChar();
             }
 
             return sb.ToString();
@@ -586,7 +585,7 @@ namespace LiteDB
             var canE = true;
             var canSign = false;
 
-            this.ReadChar();
+            ReadChar();
 
             while (!_eof &&
                 (char.IsDigit(_char) || _char == '+' || _char == '-' || _char == '.' || _char == 'e' || _char == 'E'))
@@ -611,7 +610,7 @@ namespace LiteDB
                 }
 
                 sb.Append(_char);
-                this.ReadChar();
+                ReadChar();
             }
 
             return sb.ToString();
@@ -623,13 +622,13 @@ namespace LiteDB
         private string ReadString(char quote)
         {
             var sb = new StringBuilder();
-            this.ReadChar(); // remove first " or '
+            ReadChar(); // remove first " or '
 
             while (_char != quote && !_eof)
             {
                 if (_char == '\\')
                 {
-                    this.ReadChar();
+                    ReadChar();
 
                     if (_char == quote) sb.Append(quote);
 
@@ -643,7 +642,7 @@ namespace LiteDB
                         case 'r': sb.Append('\r'); break;
                         case 't': sb.Append('\t'); break;
                         case 'u':
-                            var codePoint = ParseUnicode(this.ReadChar(), this.ReadChar(), this.ReadChar(), this.ReadChar());
+                            var codePoint = ParseUnicode(ReadChar(), ReadChar(), ReadChar(), ReadChar());
                             sb.Append((char)codePoint);
                             break;
                     }
@@ -653,10 +652,10 @@ namespace LiteDB
                     sb.Append(_char);
                 }
 
-                this.ReadChar();
+                ReadChar();
             }
 
-            this.ReadChar(); // read last " or '
+            ReadChar(); // read last " or '
 
             return sb.ToString();
         }
@@ -669,9 +668,9 @@ namespace LiteDB
             // remove all char until new line
             while (_char != '\n' && !_eof)
             {
-                this.ReadChar();
+                ReadChar();
             }
-            if (_char == '\n') this.ReadChar();
+            if (_char == '\n') ReadChar();
         }
 
         public static uint ParseUnicode(char c1, char c2, char c3, char c4)
@@ -698,7 +697,7 @@ namespace LiteDB
 
         public override string ToString()
         {
-            return this.Current?.ToString() + " [ahead: " + _ahead?.ToString() + "] - position: " + this.Position;
+            return Current?.ToString() + " [ahead: " + _ahead?.ToString() + "] - position: " + Position;
         }
     }
 }

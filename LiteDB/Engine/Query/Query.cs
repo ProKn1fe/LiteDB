@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -50,56 +47,56 @@ namespace LiteDB
         {
             var sb = new StringBuilder();
 
-            if (this.ExplainPlan)
+            if (ExplainPlan)
             {
                 sb.AppendLine("EXPLAIN");
             }
 
-            sb.AppendLine($"SELECT {this.Select.Source}");
+            sb.AppendLine($"SELECT {Select.Source}");
 
-            if (this.Into != null)
+            if (Into != null)
             {
-                sb.AppendLine($"INTO {this.Into}:{IntoAutoId.ToString().ToLower()}");
+                sb.AppendLine($"INTO {Into}:{IntoAutoId.ToString().ToLower()}");
             }
 
             sb.AppendLine($"FROM {collection}");
 
-            if (this.Includes.Count > 0)
+            if (Includes.Count > 0)
             {
-                sb.AppendLine($"INCLUDE {string.Join(", ", this.Includes.Select(x => x.Source))}");
+                sb.AppendLine($"INCLUDE {string.Join(", ", Includes.Select(x => x.Source))}");
             }
 
-            if (this.Where.Count > 0)
+            if (Where.Count > 0)
             {
-                sb.AppendLine($"WHERE {string.Join(" AND ", this.Where.Select(x => x.Source))}");
+                sb.AppendLine($"WHERE {string.Join(" AND ", Where.Select(x => x.Source))}");
             }
 
-            if (this.GroupBy != null)
+            if (GroupBy != null)
             {
-                sb.AppendLine($"GROUP BY {this.GroupBy.Source}");
+                sb.AppendLine($"GROUP BY {GroupBy.Source}");
             }
 
-            if (this.Having != null)
+            if (Having != null)
             {
-                sb.AppendLine($"HAVING {this.Having.Source}");
+                sb.AppendLine($"HAVING {Having.Source}");
             }
 
-            if (this.OrderBy != null)
+            if (OrderBy != null)
             {
-                sb.AppendLine($"ORDER BY {this.OrderBy.Source} {(this.Order == Query.Ascending ? "ASC" : "DESC")}");
+                sb.AppendLine($"ORDER BY {OrderBy.Source} {(Order == Query.Ascending ? "ASC" : "DESC")}");
             }
 
-            if (this.Limit != int.MaxValue)
+            if (Limit != int.MaxValue)
             {
-                sb.AppendLine($"LIMIT {this.Limit}");
+                sb.AppendLine($"LIMIT {Limit}");
             }
 
-            if (this.Offset != 0)
+            if (Offset != 0)
             {
-                sb.AppendLine($"OFFSET {this.Offset}");
+                sb.AppendLine($"OFFSET {Offset}");
             }
 
-            if (this.ForUpdate)
+            if (ForUpdate)
             {
                 sb.AppendLine($"FOR UPDATE");
             }

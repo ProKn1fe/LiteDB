@@ -15,7 +15,7 @@ namespace LiteDB.Engine
             if (collection.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(collection));
             if (ids == null) throw new ArgumentNullException(nameof(ids));
 
-            return this.AutoTransaction(transaction =>
+            return AutoTransaction(transaction =>
             {
                 var snapshot = transaction.CreateSnapshot(LockMode.Write, collection, false);
                 var collectionPage = snapshot.CollectionPage;
@@ -67,7 +67,7 @@ namespace LiteDB.Engine
             {
                 var id = predicate.Right.Execute(_header.Pragmas.Collation).First();
 
-                return this.Delete(collection, new BsonValue[] { id });
+                return Delete(collection, new BsonValue[] { id });
             }
             else
             {
@@ -83,7 +83,7 @@ namespace LiteDB.Engine
                         query.Where.Add(predicate);
                     }
 
-                    using (var reader = this.Query(collection, query))
+                    using (var reader = Query(collection, query))
                     {
                         while (reader.Read())
                         {
@@ -97,7 +97,7 @@ namespace LiteDB.Engine
                     }
                 }
 
-                return this.Delete(collection, getIds());
+                return Delete(collection, getIds());
             }
         }
     }

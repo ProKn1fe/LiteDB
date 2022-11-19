@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -32,16 +29,16 @@ namespace LiteDB.Engine
         {
             for(var i = 0; i < PAGE_FREE_LIST_SLOTS; i++)
             {
-                this.FreeDataPageList[i] = uint.MaxValue;
+                FreeDataPageList[i] = uint.MaxValue;
             }
         }
 
         public CollectionPage(PageBuffer buffer)
             : base(buffer)
         {
-            ENSURE(this.PageType == PageType.Collection, "page type must be collection page");
+            ENSURE(PageType == PageType.Collection, "page type must be collection page");
 
-            if (this.PageType != PageType.Collection) throw LiteException.InvalidPageType(PageType.Collection, this);
+            if (PageType != PageType.Collection) throw LiteException.InvalidPageType(PageType.Collection, this);
 
             // create new buffer area to store BsonDocument indexes
             var area = _buffer.Slice(PAGE_HEADER_SIZE, PAGE_SIZE - PAGE_HEADER_SIZE);
@@ -51,7 +48,7 @@ namespace LiteDB.Engine
                 // read position for FreeDataPage and FreeIndexPage
                 for(var i = 0; i < PAGE_FREE_LIST_SLOTS; i++)
                 {
-                    this.FreeDataPageList[i] = r.ReadUInt32();
+                    FreeDataPageList[i] = r.ReadUInt32();
                 }
 
                 // skip reserved area
@@ -72,7 +69,7 @@ namespace LiteDB.Engine
         public override PageBuffer UpdateBuffer()
         {
             // if page was deleted, do not write in content area (must keep with 0 only)
-            if (this.PageType == PageType.Empty) return base.UpdateBuffer();
+            if (PageType == PageType.Empty) return base.UpdateBuffer();
 
             var area = _buffer.Slice(PAGE_HEADER_SIZE, PAGE_SIZE - PAGE_HEADER_SIZE);
 
@@ -81,7 +78,7 @@ namespace LiteDB.Engine
                 // read position for FreeDataPage and FreeIndexPage
                 for (var i = 0; i < PAGE_FREE_LIST_SLOTS; i++)
                 {
-                    w.Write(this.FreeDataPageList[i]);
+                    w.Write(FreeDataPageList[i]);
                 }
 
                 // skip reserved area (indexes starts at position 96)
@@ -157,7 +154,7 @@ namespace LiteDB.Engine
             
             _indexes[name] = index;
 
-            this.IsDirty = true;
+            IsDirty = true;
 
             return index;
         }
@@ -167,7 +164,7 @@ namespace LiteDB.Engine
         /// </summary>
         public CollectionIndex UpdateCollectionIndex(string name)
         {
-            this.IsDirty = true;
+            IsDirty = true;
 
             return _indexes[name];
         }
@@ -179,7 +176,7 @@ namespace LiteDB.Engine
         {
             _indexes.Remove(name);
 
-            this.IsDirty = true;
+            IsDirty = true;
         }
 
     }

@@ -1,11 +1,5 @@
-﻿using LiteDB.Engine;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -13,11 +7,11 @@ namespace LiteDB
     {
         public ExpressionContext()
         {
-            this.Source = Expression.Parameter(typeof(IEnumerable<BsonDocument>), "source");
-            this.Root = Expression.Parameter(typeof(BsonDocument), "root");
-            this.Current = Expression.Parameter(typeof(BsonValue), "current");
-            this.Collation = Expression.Parameter(typeof(Collation), "collation");
-            this.Parameters = Expression.Parameter(typeof(BsonDocument), "parameters");
+            Source = Expression.Parameter(typeof(IEnumerable<BsonDocument>), "source");
+            Root = Expression.Parameter(typeof(BsonDocument), "root");
+            Current = Expression.Parameter(typeof(BsonValue), "current");
+            Collation = Expression.Parameter(typeof(Collation), "collation");
+            Parameters = Expression.Parameter(typeof(BsonDocument), "parameters");
         }
 
         public ParameterExpression Source { get; }

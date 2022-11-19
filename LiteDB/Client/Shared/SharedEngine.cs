@@ -1,11 +1,8 @@
 ﻿using LiteDB.Engine;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -111,7 +108,7 @@ namespace LiteDB
 
         public bool BeginTrans()
         {
-            this.OpenDatabase(false);
+            OpenDatabase(false);
 
             try
             {
@@ -126,7 +123,7 @@ namespace LiteDB
             }
             catch
             {
-                this.CloseDatabase();
+                CloseDatabase();
                 throw;
             }
         }
@@ -141,7 +138,7 @@ namespace LiteDB
             }
             finally
             {
-                this.CloseDatabase();
+                CloseDatabase();
             }
         }
 
@@ -155,7 +152,7 @@ namespace LiteDB
             }
             finally
             {
-                this.CloseDatabase();
+                CloseDatabase();
             }
         }
 
@@ -165,16 +162,16 @@ namespace LiteDB
 
         public IBsonDataReader Query(string collection, Query query)
         {
-            this.OpenDatabase(true);
+            OpenDatabase(true);
 
             var reader = _engine.Query(collection, query);
 
-            return new SharedDataReader(reader, () => this.CloseDatabase());
+            return new SharedDataReader(reader, () => CloseDatabase());
         }
 
         public BsonValue Pragma(string name)
         {
-            this.OpenDatabase(true);
+            OpenDatabase(true);
 
             try
             {
@@ -182,13 +179,13 @@ namespace LiteDB
             }
             finally
             {
-                this.CloseDatabase();
+                CloseDatabase();
             }
         }
 
         public bool Pragma(string name, BsonValue value)
         {
-            this.OpenDatabase(false);
+            OpenDatabase(false);
 
             try
             {
@@ -196,7 +193,7 @@ namespace LiteDB
             }
             finally
             {
-                this.CloseDatabase();
+                CloseDatabase();
             }
         }
 
@@ -206,7 +203,7 @@ namespace LiteDB
 
         public int Checkpoint()
         {
-            this.OpenDatabase(false);
+            OpenDatabase(false);
 
             try
             {
@@ -214,13 +211,13 @@ namespace LiteDB
             }
             finally
             {
-                this.CloseDatabase();
+                CloseDatabase();
             }
         }
 
         public long Rebuild(RebuildOptions options)
         {
-            this.OpenDatabase(false);
+            OpenDatabase(false);
 
             try
             {
@@ -228,13 +225,13 @@ namespace LiteDB
             }
             finally
             {
-                this.CloseDatabase();
+                CloseDatabase();
             }
         }
 
         public int Insert(string collection, IEnumerable<BsonDocument> docs, BsonAutoId autoId)
         {
-            this.OpenDatabase(false);
+            OpenDatabase(false);
 
             try
             {
@@ -242,13 +239,13 @@ namespace LiteDB
             }
             finally
             {
-                this.CloseDatabase();
+                CloseDatabase();
             }
         }
 
         public int Update(string collection, IEnumerable<BsonDocument> docs)
         {
-            this.OpenDatabase(false);
+            OpenDatabase(false);
 
             try
             {
@@ -256,13 +253,13 @@ namespace LiteDB
             }
             finally
             {
-                this.CloseDatabase();
+                CloseDatabase();
             }
         }
 
         public int UpdateMany(string collection, BsonExpression extend, BsonExpression predicate)
         {
-            this.OpenDatabase(false);
+            OpenDatabase(false);
 
             try
             {
@@ -270,13 +267,13 @@ namespace LiteDB
             }
             finally
             {
-                this.CloseDatabase();
+                CloseDatabase();
             }
         }
 
         public int Upsert(string collection, IEnumerable<BsonDocument> docs, BsonAutoId autoId)
         {
-            this.OpenDatabase(false);
+            OpenDatabase(false);
 
             try
             {
@@ -284,13 +281,13 @@ namespace LiteDB
             }
             finally
             {
-                this.CloseDatabase();
+                CloseDatabase();
             }
         }
 
         public int Delete(string collection, IEnumerable<BsonValue> ids)
         {
-            this.OpenDatabase(false);
+            OpenDatabase(false);
 
             try
             {
@@ -298,13 +295,13 @@ namespace LiteDB
             }
             finally
             {
-                this.CloseDatabase();
+                CloseDatabase();
             }
         }
 
         public int DeleteMany(string collection, BsonExpression predicate)
         {
-            this.OpenDatabase(false);
+            OpenDatabase(false);
 
             try
             {
@@ -312,13 +309,13 @@ namespace LiteDB
             }
             finally
             {
-                this.CloseDatabase();
+                CloseDatabase();
             }
         }
 
         public bool DropCollection(string name)
         {
-            this.OpenDatabase(false);
+            OpenDatabase(false);
 
             try
             {
@@ -326,13 +323,13 @@ namespace LiteDB
             }
             finally
             {
-                this.CloseDatabase();
+                CloseDatabase();
             }
         }
 
         public bool RenameCollection(string name, string newName)
         {
-            this.OpenDatabase(false);
+            OpenDatabase(false);
 
             try
             {
@@ -340,13 +337,13 @@ namespace LiteDB
             }
             finally
             {
-                this.CloseDatabase();
+                CloseDatabase();
             }
         }
 
         public bool DropIndex(string collection, string name)
         {
-            this.OpenDatabase(false);
+            OpenDatabase(false);
 
             try
             {
@@ -354,13 +351,13 @@ namespace LiteDB
             }
             finally
             {
-                this.CloseDatabase();
+                CloseDatabase();
             }
         }
 
         public bool EnsureIndex(string collection, string name, BsonExpression expression, bool unique)
         {
-            this.OpenDatabase(false);
+            OpenDatabase(false);
 
             try
             {
@@ -368,7 +365,7 @@ namespace LiteDB
             }
             finally
             {
-                this.CloseDatabase();
+                CloseDatabase();
             }
         }
 
@@ -376,23 +373,20 @@ namespace LiteDB
 
         public void Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         ~SharedEngine()
         {
-            this.Dispose(false);
+            Dispose(false);
         }
 
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
             {
-                if (_engine != null)
-                {
-                    _engine.Dispose();
-                }
+                _engine?.Dispose();
 
                 _locker.Dispose();
             }

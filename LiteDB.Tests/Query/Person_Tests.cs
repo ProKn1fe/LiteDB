@@ -12,11 +12,11 @@ namespace LiteDB.Tests.QueryTest
 
         public Person_Tests()
         {
-            this.local = DataGen.Person().ToArray();
+            local = DataGen.Person().ToArray();
 
             db = new LiteDatabase(":memory:");
             collection = db.GetCollection<Person>("person");
-            collection.Insert(this.local);
+            collection.Insert(local);
         }
 
         public void Dispose()

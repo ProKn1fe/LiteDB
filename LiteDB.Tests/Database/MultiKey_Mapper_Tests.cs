@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+
 using FluentAssertions;
+
 using Xunit;
 
 namespace LiteDB.Tests.Database

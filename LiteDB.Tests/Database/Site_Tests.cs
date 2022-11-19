@@ -1,8 +1,7 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
+﻿using System.Linq;
+
 using FluentAssertions;
+
 using Xunit;
 
 namespace LiteDB.Tests.Database

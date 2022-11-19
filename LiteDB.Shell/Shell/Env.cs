@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using LiteDB;
-
-namespace LiteDB.Shell
+﻿namespace LiteDB.Shell
 {
     internal class Env
     {

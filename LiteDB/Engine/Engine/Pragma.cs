@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using static LiteDB.Constants;
-
-namespace LiteDB.Engine
+﻿namespace LiteDB.Engine
 {
     public partial class LiteEngine
     {
@@ -21,12 +15,12 @@ namespace LiteDB.Engine
         /// </summary>
         public bool Pragma(string name, BsonValue value)
         {
-            if (this.Pragma(name) == value) return false;
+            if (Pragma(name) == value) return false;
 
             if (_locker.IsInTransaction) throw LiteException.AlreadyExistsTransaction();
 
             // do a inside transaction to edit pragma on commit event	
-            return this.AutoTransaction(transaction =>
+            return AutoTransaction(transaction =>
             {
                 transaction.Pages.Commit += (h) =>
                 {

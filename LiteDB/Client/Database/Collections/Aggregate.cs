@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -15,7 +14,7 @@ namespace LiteDB
         public int Count()
         {
             // do not use indexes - collections has DocumentCount property
-            return this.Query().Count();
+            return Query().Count();
         }
 
         /// <summary>
@@ -25,23 +24,23 @@ namespace LiteDB
         {
             if (predicate == null) throw new ArgumentNullException(nameof(predicate));
 
-            return this.Query().Where(predicate).Count();
+            return Query().Where(predicate).Count();
         }
 
         /// <summary>
         /// Get document count in collection using predicate filter expression
         /// </summary>
-        public int Count(string predicate, BsonDocument parameters) => this.Count(BsonExpression.Create(predicate, parameters));
+        public int Count(string predicate, BsonDocument parameters) => Count(BsonExpression.Create(predicate, parameters));
 
         /// <summary>
         /// Get document count in collection using predicate filter expression
         /// </summary>
-        public int Count(string predicate, params BsonValue[] args) => this.Count(BsonExpression.Create(predicate, args));
+        public int Count(string predicate, params BsonValue[] args) => Count(BsonExpression.Create(predicate, args));
 
         /// <summary>
         /// Count documents matching a query. This method does not deserialize any documents. Needs indexes on query expression
         /// </summary>
-        public int Count(Expression<Func<T, bool>> predicate) => this.Count(_mapper.GetExpression(predicate));
+        public int Count(Expression<Func<T, bool>> predicate) => Count(_mapper.GetExpression(predicate));
 
         /// <summary>
         /// Get document count in collection using predicate filter expression
@@ -57,7 +56,7 @@ namespace LiteDB
         /// </summary>
         public long LongCount()
         {
-            return this.Query().LongCount();
+            return Query().LongCount();
         }
 
         /// <summary>
@@ -67,23 +66,23 @@ namespace LiteDB
         {
             if (predicate == null) throw new ArgumentNullException(nameof(predicate));
 
-            return this.Query().Where(predicate).LongCount();
+            return Query().Where(predicate).LongCount();
         }
 
         /// <summary>
         /// Get document count in collection using predicate filter expression
         /// </summary>
-        public long LongCount(string predicate, BsonDocument parameters) => this.LongCount(BsonExpression.Create(predicate, parameters));
+        public long LongCount(string predicate, BsonDocument parameters) => LongCount(BsonExpression.Create(predicate, parameters));
 
         /// <summary>
         /// Get document count in collection using predicate filter expression
         /// </summary>
-        public long LongCount(string predicate, params BsonValue[] args) => this.LongCount(BsonExpression.Create(predicate, args));
+        public long LongCount(string predicate, params BsonValue[] args) => LongCount(BsonExpression.Create(predicate, args));
 
         /// <summary>
         /// Get document count in collection using predicate filter expression
         /// </summary>
-        public long LongCount(Expression<Func<T, bool>> predicate) => this.LongCount(_mapper.GetExpression(predicate));
+        public long LongCount(Expression<Func<T, bool>> predicate) => LongCount(_mapper.GetExpression(predicate));
 
         /// <summary>
         /// Get document count in collection using predicate filter expression
@@ -101,23 +100,23 @@ namespace LiteDB
         {
             if (predicate == null) throw new ArgumentNullException(nameof(predicate));
 
-            return this.Query().Where(predicate).Exists();
+            return Query().Where(predicate).Exists();
         }
 
         /// <summary>
         /// Get true if collection contains at least 1 document that satisfies the predicate expression
         /// </summary>
-        public bool Exists(string predicate, BsonDocument parameters) => this.Exists(BsonExpression.Create(predicate, parameters));
+        public bool Exists(string predicate, BsonDocument parameters) => Exists(BsonExpression.Create(predicate, parameters));
 
         /// <summary>
         /// Get true if collection contains at least 1 document that satisfies the predicate expression
         /// </summary>
-        public bool Exists(string predicate, params BsonValue[] args) => this.Exists(BsonExpression.Create(predicate, args));
+        public bool Exists(string predicate, params BsonValue[] args) => Exists(BsonExpression.Create(predicate, args));
 
         /// <summary>
         /// Get true if collection contains at least 1 document that satisfies the predicate expression
         /// </summary>
-        public bool Exists(Expression<Func<T, bool>> predicate) => this.Exists(_mapper.GetExpression(predicate));
+        public bool Exists(Expression<Func<T, bool>> predicate) => Exists(_mapper.GetExpression(predicate));
 
         /// <summary>
         /// Get true if collection contains at least 1 document that satisfies the predicate expression
@@ -135,7 +134,7 @@ namespace LiteDB
         {
             if (string.IsNullOrEmpty(keySelector)) throw new ArgumentNullException(nameof(keySelector));
 
-            var doc = this.Query()
+            var doc = Query()
                 .OrderBy(keySelector)
                 .Select(keySelector)
                 .ToDocuments()
@@ -148,7 +147,7 @@ namespace LiteDB
         /// <summary>
         /// Returns the min value of _id index
         /// </summary>
-        public BsonValue Min() => this.Min("_id");
+        public BsonValue Min() => Min("_id");
 
         /// <summary>
         /// Returns the min value from specified key value in collection
@@ -159,7 +158,7 @@ namespace LiteDB
 
             var expr = _mapper.GetExpression(keySelector);
 
-            var value = this.Min(expr);
+            var value = Min(expr);
 
             return (K)_mapper.Deserialize(typeof(K), value);
         }
@@ -171,7 +170,7 @@ namespace LiteDB
         {
             if (string.IsNullOrEmpty(keySelector)) throw new ArgumentNullException(nameof(keySelector));
 
-            var doc = this.Query()
+            var doc = Query()
                 .OrderByDescending(keySelector)
                 .Select(keySelector)
                 .ToDocuments()
@@ -184,7 +183,7 @@ namespace LiteDB
         /// <summary>
         /// Returns the max _id index key value
         /// </summary>
-        public BsonValue Max() => this.Max("_id");
+        public BsonValue Max() => Max("_id");
 
         /// <summary>
         /// Returns the last/max field using a linq expression
@@ -195,7 +194,7 @@ namespace LiteDB
 
             var expr = _mapper.GetExpression(keySelector);
 
-            var value = this.Max(expr);
+            var value = Max(expr);
 
             return (K)_mapper.Deserialize(typeof(K), value);
         }

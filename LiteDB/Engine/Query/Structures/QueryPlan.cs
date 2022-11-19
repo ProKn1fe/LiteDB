@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using static LiteDB.Constants;
 
 namespace LiteDB.Engine
 {
@@ -14,7 +11,7 @@ namespace LiteDB.Engine
     {
         public QueryPlan(string collection)
         {
-            this.Collection = collection;
+            Collection = collection;
         }
 
         /// <summary>
@@ -99,13 +96,13 @@ namespace LiteDB.Engine
         /// </summary>
         public BasePipe GetPipe(TransactionService transaction, Snapshot snapshot, SortDisk tempDisk, EnginePragmas pragmas)
         {
-            if (this.GroupBy == null)
+            if (GroupBy == null)
             {
-                return new QueryPipe(transaction, this.GetLookup(snapshot, pragmas), tempDisk, pragmas);
+                return new QueryPipe(transaction, GetLookup(snapshot, pragmas), tempDisk, pragmas);
             }
             else
             {
-                return new GroupByPipe(transaction, this.GetLookup(snapshot, pragmas), tempDisk, pragmas);
+                return new GroupByPipe(transaction, GetLookup(snapshot, pragmas), tempDisk, pragmas);
             }
         }
 
@@ -119,15 +116,15 @@ namespace LiteDB.Engine
 
             // define document loader
             // if index are VirtualIndex - it's also lookup document
-            if (!(this.Index is IDocumentLookup lookup))
+            if (!(Index is IDocumentLookup lookup))
             {
-                if (this.IsIndexKeyOnly)
+                if (IsIndexKeyOnly)
                 {
-                    lookup = new IndexLookup(indexer, this.Fields.Single());
+                    lookup = new IndexLookup(indexer, Fields.Single());
                 }
                 else
                 {
-                    lookup = new DatafileLookup(data, pragmas.UtcDate, this.Fields);
+                    lookup = new DatafileLookup(data, pragmas.UtcDate, Fields);
                 }
             }
 
@@ -145,77 +142,77 @@ namespace LiteDB.Engine
         {
             var doc = new BsonDocument
             {
-                ["collection"] = this.Collection,
-                ["snaphost"] = this.ForUpdate ? "write" : "read",
-                ["pipe"] = this.GroupBy == null ? "queryPipe" : "groupByPipe"
+                ["collection"] = Collection,
+                ["snaphost"] = ForUpdate ? "write" : "read",
+                ["pipe"] = GroupBy == null ? "queryPipe" : "groupByPipe"
             };
 
             doc["index"] = new BsonDocument
             {
-                ["name"] = this.Index.Name,
-                ["expr"] = this.IndexExpression,
-                ["order"] = this.Index.Order,
-                ["mode"] = this.Index.ToString(),
-                ["cost"] = (int)this.IndexCost // uint.MaxValue (-1) mean not analyzed
+                ["name"] = Index.Name,
+                ["expr"] = IndexExpression,
+                ["order"] = Index.Order,
+                ["mode"] = Index.ToString(),
+                ["cost"] = (int)IndexCost // uint.MaxValue (-1) mean not analyzed
             };
 
             doc["lookup"] = new BsonDocument
             {
-                ["loader"] = this.Index is IndexVirtual ? "virtual" : (this.IsIndexKeyOnly ? "index" : "document"),
+                ["loader"] = Index is IndexVirtual ? "virtual" : (IsIndexKeyOnly ? "index" : "document"),
                 ["fields"] =
-                    this.Fields.Count == 0 ? new BsonValue("$") :
-                    (BsonValue)new BsonArray(this.Fields.Select(x => new BsonValue(x))),
+                    Fields.Count == 0 ? new BsonValue("$") :
+                    (BsonValue)new BsonArray(Fields.Select(x => new BsonValue(x))),
             };
 
-            if (this.IncludeBefore.Count > 0)
+            if (IncludeBefore.Count > 0)
             {
-                doc["includeBefore"] = new BsonArray(this.IncludeBefore.Select(x => new BsonValue(x.Source)));
+                doc["includeBefore"] = new BsonArray(IncludeBefore.Select(x => new BsonValue(x.Source)));
             }
 
-            if (this.Filters.Count > 0)
+            if (Filters.Count > 0)
             {
-                doc["filters"] = new BsonArray(this.Filters.Select(x => new BsonValue(x.Source)));
+                doc["filters"] = new BsonArray(Filters.Select(x => new BsonValue(x.Source)));
             }
 
-            if (this.OrderBy != null)
+            if (OrderBy != null)
             {
                 doc["orderBy"] = new BsonDocument
                 {
-                    ["expr"] = this.OrderBy.Expression.Source,
-                    ["order"] = this.OrderBy.Order,
+                    ["expr"] = OrderBy.Expression.Source,
+                    ["order"] = OrderBy.Order,
                 };
             }
 
-            if (this.Limit != int.MaxValue)
+            if (Limit != int.MaxValue)
             {
-                doc["limit"] = this.Limit;
+                doc["limit"] = Limit;
             }
 
-            if (this.Offset != 0)
+            if (Offset != 0)
             {
-                doc["offset"] = this.Offset;
+                doc["offset"] = Offset;
             }
 
-            if (this.IncludeAfter.Count > 0)
+            if (IncludeAfter.Count > 0)
             {
-                doc["includeAfter"] = new BsonArray(this.IncludeAfter.Select(x => new BsonValue(x.Source)));
+                doc["includeAfter"] = new BsonArray(IncludeAfter.Select(x => new BsonValue(x.Source)));
             }
 
-            if (this.GroupBy != null)
+            if (GroupBy != null)
             {
                 doc["groupBy"] = new BsonDocument
                 {
-                    ["expr"] = this.GroupBy.Expression.Source,
-                    ["having"] = this.GroupBy.Having?.Source,
-                    ["select"] = this.GroupBy.Select?.Source
+                    ["expr"] = GroupBy.Expression.Source,
+                    ["having"] = GroupBy.Having?.Source,
+                    ["select"] = GroupBy.Select?.Source
                 };
             }
             else
             {
                 doc["select"] = new BsonDocument
                 {
-                    ["expr"] = this.Select.Expression.Source,
-                    ["all"] = this.Select.All
+                    ["expr"] = Select.Expression.Source,
+                    ["all"] = Select.All
                 };
             }
 

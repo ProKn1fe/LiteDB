@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using static LiteDB.Constants;
 
 namespace LiteDB.Engine
 {
@@ -29,24 +27,24 @@ namespace LiteDB.Engine
         public override IEnumerable<BsonDocument> Pipe(IEnumerable<IndexNode> nodes, QueryPlan query)
         {
             // starts pipe loading document
-            var source = this.LoadDocument(nodes);
+            var source = LoadDocument(nodes);
 
             // do includes in result before filter
             foreach (var path in query.IncludeBefore)
             {
-                source = this.Include(source, path);
+                source = Include(source, path);
             }
 
             // filter results according expressions
             foreach (var expr in query.Filters)
             {
-                source = this.Filter(source, expr);
+                source = Filter(source, expr);
             }
 
             if (query.OrderBy != null)
             {
                 // pipe: orderby with offset+limit
-                source = this.OrderBy(source, query.OrderBy.Expression, query.OrderBy.Order, query.Offset, query.Limit);
+                source = OrderBy(source, query.OrderBy.Expression, query.OrderBy.Order, query.Offset, query.Limit);
             }
             else
             {
@@ -60,18 +58,18 @@ namespace LiteDB.Engine
             // do includes in result after filter
             foreach (var path in query.IncludeAfter)
             {
-                source = this.Include(source, path);
+                source = Include(source, path);
             }
 
             // if is an aggregate query, run select transform over all resultset - will return a single value
             if (query.Select.All)
             {
-                return this.SelectAll(source, query.Select.Expression);
+                return SelectAll(source, query.Select.Expression);
             }
             // run select transform in each document and return a new document or value
             else
             {
-                return this.Select(source, query.Select.Expression);
+                return Select(source, query.Select.Expression);
             }
         }
 

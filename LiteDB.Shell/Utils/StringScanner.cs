@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace LiteDB.Shell
@@ -17,13 +16,13 @@ namespace LiteDB.Shell
         /// </summary>
         public StringScanner(string source)
         {
-            this.Source = source;
-            this.Index = 0;
+            Source = source;
+            Index = 0;
         }
 
         public override string ToString()
         {
-            return this.HasTerminated ? "<EOF>" : this.Source.Substring(this.Index);
+            return HasTerminated ? "<EOF>" : Source.Substring(Index);
         }
 
         /// <summary>
@@ -31,7 +30,7 @@ namespace LiteDB.Shell
         /// </summary>
         public void Reset()
         {
-            this.Index = 0;
+            Index = 0;
         }
 
         /// <summary>
@@ -39,7 +38,7 @@ namespace LiteDB.Shell
         /// </summary>
         public void Seek(int length)
         {
-            this.Index += length;
+            Index += length;
         }
 
         /// <summary>
@@ -47,7 +46,7 @@ namespace LiteDB.Shell
         /// </summary>
         public bool HasTerminated
         {
-            get { return this.Index >= this.Source.Length; }
+            get { return Index >= Source.Length; }
         }
 
         /// <summary>
@@ -55,7 +54,7 @@ namespace LiteDB.Shell
         /// </summary>
         public string Scan(string pattern)
         {
-            return this.Scan(new Regex((pattern.StartsWith("^") ? "" : "^") + pattern, RegexOptions.IgnorePatternWhitespace));
+            return Scan(new Regex((pattern.StartsWith("^") ? "" : "^") + pattern, RegexOptions.IgnorePatternWhitespace));
         }
 
         /// <summary>
@@ -63,11 +62,11 @@ namespace LiteDB.Shell
         /// </summary>
         public string Scan(Regex regex)
         {
-            var match = regex.Match(this.Source, this.Index, this.Source.Length - this.Index);
+            var match = regex.Match(Source, Index, Source.Length - Index);
 
             if (match.Success)
             {
-                this.Index += match.Length;
+                Index += match.Length;
                 return match.Value;
             }
             else
@@ -81,16 +80,16 @@ namespace LiteDB.Shell
         /// </summary>
         public string Scan(string pattern, int group)
         {
-            return this.Scan(new Regex((pattern.StartsWith("^") ? "" : "^") + pattern, RegexOptions.IgnorePatternWhitespace), group);
+            return Scan(new Regex((pattern.StartsWith("^") ? "" : "^") + pattern, RegexOptions.IgnorePatternWhitespace), group);
         }
 
         public string Scan(Regex regex, int group)
         {
-            var match = regex.Match(this.Source, this.Index, this.Source.Length - this.Index);
+            var match = regex.Match(Source, Index, Source.Length - Index);
 
             if (match.Success)
             {
-                this.Index += match.Length;
+                Index += match.Length;
                 return group >= match.Groups.Count ? "" : match.Groups[group].Value;
             }
             else
@@ -104,7 +103,7 @@ namespace LiteDB.Shell
         /// </summary>
         public bool Match(string pattern)
         {
-            return this.Match(new Regex((pattern.StartsWith("^") ? "" : "^") + pattern, RegexOptions.IgnorePatternWhitespace));
+            return Match(new Regex((pattern.StartsWith("^") ? "" : "^") + pattern, RegexOptions.IgnorePatternWhitespace));
         }
 
         /// <summary>
@@ -112,7 +111,7 @@ namespace LiteDB.Shell
         /// </summary>
         public bool Match(Regex regex)
         {
-            var match = regex.Match(this.Source, this.Index, this.Source.Length - this.Index);
+            var match = regex.Match(Source, Index, Source.Length - Index);
             return match.Success;
         }
 
@@ -121,9 +120,9 @@ namespace LiteDB.Shell
         /// </summary>
         public void ThrowIfNotFinish()
         {
-            this.Scan(@"\s*");
+            Scan(@"\s*");
 
-            if (!this.HasTerminated) throw new Exception("Unknow token after command");
+            if (!HasTerminated) throw new Exception("Unknow token after command");
         }
     }
 }

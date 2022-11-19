@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using static LiteDB.Constants;
 
 namespace LiteDB.Engine
 {
@@ -28,25 +26,25 @@ namespace LiteDB.Engine
         public override IEnumerable<BsonDocument> Pipe(IEnumerable<IndexNode> nodes, QueryPlan query)
         {
             // starts pipe loading document
-            var source = this.LoadDocument(nodes);
+            var source = LoadDocument(nodes);
 
             // filter results according filter expressions
             foreach (var expr in query.Filters)
             {
-                source = this.Filter(source, expr);
+                source = Filter(source, expr);
             }
 
             // run orderBy used in GroupBy (if not already ordered by index)
             if (query.OrderBy != null)
             {
-                source = this.OrderBy(source, query.OrderBy.Expression, query.OrderBy.Order, 0, int.MaxValue);
+                source = OrderBy(source, query.OrderBy.Expression, query.OrderBy.Order, 0, int.MaxValue);
             }
 
             // apply groupby
-            var groups = this.GroupBy(source, query.GroupBy);
+            var groups = GroupBy(source, query.GroupBy);
 
             // apply group filter and transform result
-            var result = this.SelectGroupBy(groups, query.GroupBy);
+            var result = SelectGroupBy(groups, query.GroupBy);
 
             // apply offset
             if (query.Offset > 0) result = result.Skip(query.Offset);

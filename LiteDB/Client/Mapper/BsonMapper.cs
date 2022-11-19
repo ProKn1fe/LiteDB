@@ -110,15 +110,15 @@ namespace LiteDB
 
         public BsonMapper(Func<Type, object> customTypeInstantiator = null, ITypeNameBinder typeNameBinder = null)
         {
-            this.SerializeNullValues = false;
-            this.TrimWhitespace = true;
-            this.EmptyStringToNull = true;
-            this.EnumAsInteger = false;
-            this.ResolveFieldName = (s) => s;
-            this.ResolveMember = (t, mi, mm) => { };
-            this.ResolveCollectionName = (t) => Reflection.IsEnumerable(t) ? Reflection.GetListItemType(t).Name : t.Name;
-            this.IncludeFields = false;
-            this.MaxDepth = 20;
+            SerializeNullValues = false;
+            TrimWhitespace = true;
+            EmptyStringToNull = true;
+            EnumAsInteger = false;
+            ResolveFieldName = (s) => s;
+            ResolveMember = (t, mi, mm) => { };
+            ResolveCollectionName = (t) => Reflection.IsEnumerable(t) ? Reflection.GetListItemType(t).Name : t.Name;
+            IncludeFields = false;
+            MaxDepth = 20;
 
             _typeInstantiator = customTypeInstantiator ?? ((Type t) => null);
             _typeNameBinder = typeNameBinder ?? DefaultTypeNameBinder.Instance;
@@ -179,7 +179,7 @@ namespace LiteDB
 
             var expr = visitor.Resolve(typeof(K) == typeof(bool));
 
-            LOG($"`{predicate.ToString()}` -> `{expr.Source}`", "LINQ");
+            LOG($"`{predicate}` -> `{expr.Source}`", "LINQ");
 
             return expr;
         }
@@ -193,7 +193,7 @@ namespace LiteDB
         /// </summary>
         public BsonMapper UseCamelCase()
         {
-            this.ResolveFieldName = (s) => char.ToLower(s[0]) + s.Substring(1);
+            ResolveFieldName = (s) => char.ToLower(s[0]) + s.Substring(1);
 
             return this;
         }
@@ -205,7 +205,7 @@ namespace LiteDB
         /// </summary>
         public BsonMapper UseLowerCaseDelimiter(char delimiter = '_')
         {
-            this.ResolveFieldName = (s) => _lowerCaseDelimiter.Replace(s, delimiter + "$2").ToLower();
+            ResolveFieldName = (s) => _lowerCaseDelimiter.Replace(s, delimiter + "$2").ToLower();
 
             return this;
         }
@@ -227,7 +227,7 @@ namespace LiteDB
                 {
                     if (!_entities.TryGetValue(type, out mapper))
                     {
-                        return _entities[type] = this.BuildEntityMapper(type);
+                        return _entities[type] = BuildEntityMapper(type);
                     }
                 }
             }
@@ -248,8 +248,8 @@ namespace LiteDB
             var fieldAttr = typeof(BsonFieldAttribute);
             var dbrefAttr = typeof(BsonRefAttribute);
 
-            var members = this.GetTypeMembers(type);
-            var id = this.GetIdMember(members);
+            var members = GetTypeMembers(type);
+            var id = GetIdMember(members);
 
             foreach (var memberInfo in members)
             {
@@ -257,7 +257,7 @@ namespace LiteDB
                 if (CustomAttributeExtensions.IsDefined(memberInfo, ignoreAttr, true)) continue;
 
                 // checks field name conversion
-                var name = this.ResolveFieldName(memberInfo.Name);
+                var name = ResolveFieldName(memberInfo.Name);
 
                 // check if property has [BsonField]
                 var field = (BsonFieldAttribute)CustomAttributeExtensions.GetCustomAttributes(memberInfo, fieldAttr, true).FirstOrDefault();
@@ -307,11 +307,11 @@ namespace LiteDB
 
                 if (dbRef != null && memberInfo is PropertyInfo)
                 {
-                    BsonMapper.RegisterDbRef(this, member, _typeNameBinder, dbRef.Collection ?? this.ResolveCollectionName((memberInfo as PropertyInfo).PropertyType));
+                    BsonMapper.RegisterDbRef(this, member, _typeNameBinder, dbRef.Collection ?? ResolveCollectionName((memberInfo as PropertyInfo).PropertyType));
                 }
 
                 // support callback to user modify member mapper
-                this.ResolveMember?.Invoke(type, memberInfo, member);
+                ResolveMember?.Invoke(type, memberInfo, member);
 
                 // test if has name and there is no duplicate field
                 if (member.FieldName != null && mapper.Members.Any(x => x.FieldName.Equals(name, StringComparison.OrdinalIgnoreCase)) == false)
@@ -341,7 +341,7 @@ namespace LiteDB
         {
             var members = new List<MemberInfo>();
 
-            var flags = this.IncludeNonPublic ?
+            var flags = IncludeNonPublic ?
                 (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) :
                 (BindingFlags.Public | BindingFlags.Instance);
 
@@ -349,7 +349,7 @@ namespace LiteDB
                 .Where(x => x.CanRead && x.GetIndexParameters().Length == 0)
                 .Select(x => x as MemberInfo));
 
-            if (this.IncludeFields)
+            if (IncludeFields)
             {
                 members.AddRange(type.GetFields(flags).Where(x => !x.Name.EndsWith("k__BackingField") && x.IsStatic == false).Select(x => x as MemberInfo));
             }
@@ -403,11 +403,11 @@ namespace LiteDB
                     var cast = Expression.Convert(convertTypeFunc, p.ParameterType);
                     pars.Add(cast);
                 }
-                else if (p.ParameterType.GetTypeInfo().IsEnum && this.EnumAsInteger)
+                else if (p.ParameterType.GetTypeInfo().IsEnum && EnumAsInteger)
                 {
                     var typeExpr = Expression.Constant(p.ParameterType);
                     var rawValue = Expression.PropertyOrField(expr, "AsInt32");
-                    var convertTypeFunc = Expression.Call(typeof(Enum).GetMethod("ToObject", new Type[] { typeof(Type), typeof(Int32) }), typeExpr, rawValue);
+                    var convertTypeFunc = Expression.Call(typeof(Enum).GetMethod("ToObject", new Type[] { typeof(Type), typeof(int) }), typeExpr, rawValue);
                     var cast = Expression.Convert(convertTypeFunc, p.ParameterType);
                     pars.Add(cast);
                 }

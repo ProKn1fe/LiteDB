@@ -108,7 +108,7 @@ namespace LiteDB.Engine
                 bufferPosition += bytesToCopy;
 
                 // move position in current segment (and go to next segment if finish)
-                this.MoveForward(bytesToCopy);
+                MoveForward(bytesToCopy);
 
                 if (_isEOF) break;
             }
@@ -121,12 +121,12 @@ namespace LiteDB.Engine
         /// <summary>
         /// Write bytes from buffer into segmentsr. Return how many bytes was write
         /// </summary>
-        public int Write(byte[] buffer) => this.Write(buffer, 0, buffer.Length);
+        public int Write(byte[] buffer) => Write(buffer, 0, buffer.Length);
 
         /// <summary>
         /// Skip bytes (same as Write but with no array copy)
         /// </summary>
-        public int Skip(int count) => this.Write(null, 0, count);
+        public int Skip(int count) => Write(null, 0, count);
 
         /// <summary>
         /// Consume all data source until finish
@@ -162,7 +162,7 @@ namespace LiteDB.Engine
 
                 _current[_currentPosition + bytesCount] = 0x00;
 
-                this.MoveForward(bytesCount + 1); // +1 to '\0'
+                MoveForward(bytesCount + 1); // +1 to '\0'
             }
             else
             {
@@ -170,11 +170,11 @@ namespace LiteDB.Engine
 
                 Encoding.UTF8.GetBytes(value, 0, value.Length, buffer, 0);
 
-                this.Write(buffer, 0, bytesCount);
+                Write(buffer, 0, bytesCount);
 
                 _current[_currentPosition] = 0x00;
 
-                this.MoveForward(1);
+                MoveForward(1);
 
                 BufferPool.Return(buffer);
             }
@@ -190,14 +190,14 @@ namespace LiteDB.Engine
 
             if (specs)
             {
-                this.Write(count + 1); // write Length + 1 (for \0)
+                Write(count + 1); // write Length + 1 (for \0)
             }
 
             if (count <= _current.Count - _currentPosition)
             {
                 Encoding.UTF8.GetBytes(value, 0, value.Length, _current.Array, _current.Offset + _currentPosition);
 
-                this.MoveForward(count);
+                MoveForward(count);
             }
             else
             {
@@ -206,14 +206,14 @@ namespace LiteDB.Engine
 
                 Encoding.UTF8.GetBytes(value, 0, value.Length, buffer, 0);
 
-                this.Write(buffer, 0, count);
+                Write(buffer, 0, count);
 
                 BufferPool.Return(buffer);
             }
 
             if (specs)
             {
-                this.Write((byte)0x00);
+                Write((byte)0x00);
             }
         }
 
@@ -227,7 +227,7 @@ namespace LiteDB.Engine
             {
                 toBytes(value, _current.Array, _current.Offset + _currentPosition);
 
-                this.MoveForward(size);
+                MoveForward(size);
             }
             else
             {
@@ -235,24 +235,24 @@ namespace LiteDB.Engine
 
                 toBytes(value, buffer, 0);
 
-                this.Write(buffer, 0, size);
+                Write(buffer, 0, size);
 
                 BufferPool.Return(buffer);
             }
         }
 
-        public void Write(Int32 value) => this.WriteNumber(value, BufferExtensions.ToBytes, 4);
-        public void Write(Int64 value) => this.WriteNumber(value, BufferExtensions.ToBytes, 8);
-        public void Write(UInt32 value) => this.WriteNumber(value, BufferExtensions.ToBytes, 4);
-        public void Write(Double value) => this.WriteNumber(value, BufferExtensions.ToBytes, 8);
+        public void Write(int value) => WriteNumber(value, BufferExtensions.ToBytes, 4);
+        public void Write(long value) => WriteNumber(value, BufferExtensions.ToBytes, 8);
+        public void Write(uint value) => WriteNumber(value, BufferExtensions.ToBytes, 4);
+        public void Write(double value) => WriteNumber(value, BufferExtensions.ToBytes, 8);
 
-        public void Write(Decimal value)
+        public void Write(decimal value)
         {
-            var bits = Decimal.GetBits(value);
-            this.Write(bits[0]);
-            this.Write(bits[1]);
-            this.Write(bits[2]);
-            this.Write(bits[3]);
+            var bits = decimal.GetBits(value);
+            Write(bits[0]);
+            Write(bits[1]);
+            Write(bits[2]);
+            Write(bits[3]);
         }
 
         #endregion
@@ -266,7 +266,7 @@ namespace LiteDB.Engine
         {
             var utc = (value == DateTime.MinValue || value == DateTime.MaxValue) ? value : value.ToUniversalTime();
 
-            this.Write(utc.Ticks);
+            Write(utc.Ticks);
         }
 
         /// <summary>
@@ -277,7 +277,7 @@ namespace LiteDB.Engine
             // there is no avaiable value.TryWriteBytes (TODO: implement conditional compile)?
             var bytes = value.ToByteArray();
 
-            this.Write(bytes, 0, 16);
+            Write(bytes, 0, 16);
         }
 
         /// <summary>
@@ -289,7 +289,7 @@ namespace LiteDB.Engine
             {
                 value.ToByteArray(_current.Array, _current.Offset + _currentPosition);
 
-                this.MoveForward(12);
+                MoveForward(12);
             }
             else
             {
@@ -297,7 +297,7 @@ namespace LiteDB.Engine
 
                 value.ToByteArray(buffer, 0);
 
-                this.Write(buffer, 0, 12);
+                Write(buffer, 0, 12);
 
                 BufferPool.Return(buffer);
             }
@@ -309,7 +309,7 @@ namespace LiteDB.Engine
         public void Write(bool value)
         {
             _current[_currentPosition] = value ? (byte)0x01 : (byte)0x00;
-            this.MoveForward(1);
+            MoveForward(1);
         }
 
         /// <summary>
@@ -318,7 +318,7 @@ namespace LiteDB.Engine
         public void Write(byte value)
         {
             _current[_currentPosition] = value;
-            this.MoveForward(1);
+            MoveForward(1);
         }
 
         /// <summary>
@@ -326,8 +326,8 @@ namespace LiteDB.Engine
         /// </summary>
         internal void Write(PageAddress address)
         {
-            this.Write(address.PageID);
-            this.Write(address.Index);
+            Write(address.PageID);
+            Write(address.Index);
         }
 
         #endregion
@@ -341,14 +341,14 @@ namespace LiteDB.Engine
         {
             var bytesCount = value.GetBytesCount(recalc);
 
-            this.Write(bytesCount);
+            Write(bytesCount);
 
             for (var i = 0; i < value.Count; i++)
             {
-                this.WriteElement(i.ToString(), value[i]);
+                WriteElement(i.ToString(), value[i]);
             }
 
-            this.Write((byte)0x00);
+            Write((byte)0x00);
 
             return bytesCount;
         }
@@ -360,14 +360,14 @@ namespace LiteDB.Engine
         {
             var bytesCount = value.GetBytesCount(recalc);
 
-            this.Write(bytesCount);
+            Write(bytesCount);
 
             foreach (var el in value.GetElements())
             {
-                this.WriteElement(el.Key, el.Value);
+                WriteElement(el.Key, el.Value);
             }
 
-            this.Write((byte)0x00);
+            Write((byte)0x00);
 
             return bytesCount;
         }
@@ -378,100 +378,100 @@ namespace LiteDB.Engine
             switch (value.Type)
             {
                 case BsonType.Double:
-                    this.Write((byte)0x01);
-                    this.WriteCString(key);
-                    this.Write(value.AsDouble);
+                    Write((byte)0x01);
+                    WriteCString(key);
+                    Write(value.AsDouble);
                     break;
 
                 case BsonType.String:
-                    this.Write((byte)0x02);
-                    this.WriteCString(key);
-                    this.WriteString(value.AsString, true); // true = BSON Specs (add LENGTH at begin + \0 at end)
+                    Write((byte)0x02);
+                    WriteCString(key);
+                    WriteString(value.AsString, true); // true = BSON Specs (add LENGTH at begin + \0 at end)
                     break;
 
                 case BsonType.Document:
-                    this.Write((byte)0x03);
-                    this.WriteCString(key);
-                    this.WriteDocument(value.AsDocument, false);
+                    Write((byte)0x03);
+                    WriteCString(key);
+                    WriteDocument(value.AsDocument, false);
                     break;
 
                 case BsonType.Array:
-                    this.Write((byte)0x04);
-                    this.WriteCString(key);
-                    this.WriteArray(value.AsArray, false);
+                    Write((byte)0x04);
+                    WriteCString(key);
+                    WriteArray(value.AsArray, false);
                     break;
 
                 case BsonType.Binary:
-                    this.Write((byte)0x05);
-                    this.WriteCString(key);
+                    Write((byte)0x05);
+                    WriteCString(key);
                     var bytes = value.AsBinary;
-                    this.Write(bytes.Length);
-                    this.Write((byte)0x00); // subtype 00 - Generic binary subtype
-                    this.Write(bytes, 0, bytes.Length);
+                    Write(bytes.Length);
+                    Write((byte)0x00); // subtype 00 - Generic binary subtype
+                    Write(bytes, 0, bytes.Length);
                     break;
 
                 case BsonType.Guid:
-                    this.Write((byte)0x05);
-                    this.WriteCString(key);
+                    Write((byte)0x05);
+                    WriteCString(key);
                     var guid = value.AsGuid;
-                    this.Write(16);
-                    this.Write((byte)0x04); // UUID
-                    this.Write(guid);
+                    Write(16);
+                    Write((byte)0x04); // UUID
+                    Write(guid);
                     break;
 
                 case BsonType.ObjectId:
-                    this.Write((byte)0x07);
-                    this.WriteCString(key);
-                    this.Write(value.AsObjectId);
+                    Write((byte)0x07);
+                    WriteCString(key);
+                    Write(value.AsObjectId);
                     break;
 
                 case BsonType.Boolean:
-                    this.Write((byte)0x08);
-                    this.WriteCString(key);
-                    this.Write((byte)(value.AsBoolean ? 0x01 : 0x00));
+                    Write((byte)0x08);
+                    WriteCString(key);
+                    Write((byte)(value.AsBoolean ? 0x01 : 0x00));
                     break;
 
                 case BsonType.DateTime:
-                    this.Write((byte)0x09);
-                    this.WriteCString(key);
+                    Write((byte)0x09);
+                    WriteCString(key);
                     var date = value.AsDateTime;
                     // do not convert to UTC min/max date values - #19
                     var utc = (date == DateTime.MinValue || date == DateTime.MaxValue) ? date : date.ToUniversalTime();
                     var ts = utc - BsonValue.UnixEpoch;
-                    this.Write(Convert.ToInt64(ts.TotalMilliseconds));
+                    Write(Convert.ToInt64(ts.TotalMilliseconds));
                     break;
 
                 case BsonType.Null:
-                    this.Write((byte)0x0A);
-                    this.WriteCString(key);
+                    Write((byte)0x0A);
+                    WriteCString(key);
                     break;
 
                 case BsonType.Int32:
-                    this.Write((byte)0x10);
-                    this.WriteCString(key);
-                    this.Write(value.AsInt32);
+                    Write((byte)0x10);
+                    WriteCString(key);
+                    Write(value.AsInt32);
                     break;
 
                 case BsonType.Int64:
-                    this.Write((byte)0x12);
-                    this.WriteCString(key);
-                    this.Write(value.AsInt64);
+                    Write((byte)0x12);
+                    WriteCString(key);
+                    Write(value.AsInt64);
                     break;
 
                 case BsonType.Decimal:
-                    this.Write((byte)0x13);
-                    this.WriteCString(key);
-                    this.Write(value.AsDecimal);
+                    Write((byte)0x13);
+                    WriteCString(key);
+                    Write(value.AsDecimal);
                     break;
 
                 case BsonType.MinValue:
-                    this.Write((byte)0xFF);
-                    this.WriteCString(key);
+                    Write((byte)0xFF);
+                    WriteCString(key);
                     break;
 
                 case BsonType.MaxValue:
-                    this.Write((byte)0x7F);
-                    this.WriteCString(key);
+                    Write((byte)0x7F);
+                    WriteCString(key);
                     break;
             }
         }

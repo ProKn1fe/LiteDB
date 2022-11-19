@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -14,7 +12,7 @@ namespace LiteDB
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
 
-            return this.Upsert(new T[] { entity }) == 1;
+            return Upsert(new T[] { entity }) == 1;
         }
 
         /// <summary>
@@ -24,7 +22,7 @@ namespace LiteDB
         {
             if (entities == null) throw new ArgumentNullException(nameof(entities));
 
-            return _engine.Upsert(_collection, this.GetBsonDocs(entities), _autoId);
+            return _engine.Upsert(_collection, GetBsonDocs(entities), _autoId);
         }
 
         /// <summary>

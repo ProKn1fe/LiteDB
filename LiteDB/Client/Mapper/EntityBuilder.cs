@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -28,7 +25,7 @@ namespace LiteDB
         /// </summary>
         public EntityBuilder<T> Ignore<K>(Expression<Func<T, K>> member)
         {
-            return this.GetMember(member, (p) =>
+            return GetMember(member, (p) =>
             {
                 _entity.Members.Remove(p);
             });
@@ -41,7 +38,7 @@ namespace LiteDB
         {
             if (field.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(field));
 
-            return this.GetMember(member, (p) =>
+            return GetMember(member, (p) =>
             {
                 p.FieldName = field;
             });
@@ -52,7 +49,7 @@ namespace LiteDB
         /// </summary>
         public EntityBuilder<T> Id<K>(Expression<Func<T, K>> member, bool autoId = true)
         {
-            return this.GetMember(member, (p) =>
+            return GetMember(member, (p) =>
             {
                 // if contains another _id, remove-it
                 var oldId = _entity.Members.FirstOrDefault(x => x.FieldName == "_id");
@@ -83,7 +80,7 @@ namespace LiteDB
         /// </summary>
         public EntityBuilder<T> DbRef<K>(Expression<Func<T, K>> member, string collection = null)
         {
-            return this.GetMember(member, (p) =>
+            return GetMember(member, (p) =>
             {
                 BsonMapper.RegisterDbRef(_mapper, p, _typeNameBinder, collection ?? _mapper.ResolveCollectionName(typeof(K)));
             });

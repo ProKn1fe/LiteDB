@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -36,9 +34,9 @@ namespace LiteDB
         public void Serialize(BsonValue value)
         {
             _indent = 0;
-            _spacer = this.Pretty ? " " : "";
+            _spacer = Pretty ? " " : "";
 
-            this.WriteValue(value ?? BsonValue.Null);
+            WriteValue(value ?? BsonValue.Null);
         }
 
         private void WriteValue(BsonValue value)
@@ -51,11 +49,11 @@ namespace LiteDB
                     break;
 
                 case BsonType.Array:
-                    this.WriteArray(value.AsArray);
+                    WriteArray(value.AsArray);
                     break;
 
                 case BsonType.Document:
-                    this.WriteObject(value.AsDocument);
+                    WriteObject(value.AsDocument);
                     break;
 
                 case BsonType.Boolean:
@@ -63,7 +61,7 @@ namespace LiteDB
                     break;
 
                 case BsonType.String:
-                    this.WriteString(value.AsString);
+                    WriteString(value.AsString);
                     break;
 
                 case BsonType.Int32:
@@ -76,35 +74,35 @@ namespace LiteDB
 
                 case BsonType.Binary:
                     var bytes = value.AsBinary;
-                    this.WriteExtendDataType("$binary", Convert.ToBase64String(bytes, 0, bytes.Length));
+                    WriteExtendDataType("$binary", Convert.ToBase64String(bytes, 0, bytes.Length));
                     break;
 
                 case BsonType.ObjectId:
-                    this.WriteExtendDataType("$oid", value.AsObjectId.ToString());
+                    WriteExtendDataType("$oid", value.AsObjectId.ToString());
                     break;
 
                 case BsonType.Guid:
-                    this.WriteExtendDataType("$guid", value.AsGuid.ToString());
+                    WriteExtendDataType("$guid", value.AsGuid.ToString());
                     break;
 
                 case BsonType.DateTime:
-                    this.WriteExtendDataType("$date", value.AsDateTime.ToUniversalTime().ToString("o"));
+                    WriteExtendDataType("$date", value.AsDateTime.ToUniversalTime().ToString("o"));
                     break;
 
                 case BsonType.Int64:
-                    this.WriteExtendDataType("$numberLong", value.AsInt64.ToString(_numberFormat));
+                    WriteExtendDataType("$numberLong", value.AsInt64.ToString(_numberFormat));
                     break;
 
                 case BsonType.Decimal:
-                    this.WriteExtendDataType("$numberDecimal", value.AsDecimal.ToString(_numberFormat));
+                    WriteExtendDataType("$numberDecimal", value.AsDecimal.ToString(_numberFormat));
                     break;
 
                 case BsonType.MinValue:
-                    this.WriteExtendDataType("$minValue", "1");
+                    WriteExtendDataType("$minValue", "1");
                     break;
 
                 case BsonType.MaxValue:
-                    this.WriteExtendDataType("$maxValue", "1");
+                    WriteExtendDataType("$maxValue", "1");
                     break;
             }
         }
@@ -114,47 +112,47 @@ namespace LiteDB
             var length = obj.Keys.Count();
             var hasData = length > 0;
 
-            this.WriteStartBlock("{", hasData);
+            WriteStartBlock("{", hasData);
 
             var index = 0;
 
             foreach (var el in obj.GetElements())
             {
-                this.WriteKeyValue(el.Key, el.Value, index++ < length - 1);
+                WriteKeyValue(el.Key, el.Value, index++ < length - 1);
             }
 
-            this.WriteEndBlock("}", hasData);
+            WriteEndBlock("}", hasData);
         }
 
         private void WriteArray(BsonArray arr)
         {
             var hasData = arr.Count > 0;
 
-            this.WriteStartBlock("[", hasData);
+            WriteStartBlock("[", hasData);
 
             for (var i = 0; i < arr.Count; i++)
             {
                 var item = arr[i];
 
                 // do not do this tests if is not pretty format - to better performance
-                if (this.Pretty && item != null)
+                if (Pretty && item != null)
                 {
                     if (!((item.IsDocument && item.AsDocument.Keys.Any()) || (item.IsArray && item.AsArray.Count > 0)))
                     {
-                        this.WriteIndent();
+                        WriteIndent();
                     }
                 }
 
-                this.WriteValue(item ?? BsonValue.Null);
+                WriteValue(item ?? BsonValue.Null);
 
                 if (i < arr.Count - 1)
                 {
                     _writer.Write(',');
                 }
-                this.WriteNewLine();
+                WriteNewLine();
             }
 
-            this.WriteEndBlock("]", hasData);
+            WriteEndBlock("]", hasData);
         }
 
         private void WriteString(string s)
@@ -244,40 +242,40 @@ namespace LiteDB
 
         private void WriteKeyValue(string key, BsonValue value, bool comma)
         {
-            this.WriteIndent();
+            WriteIndent();
 
             _writer.Write('\"');
             _writer.Write(key);
             _writer.Write("\":");
 
             // do not do this tests if is not pretty format - to better performance
-            if (this.Pretty)
+            if (Pretty)
             {
                 _writer.Write(' ');
 
                 if (value != null && ((value.IsDocument && value.AsDocument.Keys.Any()) || (value.IsArray && value.AsArray.Count > 0)))
                 {
-                    this.WriteNewLine();
+                    WriteNewLine();
                 }
             }
 
-            this.WriteValue(value ?? BsonValue.Null);
+            WriteValue(value ?? BsonValue.Null);
 
             if (comma)
             {
                 _writer.Write(',');
             }
 
-            this.WriteNewLine();
+            WriteNewLine();
         }
 
         private void WriteStartBlock(string str, bool hasData)
         {
             if (hasData)
             {
-                this.WriteIndent();
+                WriteIndent();
                 _writer.Write(str);
-                this.WriteNewLine();
+                WriteNewLine();
                 _indent++;
             }
             else
@@ -291,7 +289,7 @@ namespace LiteDB
             if (hasData)
             {
                 _indent--;
-                this.WriteIndent();
+                WriteIndent();
                 _writer.Write(str);
             }
             else
@@ -302,7 +300,7 @@ namespace LiteDB
 
         private void WriteNewLine()
         {
-            if (this.Pretty)
+            if (Pretty)
             {
                 _writer.WriteLine();
             }
@@ -310,9 +308,9 @@ namespace LiteDB
 
         private void WriteIndent()
         {
-            if (this.Pretty)
+            if (Pretty)
             {
-                _writer.Write("".PadRight(_indent * this.Indent, ' '));
+                _writer.Write("".PadRight(_indent * Indent, ' '));
             }
         }
     }

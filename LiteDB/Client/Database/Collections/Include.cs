@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Linq;
 using System.Linq.Expressions;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -17,7 +15,7 @@ namespace LiteDB
 
             var path = _mapper.GetExpression(keySelector);
 
-            return this.Include(path);
+            return Include(path);
         }
 
         /// <summary>

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace LiteDB.Shell
+﻿namespace LiteDB.Shell
 {
     internal interface IShellCommand
     {

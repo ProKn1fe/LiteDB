@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using LiteDB.Engine;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -55,7 +51,7 @@ namespace LiteDB
             else if (from.Is("INTO"))
             {
                 query.Into = ParseCollection(_tokenizer);
-                query.IntoAutoId = this.ParseWithAutoId();
+                query.IntoAutoId = ParseWithAutoId();
 
                 _tokenizer.ReadToken().Expect("FROM");
             }
@@ -74,7 +70,7 @@ namespace LiteDB
                 // read first INCLUDE (before)
                 _tokenizer.ReadToken();
 
-                foreach(var path in this.ParseListOfExpressions())
+                foreach(var path in ParseListOfExpressions())
                 {
                     query.Includes.Add(path);
                 }

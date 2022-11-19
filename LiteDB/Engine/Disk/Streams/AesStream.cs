@@ -1,12 +1,10 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Security.Cryptography;
-using System.Text;
 
 using LiteDB.Client.Shared;
 
 using XTSSharp;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -93,7 +91,7 @@ namespace LiteDB.Engine
         public override long Position 
         { 
             get => _aesStream.Position - PAGE_SIZE; 
-            set => this.Seek(value, SeekOrigin.Begin); 
+            set => Seek(value, SeekOrigin.Begin); 
         }
 
         public override void Flush() => _aesStream.Flush();

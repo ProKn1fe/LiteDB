@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Runtime.InteropServices;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {

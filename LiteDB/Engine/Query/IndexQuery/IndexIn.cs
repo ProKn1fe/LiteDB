@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using static LiteDB.Constants;
 
 namespace LiteDB.Engine
 {
@@ -29,7 +27,7 @@ namespace LiteDB.Engine
         {
             foreach (var value in _values.Distinct())
             {
-                var idx = new IndexEquals(this.Name, value);
+                var idx = new IndexEquals(Name, value);
 
                 foreach (var node in idx.Execute(indexer, index))
                 {
@@ -40,7 +38,7 @@ namespace LiteDB.Engine
 
         public override string ToString()
         {
-            return string.Format("INDEX SEEK({0} IN {1})", this.Name, JsonSerializer.Serialize(_values));
+            return string.Format("INDEX SEEK({0} IN {1})", Name, JsonSerializer.Serialize(_values));
         }
     }
 }

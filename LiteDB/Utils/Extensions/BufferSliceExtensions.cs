@@ -1,7 +1,8 @@
 ﻿using LiteDB.Engine;
+
 using System;
-using System.Linq;
 using System.Text;
+
 using static LiteDB.Constants;
 
 namespace LiteDB
@@ -20,27 +21,27 @@ namespace LiteDB
             return buffer.Array[buffer.Offset + offset];
         }
 
-        public static Int16 ReadInt16(this BufferSlice buffer, int offset)
+        public static short ReadInt16(this BufferSlice buffer, int offset)
         {
             return BitConverter.ToInt16(buffer.Array, buffer.Offset + offset);
         }
 
-        public static UInt16 ReadUInt16(this BufferSlice buffer, int offset)
+        public static ushort ReadUInt16(this BufferSlice buffer, int offset)
         {
             return BitConverter.ToUInt16(buffer.Array, buffer.Offset + offset);
         }
 
-        public static Int32 ReadInt32(this BufferSlice buffer, int offset)
+        public static int ReadInt32(this BufferSlice buffer, int offset)
         {
             return BitConverter.ToInt32(buffer.Array, buffer.Offset + offset);
         }
 
-        public static UInt32 ReadUInt32(this BufferSlice buffer, int offset)
+        public static uint ReadUInt32(this BufferSlice buffer, int offset)
         {
             return BitConverter.ToUInt32(buffer.Array, buffer.Offset + offset);
         }
 
-        public static Int64 ReadInt64(this BufferSlice buffer, int offset)
+        public static long ReadInt64(this BufferSlice buffer, int offset)
         {
             return BitConverter.ToInt64(buffer.Array, buffer.Offset + offset);
         }
@@ -50,13 +51,13 @@ namespace LiteDB
             return BitConverter.ToDouble(buffer.Array, buffer.Offset + offset);
         }
 
-        public static Decimal ReadDecimal(this BufferSlice buffer, int offset)
+        public static decimal ReadDecimal(this BufferSlice buffer, int offset)
         {
             var a = buffer.ReadInt32(offset);
             var b = buffer.ReadInt32(offset + 4);
             var c = buffer.ReadInt32(offset + 8);
             var d = buffer.ReadInt32(offset + 12);
-            return new Decimal(new int[] { a, b, c, d });
+            return new decimal(new int[] { a, b, c, d });
         }
 
         public static ObjectId ReadObjectId(this BufferSlice buffer, int offset)
@@ -162,39 +163,39 @@ namespace LiteDB
             buffer.Array[buffer.Offset + offset] = value;
         }
 
-        public static void Write(this BufferSlice buffer, Int16 value, int offset)
+        public static void Write(this BufferSlice buffer, short value, int offset)
         {
             value.ToBytes(buffer.Array, buffer.Offset + offset);
         }
 
-        public static void Write(this BufferSlice buffer, UInt16 value, int offset)
+        public static void Write(this BufferSlice buffer, ushort value, int offset)
         {
             value.ToBytes(buffer.Array, buffer.Offset + offset);
         }
 
-        public static void Write(this BufferSlice buffer, Int32 value, int offset)
+        public static void Write(this BufferSlice buffer, int value, int offset)
         {
             value.ToBytes(buffer.Array, buffer.Offset + offset);
         }
 
-        public static void Write(this BufferSlice buffer, UInt32 value, int offset)
+        public static void Write(this BufferSlice buffer, uint value, int offset)
         {
             value.ToBytes(buffer.Array, buffer.Offset + offset);
         }
 
-        public static void Write(this BufferSlice buffer, Int64 value, int offset)
+        public static void Write(this BufferSlice buffer, long value, int offset)
         {
             value.ToBytes(buffer.Array, buffer.Offset + offset);
         }
 
-        public static void Write(this BufferSlice buffer, Double value, int offset)
+        public static void Write(this BufferSlice buffer, double value, int offset)
         {
             value.ToBytes(buffer.Array, buffer.Offset + offset);
         }
 
-        public static void Write(this BufferSlice buffer, Decimal value, int offset)
+        public static void Write(this BufferSlice buffer, decimal value, int offset)
         {
-            var bits = Decimal.GetBits(value);
+            var bits = decimal.GetBits(value);
             buffer.Write(bits[0], offset);
             buffer.Write(bits[1], offset + 4);
             buffer.Write(bits[2], offset + 8);

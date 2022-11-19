@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.Collections.Generic;
+
 using LiteDB.Client.Shared;
 
 using static LiteDB.Constants;
@@ -69,7 +67,7 @@ namespace LiteDB.Engine
             }
 
             // random level (flip coin mode) - return number between 1-32
-            var level = this.Flip();
+            var level = Flip();
 
             // set index collection with max-index level
             if (level > index.MaxLevel)
@@ -79,7 +77,7 @@ namespace LiteDB.Engine
             }
 
             // call AddNode with key value
-            return this.AddNode(index, key, dataBlock, level, last);
+            return AddNode(index, key, dataBlock, level, last);
         }
 
         /// <summary>
@@ -101,7 +99,7 @@ namespace LiteDB.Engine
             var node = indexPage.InsertIndexNode(index.Slot, level, key, dataBlock, bytesLength);
 
             // now, let's link my index node on right place
-            var cur = this.GetNode(index.Head);
+            var cur = GetNode(index.Head);
 
             // using as cache last
             IndexNode cache = null;
@@ -110,13 +108,13 @@ namespace LiteDB.Engine
             for (int i = index.MaxLevel - 1; i >= 0; i--)
             {
                 // get cache for last node
-                cache = cache != null && cache.Position == cur.Next[i] ? cache : this.GetNode(cur.Next[i]);
+                cache = cache != null && cache.Position == cur.Next[i] ? cache : GetNode(cur.Next[i]);
 
                 // for(; <while_not_this>; <do_this>) { ... }
                 for (; cur.Next[i].IsEmpty == false; cur = cache)
                 {
                     // get cache for last node
-                    cache = cache != null && cache.Position == cur.Next[i] ? cache : this.GetNode(cur.Next[i]);
+                    cache = cache != null && cache.Position == cur.Next[i] ? cache : GetNode(cur.Next[i]);
 
                     // read next node to compare
                     var diff = cache.Key.CompareTo(key, _collation);
@@ -137,12 +135,9 @@ namespace LiteDB.Engine
                     node.SetPrev((byte)i, cur.Position);
                     cur.SetNext((byte)i, node.Position);
 
-                    var next = this.GetNode(node.Next[i]);
+                    var next = GetNode(node.Next[i]);
 
-                    if (next != null)
-                    {
-                        next.SetPrev((byte)i, node.Position);
-                    }
+                    next?.SetPrev((byte)i, node.Position);
                 }
             }
 
@@ -212,13 +207,13 @@ namespace LiteDB.Engine
         /// </summary>
         public IEnumerable<IndexNode> GetNodeList(PageAddress nodeAddress)
         {
-            var node = this.GetNode(nodeAddress);
+            var node = GetNode(nodeAddress);
 
             while (node != null)
             {
                 yield return node;
 
-                node = this.GetNode(node.NextNode);
+                node = GetNode(node.NextNode);
             }
         }
 
@@ -227,15 +222,15 @@ namespace LiteDB.Engine
         /// </summary>
         public void DeleteAll(PageAddress pkAddress)
         {
-            var node = this.GetNode(pkAddress);
+            var node = GetNode(pkAddress);
             var indexes = _snapshot.CollectionPage.GetCollectionIndexesSlots();
 
             while (node != null)
             {
-                this.DeleteSingleNode(node, indexes[node.Slot]);
+                DeleteSingleNode(node, indexes[node.Slot]);
 
                 // move to next node
-                node = this.GetNode(node.NextNode);
+                node = GetNode(node.NextNode);
             }
         }
 
@@ -244,15 +239,15 @@ namespace LiteDB.Engine
         /// </summary>
         public IndexNode DeleteList(PageAddress pkAddress, HashSet<PageAddress> toDelete)
         {
-            var last = this.GetNode(pkAddress);
-            var node = this.GetNode(last.NextNode); // starts in first node after PK
+            var last = GetNode(pkAddress);
+            var node = GetNode(last.NextNode); // starts in first node after PK
             var indexes = _snapshot.CollectionPage.GetCollectionIndexesSlots();
 
             while (node != null)
             {
                 if (toDelete.Contains(node.Position))
                 {
-                    this.DeleteSingleNode(node, indexes[node.Slot]);
+                    DeleteSingleNode(node, indexes[node.Slot]);
 
                     // fix single-linked list from last non-delete delete
                     last.SetNextNode(node.NextNode);
@@ -264,7 +259,7 @@ namespace LiteDB.Engine
                 }
 
                 // move to next node
-                node = this.GetNode(node.NextNode);
+                node = GetNode(node.NextNode);
             }
 
             return last;
@@ -278,17 +273,11 @@ namespace LiteDB.Engine
             for (int i = node.Level - 1; i >= 0; i--)
             {
                 // get previous and next nodes (between my deleted node)
-                var prevNode = this.GetNode(node.Prev[i]);
-                var nextNode = this.GetNode(node.Next[i]);
+                var prevNode = GetNode(node.Prev[i]);
+                var nextNode = GetNode(node.Next[i]);
 
-                if (prevNode != null)
-                {
-                    prevNode.SetNext((byte)i, node.Next[i]);
-                }
-                if (nextNode != null)
-                {
-                    nextNode.SetPrev((byte)i, node.Prev[i]);
-                }
+                prevNode?.SetNext((byte)i, node.Next[i]);
+                nextNode?.SetPrev((byte)i, node.Prev[i]);
             }
 
             node.Page.DeleteIndexNode(node.Position.Index);
@@ -304,14 +293,14 @@ namespace LiteDB.Engine
             var slot = index.Slot;
             var pkIndex = _snapshot.CollectionPage.PK;
 
-            foreach(var pkNode in this.FindAll(pkIndex, Query.Ascending))
+            foreach(var pkNode in FindAll(pkIndex, Query.Ascending))
             {
                 var next = pkNode.NextNode;
                 var last = pkNode;
 
                 while (next != PageAddress.Empty)
                 {
-                    var node = this.GetNode(next);
+                    var node = GetNode(next);
 
                     if (node.Slot == slot)
                     {
@@ -330,8 +319,8 @@ namespace LiteDB.Engine
             }
 
             // removing head/tail index nodes
-            this.GetNode(index.Head).Page.DeleteIndexNode(index.Head.Index);
-            this.GetNode(index.Tail).Page.DeleteIndexNode(index.Tail.Index);
+            GetNode(index.Head).Page.DeleteIndexNode(index.Head.Index);
+            GetNode(index.Tail).Page.DeleteIndexNode(index.Tail.Index);
         }
 
         #region Find
@@ -341,11 +330,11 @@ namespace LiteDB.Engine
         /// </summary>
         public IEnumerable<IndexNode> FindAll(CollectionIndex index, int order)
         {
-            var cur = order == Query.Ascending ? this.GetNode(index.Head) : this.GetNode(index.Tail);
+            var cur = order == Query.Ascending ? GetNode(index.Head) : GetNode(index.Tail);
 
             while (!cur.GetNextPrev(0, order).IsEmpty)
             {
-                cur = this.GetNode(cur.GetNextPrev(0, order));
+                cur = GetNode(cur.GetNextPrev(0, order));
 
                 // stop if node is head/tail
                 if (cur.Key.IsMinValue || cur.Key.IsMaxValue) yield break;
@@ -361,13 +350,13 @@ namespace LiteDB.Engine
         /// </summary>
         public IndexNode Find(CollectionIndex index, BsonValue value, bool sibling, int order)
         {
-            var cur = order == Query.Ascending ? this.GetNode(index.Head) : this.GetNode(index.Tail);
+            var cur = order == Query.Ascending ? GetNode(index.Head) : GetNode(index.Tail);
 
             for (int i = index.MaxLevel - 1; i >= 0; i--)
             {
-                for (; cur.GetNextPrev((byte)i, order).IsEmpty == false; cur = this.GetNode(cur.GetNextPrev((byte)i, order)))
+                for (; cur.GetNextPrev((byte)i, order).IsEmpty == false; cur = GetNode(cur.GetNextPrev((byte)i, order)))
                 {
-                    var next = this.GetNode(cur.GetNextPrev((byte)i, order));
+                    var next = GetNode(cur.GetNextPrev((byte)i, order));
                     var diff = next.Key.CompareTo(value, _collation);
 
                     if (diff == order && (i > 0 || !sibling)) break;

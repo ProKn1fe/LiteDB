@@ -1,11 +1,9 @@
 ﻿using LiteDB.Engine;
+
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -95,7 +93,7 @@ namespace LiteDB
         /// </summary>
         public ILiteQueryable<T> Where(Expression<Func<T, bool>> predicate)
         {
-            return this.Where(_mapper.GetExpression(predicate));
+            return Where(_mapper.GetExpression(predicate));
         }
 
         #endregion
@@ -119,18 +117,18 @@ namespace LiteDB
         /// </summary>
         public ILiteQueryable<T> OrderBy<K>(Expression<Func<T, K>> keySelector, int order = Query.Ascending)
         {
-            return this.OrderBy(_mapper.GetExpression(keySelector), order);
+            return OrderBy(_mapper.GetExpression(keySelector), order);
         }
 
         /// <summary>
         /// Sort the documents of resultset in descending order according to a key (support only one OrderBy)
         /// </summary>
-        public ILiteQueryable<T> OrderByDescending(BsonExpression keySelector) => this.OrderBy(keySelector, Query.Descending);
+        public ILiteQueryable<T> OrderByDescending(BsonExpression keySelector) => OrderBy(keySelector, Query.Descending);
 
         /// <summary>
         /// Sort the documents of resultset in descending order according to a key (support only one OrderBy)
         /// </summary>
-        public ILiteQueryable<T> OrderByDescending<K>(Expression<Func<T, K>> keySelector) => this.OrderBy(keySelector, Query.Descending);
+        public ILiteQueryable<T> OrderByDescending<K>(Expression<Func<T, K>> keySelector) => OrderBy(keySelector, Query.Descending);
 
         #endregion
 
@@ -213,7 +211,7 @@ namespace LiteDB
         /// <summary>
         /// Bypasses a specified number of documents in resultset and retun the remaining documents (same as Offset)
         /// </summary>
-        public ILiteQueryableResult<T> Skip(int offset) => this.Offset(offset);
+        public ILiteQueryableResult<T> Skip(int offset) => Offset(offset);
 
         /// <summary>
         /// Return a specified number of contiguous documents from start of resultset
@@ -243,7 +241,7 @@ namespace LiteDB
         /// </summary>
         public IEnumerable<BsonDocument> ToDocuments()
         {
-            using (var reader = this.ExecuteReader())
+            using (var reader = ExecuteReader())
             {
                 while (reader.Read())
                 {
@@ -259,13 +257,13 @@ namespace LiteDB
         {
             if (_isSimpleType)
             {
-                return this.ToDocuments()
+                return ToDocuments()
                     .Select(x => x[x.Keys.First()])
                     .Select(x => (T)_mapper.Deserialize(typeof(T), x));
             }
             else
             {
-                return this.ToDocuments()
+                return ToDocuments()
                     .Select(x => (T)_mapper.Deserialize(typeof(T), x));
             }
         }
@@ -275,7 +273,7 @@ namespace LiteDB
         /// </summary>
         public List<T> ToList()
         {
-            return this.ToEnumerable().ToList();
+            return ToEnumerable().ToList();
         }
 
         /// <summary>
@@ -283,7 +281,7 @@ namespace LiteDB
         /// </summary>
         public T[] ToArray()
         {
-            return this.ToEnumerable().ToArray();
+            return ToEnumerable().ToArray();
         }
 
         /// <summary>
@@ -307,7 +305,7 @@ namespace LiteDB
         /// </summary>
         public T Single()
         {
-            return this.ToEnumerable().Single();
+            return ToEnumerable().Single();
         }
 
         /// <summary>
@@ -315,7 +313,7 @@ namespace LiteDB
         /// </summary>
         public T SingleOrDefault()
         {
-            return this.ToEnumerable().SingleOrDefault();
+            return ToEnumerable().SingleOrDefault();
         }
 
         /// <summary>
@@ -323,7 +321,7 @@ namespace LiteDB
         /// </summary>
         public T First()
         {
-            return this.ToEnumerable().First();
+            return ToEnumerable().First();
         }
 
         /// <summary>
@@ -331,7 +329,7 @@ namespace LiteDB
         /// </summary>
         public T FirstOrDefault()
         {
-            return this.ToEnumerable().FirstOrDefault();
+            return ToEnumerable().FirstOrDefault();
         }
 
         #endregion
@@ -347,8 +345,8 @@ namespace LiteDB
 
             try
             {
-                this.Select($"{{ count: COUNT(*._id) }}");
-                var ret = this.ToDocuments().Single()["count"].AsInt32;
+                Select($"{{ count: COUNT(*._id) }}");
+                var ret = ToDocuments().Single()["count"].AsInt32;
 
                 return ret;
             }
@@ -367,8 +365,8 @@ namespace LiteDB
 
             try
             {
-                this.Select($"{{ count: COUNT(*._id) }}");
-                var ret = this.ToDocuments().Single()["count"].AsInt64;
+                Select($"{{ count: COUNT(*._id) }}");
+                var ret = ToDocuments().Single()["count"].AsInt64;
 
                 return ret;
             }
@@ -387,8 +385,8 @@ namespace LiteDB
 
             try
             {
-                this.Select($"{{ exists: ANY(*._id) }}");
-                var ret = this.ToDocuments().Single()["exists"].AsBoolean;
+                Select($"{{ exists: ANY(*._id) }}");
+                var ret = ToDocuments().Single()["exists"].AsBoolean;
 
                 return ret;
             }
@@ -407,7 +405,7 @@ namespace LiteDB
             _query.Into = newCollection;
             _query.IntoAutoId = autoId;
 
-            using (var reader = this.ExecuteReader())
+            using (var reader = ExecuteReader())
             {
                 return reader.Current.AsInt32;
             }

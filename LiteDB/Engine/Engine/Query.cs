@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using static LiteDB.Constants;
 
 namespace LiteDB.Engine
 {
@@ -25,7 +22,7 @@ namespace LiteDB.Engine
                 SqlParser.ParseCollection(new Tokenizer(collection), out var name, out var options);
 
                 // get registered system collection to get data source
-                var sys = this.GetSystemCollection(name);
+                var sys = GetSystemCollection(name);
 
                 source = sys.Input(options);
                 collection = sys.Name;

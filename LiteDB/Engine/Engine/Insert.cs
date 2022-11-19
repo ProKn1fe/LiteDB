@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -17,7 +15,7 @@ namespace LiteDB.Engine
             if (collection.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(collection));
             if (docs == null) throw new ArgumentNullException(nameof(docs));
 
-            var x = this.AutoTransaction(transaction =>
+            var x = AutoTransaction(transaction =>
             {
                 var snapshot = transaction.CreateSnapshot(LockMode.Write, collection, true);
                 var count = 0;
@@ -30,7 +28,7 @@ namespace LiteDB.Engine
                 {
                     transaction.Safepoint();
 
-                    this.InsertDocument(snapshot, doc, autoId, indexer, data);
+                    InsertDocument(snapshot, doc, autoId, indexer, data);
 
                     count++;
                 }
@@ -53,12 +51,12 @@ namespace LiteDB.Engine
                 doc["_id"] = id =
                     autoId == BsonAutoId.ObjectId ? new BsonValue(ObjectId.NewObjectId()) :
                     autoId == BsonAutoId.Guid ? new BsonValue(Guid.NewGuid()) :
-                    this.GetSequence(snapshot, autoId);
+                    GetSequence(snapshot, autoId);
             }
             else if(id.IsNumber)
             {
                 // update memory sequence of numeric _id
-                this.SetSequence(snapshot, id);
+                SetSequence(snapshot, id);
             }
 
             // test if _id is a valid type

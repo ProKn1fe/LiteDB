@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -210,7 +208,7 @@ namespace LiteDB.Engine
                     // update last IsConfirmed page
                     last = buffer.Position;
 
-                    this.ConfirmTransaction(transactionID, positions[transactionID]);
+                    ConfirmTransaction(transactionID, positions[transactionID]);
 
                     var pageType = (PageType)buffer.ReadByte(BasePage.P_PAGE_TYPE);
 
@@ -320,7 +318,7 @@ namespace LiteDB.Engine
                 _disk.Write(source());
 
                 // clear log file, clear wal index, memory cache,
-                this.Clear(crop);
+                Clear(crop);
 
                 return counter;
             }

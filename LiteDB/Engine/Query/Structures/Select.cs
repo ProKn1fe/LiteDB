@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static LiteDB.Constants;
-
-namespace LiteDB.Engine
+﻿namespace LiteDB.Engine
 {
     /// <summary>
     /// Represent a Select expression
@@ -18,8 +11,8 @@ namespace LiteDB.Engine
 
         public Select(BsonExpression expression, bool all)
         {
-            this.Expression = expression;
-            this.All = all;
+            Expression = expression;
+            All = all;
         }
     }
 }

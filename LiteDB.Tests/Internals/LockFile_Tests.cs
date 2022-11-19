@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using FluentAssertions;
+
 using LiteDB.Engine;
 using LiteDB.Tests;
+
 using Xunit;
 
 namespace LiteDB.Internals

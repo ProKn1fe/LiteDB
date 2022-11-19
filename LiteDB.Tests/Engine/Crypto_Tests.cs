@@ -18,7 +18,7 @@ namespace LiteDB.Tests.Engine
 
             using (var e = new LiteEngine(settings))
             {
-                this.CreateDatabase(e);
+                CreateDatabase(e);
 
                 // find string inside stream
                 var dataStr = Encoding.UTF8.GetString(data.ToArray());
@@ -41,7 +41,7 @@ namespace LiteDB.Tests.Engine
 
             using (var e = new LiteEngine(settings))
             {
-                this.CreateDatabase(e);
+                CreateDatabase(e);
 
                 // find string inside stream
                 var dataStr = Encoding.UTF8.GetString(data.ToArray());

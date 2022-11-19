@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
+
 using static LiteDB.Constants;
 using static LiteDB.Engine.Pragmas;
 
@@ -78,68 +72,68 @@ namespace LiteDB.Engine
                 [USER_VERSION] = new Pragma
                 {
                     Name = USER_VERSION,
-                    Get = () => this.UserVersion,
-                    Set = (v) => this.UserVersion = v.AsInt32,
-                    Read = (b) => this.UserVersion = b.ReadInt32(P_USER_VERSION),
+                    Get = () => UserVersion,
+                    Set = (v) => UserVersion = v.AsInt32,
+                    Read = (b) => UserVersion = b.ReadInt32(P_USER_VERSION),
                     Validate = (v, h) => { },
-                    Write = (b) => b.Write(this.UserVersion, P_USER_VERSION)
+                    Write = (b) => b.Write(UserVersion, P_USER_VERSION)
                 },
                 [COLLATION] = new Pragma
                 {
                     Name = COLLATION,
-                    Get = () => this.Collation.ToString(),
-                    Set = (v) => this.Collation = new Collation(v.AsString),
-                    Read = (b) => this.Collation = new Collation(b.ReadInt32(P_COLLATION_LCID), (CompareOptions)b.ReadInt32(P_COLLATION_SORT)),
+                    Get = () => Collation.ToString(),
+                    Set = (v) => Collation = new Collation(v.AsString),
+                    Read = (b) => Collation = new Collation(b.ReadInt32(P_COLLATION_LCID), (CompareOptions)b.ReadInt32(P_COLLATION_SORT)),
                     Validate = (v, h) => { throw new LiteException(0, "Pragma COLLATION is read only. Use Rebuild options."); },
                     Write = (b) =>
                     {
-                        b.Write(this.Collation.Culture.LCID, P_COLLATION_LCID);
-                        b.Write((int)this.Collation.SortOptions, P_COLLATION_SORT);
+                        b.Write(Collation.Culture.LCID, P_COLLATION_LCID);
+                        b.Write((int)Collation.SortOptions, P_COLLATION_SORT);
                     }
                 },
                 [TIMEOUT] = new Pragma
                 {
                     Name = TIMEOUT,
-                    Get = () => (int)this.Timeout.TotalSeconds,
-                    Set = (v) => this.Timeout = TimeSpan.FromSeconds(v.AsInt32),
-                    Read = (b) => this.Timeout = TimeSpan.FromSeconds(b.ReadInt32(P_TIMEOUT)),
+                    Get = () => (int)Timeout.TotalSeconds,
+                    Set = (v) => Timeout = TimeSpan.FromSeconds(v.AsInt32),
+                    Read = (b) => Timeout = TimeSpan.FromSeconds(b.ReadInt32(P_TIMEOUT)),
                     Validate = (v, h) => { if (v <= 0) throw new LiteException(0, "Pragma TIMEOUT must be greater than zero"); },
-                    Write = (b) => b.Write((int)this.Timeout.TotalSeconds, P_TIMEOUT)
+                    Write = (b) => b.Write((int)Timeout.TotalSeconds, P_TIMEOUT)
                 },
                 [LIMIT_SIZE] = new Pragma
                 {
                     Name = LIMIT_SIZE,
-                    Get = () => this.LimitSize,
-                    Set = (v) => this.LimitSize = v.AsInt64,
+                    Get = () => LimitSize,
+                    Set = (v) => LimitSize = v.AsInt64,
                     Read = (b) =>
                     {
                         var limit = b.ReadInt64(P_LIMIT_SIZE);
-                        this.LimitSize = limit == 0 ? long.MaxValue : limit;
+                        LimitSize = limit == 0 ? long.MaxValue : limit;
                     },
                     Validate = (v, h) =>
                     {
                         if (v < 4 * PAGE_SIZE) throw new LiteException(0, "Pragma LIMIT_SIZE must be at least 4 pages (32768 bytes)");
                         if (h != null && v.AsInt64 < (h.LastPageID + 1) * Constants.PAGE_SIZE) throw new LiteException(0, "Pragma LIMIT_SIZE must be greater or equal to the current file size");
                     },
-                    Write = (b) => b.Write(this.LimitSize, P_LIMIT_SIZE)
+                    Write = (b) => b.Write(LimitSize, P_LIMIT_SIZE)
                 },
                 [UTC_DATE] = new Pragma
                 {
                     Name = UTC_DATE,
-                    Get = () => this.UtcDate,
-                    Set = (v) => this.UtcDate = v.AsBoolean,
-                    Read = (b) => this.UtcDate = b.ReadBool(P_UTC_DATE),
+                    Get = () => UtcDate,
+                    Set = (v) => UtcDate = v.AsBoolean,
+                    Read = (b) => UtcDate = b.ReadBool(P_UTC_DATE),
                     Validate = (v, h) => { },
-                    Write = (b) => b.Write(this.UtcDate, P_UTC_DATE)
+                    Write = (b) => b.Write(UtcDate, P_UTC_DATE)
                 },
                 [CHECKPOINT] = new Pragma
                 {
                     Name = CHECKPOINT,
-                    Get = () => this.Checkpoint,
-                    Set = (v) => this.Checkpoint = v.AsInt32,
-                    Read = (b) => this.Checkpoint = b.ReadInt32(P_CHECKPOINT),
+                    Get = () => Checkpoint,
+                    Set = (v) => Checkpoint = v.AsInt32,
+                    Read = (b) => Checkpoint = b.ReadInt32(P_CHECKPOINT),
                     Validate = (v, h) => { if (v < 0) throw new LiteException(0, "Pragma CHECKPOINT must be greater or equal to zero"); },
-                    Write = (b) => b.Write(this.Checkpoint, P_CHECKPOINT)
+                    Write = (b) => b.Write(Checkpoint, P_CHECKPOINT)
                 }
             };
 

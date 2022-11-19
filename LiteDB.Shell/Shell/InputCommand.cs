@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace LiteDB.Shell
 {
@@ -13,10 +12,10 @@ namespace LiteDB.Shell
 
         public InputCommand()
         {
-            this.Queue = new Queue<string>();
-            this.History = new List<string>();
-            this.Running = true;
-            this.AutoExit = false; // run "exit" command when there is not more command in queue
+            Queue = new Queue<string>();
+            History = new List<string>();
+            Running = true;
+            AutoExit = false; // run "exit" command when there is not more command in queue
         }
 
         public string ReadCommand()
@@ -24,7 +23,7 @@ namespace LiteDB.Shell
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write("> ");
 
-            var cmd = this.ReadLine().Trim();
+            var cmd = ReadLine().Trim();
 
             // single line only for shell commands
             if (ShellProgram.GetCommand(cmd) == null)
@@ -34,14 +33,14 @@ namespace LiteDB.Shell
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.Write("| ");
 
-                    var line = this.ReadLine();
+                    var line = ReadLine();
                     cmd += Environment.NewLine + line;
                 }
             }
 
             cmd = cmd.Trim();
 
-            this.History.Add(cmd);
+            History.Add(cmd);
 
             return cmd.Trim();
         }
@@ -53,15 +52,15 @@ namespace LiteDB.Shell
         {
             Console.ForegroundColor = ConsoleColor.Gray;
 
-            if (this.Queue.Count > 0)
+            if (Queue.Count > 0)
             {
-                var cmd = this.Queue.Dequeue();
+                var cmd = Queue.Dequeue();
                 Console.Write(cmd + Environment.NewLine);
                 return cmd;
             }
             else
             {
-                if (this.AutoExit) return "exit";
+                if (AutoExit) return "exit";
 
                 return Console.ReadLine();
             }

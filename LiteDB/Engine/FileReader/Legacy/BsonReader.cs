@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Text;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -21,7 +19,7 @@ namespace LiteDB
         /// </summary>
         public BsonDocument Deserialize(byte[] bson)
         {
-            return this.ReadDocument(new ByteReader(bson));
+            return ReadDocument(new ByteReader(bson));
         }
 
         /// <summary>
@@ -35,7 +33,7 @@ namespace LiteDB
 
             while (reader.Position < end)
             {
-                var value = this.ReadElement(reader, out string name);
+                var value = ReadElement(reader, out string name);
                 obj.RawValue[name] = value;
             }
 
@@ -55,7 +53,7 @@ namespace LiteDB
 
             while (reader.Position < end)
             {
-                var value = this.ReadElement(reader, out string name);
+                var value = ReadElement(reader, out string name);
                 arr.Add(value);
             }
 
@@ -82,11 +80,11 @@ namespace LiteDB
             }
             else if (type == 0x03) // Document
             {
-                return this.ReadDocument(reader);
+                return ReadDocument(reader);
             }
             else if (type == 0x04) // Array
             {
-                return this.ReadArray(reader);
+                return ReadArray(reader);
             }
             else if (type == 0x05) // Binary
             {

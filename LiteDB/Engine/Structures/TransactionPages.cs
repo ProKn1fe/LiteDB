@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
-using static LiteDB.Constants;
 
 namespace LiteDB.Engine
 {
@@ -52,15 +49,15 @@ namespace LiteDB.Engine
         /// </summary>
         public void OnCommit(HeaderPage header)
         {
-            this.Commit?.Invoke(header);
+            Commit?.Invoke(header);
         }
 
         /// <summary>
         /// Detect if this transaction will need persist header page (has added/deleted pages or added/deleted collections)
         /// </summary>
         public bool HeaderChanged =>
-            this.NewPages.Count > 0 ||
-            this.DeletedPages > 0 || 
-            this.Commit != null;
+            NewPages.Count > 0 ||
+            DeletedPages > 0 || 
+            Commit != null;
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using static LiteDB.Constants;
 
 namespace LiteDB.Engine
 {
@@ -32,14 +31,14 @@ namespace LiteDB.Engine
             // if contains startsWith string, search using index Find
             // otherwise, use index full scan and test results
             return _startsWith.Length > 0 ? 
-                this.ExecuteStartsWith(indexer, index) : 
-                this.ExecuteLike(indexer, index);
+                ExecuteStartsWith(indexer, index) : 
+                ExecuteLike(indexer, index);
         }
 
         private IEnumerable<IndexNode> ExecuteStartsWith(IndexService indexer, CollectionIndex index)
         {
             // find first indexNode
-            var first = indexer.Find(index, _startsWith, true, this.Order);
+            var first = indexer.Find(index, _startsWith, true, Order);
             var node = first;
 
             // if collection exists but are empty
@@ -72,11 +71,11 @@ namespace LiteDB.Engine
                     break;
                 }
 
-                node = indexer.GetNode(node.GetNextPrev(0, -this.Order));
+                node = indexer.GetNode(node.GetNextPrev(0, -Order));
             }
 
             // move forward
-            node = indexer.GetNode(first.GetNextPrev(0, this.Order));
+            node = indexer.GetNode(first.GetNextPrev(0, Order));
 
             while (node != null)
             {
@@ -106,14 +105,14 @@ namespace LiteDB.Engine
                 }
 
                 // first, go backward to get all same values
-                node = indexer.GetNode(node.GetNextPrev(0, this.Order));
+                node = indexer.GetNode(node.GetNextPrev(0, Order));
             }
         }
 
         private IEnumerable<IndexNode> ExecuteLike(IndexService indexer, CollectionIndex index)
         {
             return indexer
-                .FindAll(index, this.Order)
+                .FindAll(index, Order)
                 .Where(x => x.Key.IsString && x.Key.AsString.SqlLike(_pattern, indexer.Collation));
         }
 
@@ -121,7 +120,7 @@ namespace LiteDB.Engine
         {
             return string.Format("{0}({1} LIKE \"{2}\")",
                 _startsWith.Length > 0 ? "INDEX SEEK (+RANGE SCAN)" : "FULL INDEX SCAN",
-                this.Name,
+                Name,
                 _pattern);
         }
     }

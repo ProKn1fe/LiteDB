@@ -1,10 +1,6 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -77,17 +73,17 @@ namespace LiteDB.Engine
             : base(buffer, 0, PageType.Header)
         {
             // initialize page version
-            this.CreationTime = DateTime.UtcNow;
-            this.FreeEmptyPageList = uint.MaxValue;
-            this.LastPageID = 0;
+            CreationTime = DateTime.UtcNow;
+            FreeEmptyPageList = uint.MaxValue;
+            LastPageID = 0;
 
             // initialize pragmas
-            this.Pragmas = new EnginePragmas(this);
+            Pragmas = new EnginePragmas(this);
 
             // writing direct into buffer in Ctor() because there is no change later (write once)
             _buffer.Write(HEADER_INFO, P_HEADER_INFO);
             _buffer.Write(FILE_VERSION, P_FILE_VERSION);
-            _buffer.Write(this.CreationTime, P_CREATION_TIME);
+            _buffer.Write(CreationTime, P_CREATION_TIME);
 
             // initialize collections
             _collections = new BsonDocument();
@@ -99,9 +95,9 @@ namespace LiteDB.Engine
         public HeaderPage(PageBuffer buffer)
             : base(buffer)
         {
-            this.LoadPage();
+            LoadPage();
 
-            this.CreationTime = _buffer.ReadDateTime(P_CREATION_TIME);
+            CreationTime = _buffer.ReadDateTime(P_CREATION_TIME);
         }
 
         /// <summary>
@@ -119,11 +115,11 @@ namespace LiteDB.Engine
             }
 
             // CreateTime is readonly
-            this.FreeEmptyPageList = _buffer.ReadUInt32(P_FREE_EMPTY_PAGE_ID);
-            this.LastPageID = _buffer.ReadUInt32(P_LAST_PAGE_ID);
+            FreeEmptyPageList = _buffer.ReadUInt32(P_FREE_EMPTY_PAGE_ID);
+            LastPageID = _buffer.ReadUInt32(P_LAST_PAGE_ID);
 
             // initialize engine pragmas
-            this.Pragmas = new EnginePragmas(_buffer, this);
+            Pragmas = new EnginePragmas(_buffer, this);
 
             // create new buffer area to store BsonDocument collections
             var area = _buffer.Slice(P_COLLECTIONS, COLLECTIONS_SIZE);
@@ -138,11 +134,11 @@ namespace LiteDB.Engine
 
         public override PageBuffer UpdateBuffer()
         {
-            _buffer.Write(this.FreeEmptyPageList, P_FREE_EMPTY_PAGE_ID);
-            _buffer.Write(this.LastPageID, P_LAST_PAGE_ID);
+            _buffer.Write(FreeEmptyPageList, P_FREE_EMPTY_PAGE_ID);
+            _buffer.Write(LastPageID, P_LAST_PAGE_ID);
 
             // update engine pragmas
-            this.Pragmas.UpdateBuffer(_buffer);
+            Pragmas.UpdateBuffer(_buffer);
 
             // update collection only if needed
             if (_isCollectionsChanged)
@@ -165,7 +161,7 @@ namespace LiteDB.Engine
         /// </summary>
         public PageBuffer Savepoint()
         {
-            this.UpdateBuffer();
+            UpdateBuffer();
 
             var savepoint = new PageBuffer(new byte[PAGE_SIZE], 0, 0);
 
@@ -181,7 +177,7 @@ namespace LiteDB.Engine
         {
             System.Buffer.BlockCopy(savepoint.Array, savepoint.Offset, _buffer.Array, _buffer.Offset, PAGE_SIZE);
 
-            this.LoadPage();
+            LoadPage();
         }
 
         /// <summary>

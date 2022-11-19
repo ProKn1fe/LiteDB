@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Threading;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -96,7 +92,7 @@ namespace LiteDB.Engine
                 _monitor = new TransactionMonitor(_header, _settings, _locker, _disk, _walIndex);
 
                 // register system collections
-                this.InitializeSystemCollections();
+                InitializeSystemCollections();
 
                 LOG("initialization completed", "ENGINE");
             }
@@ -105,7 +101,7 @@ namespace LiteDB.Engine
                 LOG(ex.Message, "ERROR");
 
                 // explicit dispose (but do not run shutdown operation)
-                this.Dispose(true);
+                Dispose(true);
                 throw;
             }
         }
@@ -125,13 +121,13 @@ namespace LiteDB.Engine
         public void Dispose()
         {
             // dispose data file
-            this.Dispose(true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         ~LiteEngine()
         {
-            this.Dispose(false);
+            Dispose(false);
         }
 
         /// <summary>

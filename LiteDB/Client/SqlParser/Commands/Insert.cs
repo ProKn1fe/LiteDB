@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using LiteDB.Engine;
-using static LiteDB.Constants;
-
-namespace LiteDB
+﻿namespace LiteDB
 {
     internal partial class SqlParser
     {
@@ -18,13 +12,13 @@ namespace LiteDB
 
             var collection = _tokenizer.ReadToken().Expect(TokenType.Word).Value;
 
-            var autoId = this.ParseWithAutoId();
+            var autoId = ParseWithAutoId();
 
             _tokenizer.ReadToken().Expect("VALUES");
 
             // get list of documents (return an IEnumerable)
             // will validate EOF or ;
-            var docs = this.ParseListOfDocuments();
+            var docs = ParseListOfDocuments();
 
             var result = _engine.Insert(collection, docs, autoId);
 

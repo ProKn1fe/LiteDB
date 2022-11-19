@@ -1,8 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using LiteDB;
-using FluentAssertions;
+﻿using FluentAssertions;
+
 using Xunit;
 
 namespace LiteDB.Tests.Database
