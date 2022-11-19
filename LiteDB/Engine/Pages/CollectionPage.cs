@@ -98,7 +98,7 @@ namespace LiteDB.Engine
         /// <summary>
         /// Get PK index
         /// </summary>
-        public CollectionIndex PK { get { return _indexes["_id"]; } }
+        public CollectionIndex PK => _indexes["_id"];
 
         /// <summary>
         /// Get index from index name (index name is case sensitive) - returns null if not found

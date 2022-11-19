@@ -44,10 +44,7 @@ namespace LiteDB.Shell
         /// <summary>
         /// Indicate that cursor is EOF
         /// </summary>
-        public bool HasTerminated
-        {
-            get { return Index >= Source.Length; }
-        }
+        public bool HasTerminated => Index >= Source.Length;
 
         /// <summary>
         /// Scan in current cursor position for this patterns. If found, returns string and run with cursor

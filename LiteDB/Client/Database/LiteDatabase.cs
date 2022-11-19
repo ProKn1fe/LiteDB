@@ -152,10 +152,7 @@ namespace LiteDB
         /// <summary>
         /// Returns a special collection for storage files/stream inside datafile. Use _files and _chunks collection names. FileId is implemented as string. Use "GetStorage" for custom options
         /// </summary>
-        public ILiteStorage<string> FileStorage
-        {
-            get { return _fs ?? (_fs = GetStorage<string>()); }
-        }
+        public ILiteStorage<string> FileStorage => _fs ??= GetStorage<string>();
 
         /// <summary>
         /// Get new instance of Storage using custom FileId type, custom "_files" collection name and custom "_chunks" collection. LiteDB support multiples file storages (using different files/chunks collection names)
@@ -354,10 +351,7 @@ namespace LiteDB
         /// <summary>
         /// Get database collection (this options can be changed only in rebuild proces)
         /// </summary>
-        public Collation Collation
-        {
-            get => new Collation(_engine.Pragma(Pragmas.COLLATION).AsString);
-        }
+        public Collation Collation => new Collation(_engine.Pragma(Pragmas.COLLATION).AsString);
 
         #endregion
 

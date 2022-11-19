@@ -59,10 +59,7 @@ namespace LiteDB.Engine
         /// <summary>
         /// Returns if this index slot is empty and can be used as new index
         /// </summary>
-        public bool IsEmpty
-        {
-            get { return string.IsNullOrEmpty(Name); }
-        }
+        public bool IsEmpty => string.IsNullOrEmpty(Name);
 
         public CollectionIndex(byte slot, byte indexType, string name, string expr, bool unique)
         {

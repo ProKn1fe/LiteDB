@@ -7,7 +7,7 @@ namespace LiteDB
 {
     internal static class DictionaryExtensions
     {
-        public static T GetOrDefault<K, T>(this IDictionary<K, T> dict, K key, T defaultValue = default(T))
+        public static T GetOrDefault<K, T>(this IDictionary<K, T> dict, K key, T defaultValue = default)
         {
             if (dict.TryGetValue(key, out T result))
             {
@@ -130,7 +130,7 @@ namespace LiteDB
         /// <summary>
         /// Get value from dictionary converting datatype T
         /// </summary>
-        public static T GetValue<T>(this Dictionary<string, string> dict, string key, T defaultValue = default(T))
+        public static T GetValue<T>(this Dictionary<string, string> dict, string key, T defaultValue = default)
         {
             try
             {

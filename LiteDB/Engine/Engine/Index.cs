@@ -68,7 +68,7 @@ namespace LiteDB.Engine
                             // insert new index node
                             var node = indexer.AddNode(index, key, pkNode.DataBlock, last);
 
-                            if (first == null) first = node;
+                            first ??= node;
 
                             last = node;
 

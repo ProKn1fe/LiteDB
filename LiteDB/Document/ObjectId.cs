@@ -43,10 +43,7 @@ namespace LiteDB
         /// <summary>
         /// Get creation time
         /// </summary>
-        public DateTime CreationTime
-        {
-            get { return BsonValue.UnixEpoch.AddSeconds(Timestamp); }
-        }
+        public DateTime CreationTime => BsonValue.UnixEpoch.AddSeconds(Timestamp);
 
         #endregion
 

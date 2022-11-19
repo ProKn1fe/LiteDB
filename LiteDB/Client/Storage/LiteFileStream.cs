@@ -58,15 +58,15 @@ namespace LiteDB
         /// <summary>
         /// Get file information
         /// </summary>
-        public LiteFileInfo<TFileId> FileInfo { get { return _file; } }
+        public LiteFileInfo<TFileId> FileInfo => _file;
 
-        public override long Length { get { return _file.Length; } }
+        public override long Length => _file.Length;
 
-        public override bool CanRead { get { return _mode == FileAccess.Read; } }
+        public override bool CanRead => _mode == FileAccess.Read;
 
-        public override bool CanWrite { get { return _mode == FileAccess.Write; } }
+        public override bool CanWrite => _mode == FileAccess.Write;
 
-        public override bool CanSeek { get { return _mode == FileAccess.Read; } }
+        public override bool CanSeek => _mode == FileAccess.Read;
 
         public override long Position
         {

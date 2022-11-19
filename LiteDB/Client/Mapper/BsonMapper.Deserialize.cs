@@ -64,7 +64,7 @@ namespace LiteDB
         /// </summary>
         public T Deserialize<T>(BsonValue value)
         {
-            if (value == null) return default(T);
+            if (value == null) return default;
 
             var result = Deserialize(typeof(T), value);
 
@@ -176,12 +176,9 @@ namespace LiteDB
                 var entity = GetEntityMapper(type);
 
                 // initialize CreateInstance
-                if (entity.CreateInstance == null)
-                {
-                    entity.CreateInstance =
+                entity.CreateInstance ??=
                         GetTypeCtor(entity) ??
                         ((BsonDocument v) => Reflection.CreateInstance(entity.ForType));
-                }
 
                 var o = _typeInstantiator(type) ?? entity.CreateInstance(doc);
 

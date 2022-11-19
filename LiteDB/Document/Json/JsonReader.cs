@@ -14,7 +14,7 @@ namespace LiteDB
 
         private Tokenizer _tokenizer = null;
 
-        public long Position { get { return _tokenizer.Position; } }
+        public long Position => _tokenizer.Position;
 
         public JsonReader(TextReader reader)
         {
