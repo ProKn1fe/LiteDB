@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace LiteDB
 {
@@ -29,7 +30,7 @@ namespace LiteDB
             {
                 if (timerInMilliseconds > 0)
                 {
-                    System.Threading.Tasks.Task.Delay(timerInMilliseconds).Wait();
+                    Task.Delay(timerInMilliseconds).Wait();
                 }
             }
             else
