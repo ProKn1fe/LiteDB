@@ -36,7 +36,7 @@ namespace LiteDB
         {
             var data = Encoding.UTF8.GetBytes(value);
 
-            using (var sha = new SHA1Managed())
+            using (var sha = SHA1.Create())
             {
                 var hashData = sha.ComputeHash(data);
                 var hash = new StringBuilder();
