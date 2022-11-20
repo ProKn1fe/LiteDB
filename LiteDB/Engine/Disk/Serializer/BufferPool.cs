@@ -34,7 +34,7 @@
     }
 
 #else
-
+        // Use native arraypool in version where it exists.
         private static System.Buffers.ArrayPool<byte> _bytePool => System.Buffers.ArrayPool<byte>.Shared;
 
         public static byte[] Rent(int count)
