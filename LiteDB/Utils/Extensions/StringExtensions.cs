@@ -36,18 +36,21 @@ namespace LiteDB
         {
             var data = Encoding.UTF8.GetBytes(value);
 
-            using (var sha = SHA1.Create())
+#if NET6_0_OR_GREATER
+            var hashData = SHA1.HashData(data);
+#else
+            using var sha = SHA1.Create();
+            var hashData = sha.ComputeHash(data);
+#endif
+
+            var hash = new StringBuilder();
+
+            foreach (var b in hashData)
             {
-                var hashData = sha.ComputeHash(data);
-                var hash = new StringBuilder();
-
-                foreach (var b in hashData)
-                {
-                    hash.Append(b.ToString("X2"));
-                }
-
-                return hash.ToString();
+                hash.Append(b.ToString("X2"));
             }
+
+            return hash.ToString();
         }
 
         /// <summary>

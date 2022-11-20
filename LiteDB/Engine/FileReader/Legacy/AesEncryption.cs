@@ -68,8 +68,12 @@ namespace LiteDB
         /// </summary>
         public static byte[] HashSHA1(string password)
         {
-            var sha = SHA1.Create();
+#if NET6_0_OR_GREATER
+            var shaBytes = SHA1.HashData(Encoding.UTF8.GetBytes(password));
+#else
+            using var sha = SHA1.Create();
             var shaBytes = sha.ComputeHash(Encoding.UTF8.GetBytes(password));
+#endif
             return shaBytes;
         }
 
