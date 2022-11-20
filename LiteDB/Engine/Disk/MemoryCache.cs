@@ -282,7 +282,7 @@ namespace LiteDB.Engine
                 // ensure only 1 single thread call extend method
                 lock(_free)
                 {
-                    if (_free.Count > 0) return GetFreePage();
+                    if (!_free.IsEmpty) return GetFreePage();
 
                     Extend();
                 }

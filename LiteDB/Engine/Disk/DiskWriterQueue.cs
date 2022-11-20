@@ -44,13 +44,10 @@ namespace LiteDB.Engine
         /// </summary>
         public void Run()
         {
-            lock (_queue)
+            if (!_queue.IsEmpty && (_task == null || _task.IsCompleted))
             {
-                if (_queue.Count > 0 && (_task == null || _task.IsCompleted))
-                {
-                    // https://blog.stephencleary.com/2013/08/startnew-is-dangerous.html
-                    _task = Task.Run(ExecuteQueue);
-                }
+                // https://blog.stephencleary.com/2013/08/startnew-is-dangerous.html
+                _task = Task.Run(ExecuteQueue);
             }
         }
 
@@ -59,17 +56,10 @@ namespace LiteDB.Engine
         /// </summary>
         public void Wait()
         {
-            lock (_queue)
-            {
-                _task?.Wait();
+            _task?.Wait();
+            ExecuteQueue();
 
-                if (_queue.Count > 0)
-                {
-                    ExecuteQueue();
-                }
-            }
-
-            ENSURE(_queue.Count == 0, "queue should be empty after wait() call");
+            ENSURE(_queue.IsEmpty, "queue should be empty after wait() call");
         }
 
         /// <summary>
@@ -77,7 +67,7 @@ namespace LiteDB.Engine
         /// </summary>
         private void ExecuteQueue()
         {
-            if (_queue.Count == 0) return;
+            if (_queue.IsEmpty) return;
 
             var count = 0;
 

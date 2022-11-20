@@ -43,7 +43,7 @@ namespace LiteDB
         /// <summary>
         /// Open database in safe mode
         /// </summary>
-        private void OpenDatabase(bool @readonly)
+        private void OpenDatabase(bool readOnly)
         {
             lock (_locker)
             {
@@ -54,7 +54,7 @@ namespace LiteDB
                     open();
                 }
                 // change from read-only to read-write
-                else if (_settings.ReadOnly == true && @readonly == false && _engine != null)
+                else if (_settings.ReadOnly == true && readOnly == false && _engine != null)
                 {
                     _engine.Dispose();
                     open();
@@ -65,9 +65,9 @@ namespace LiteDB
             {
                 try
                 {
-                    _locker.AcquireLock(@readonly ? LockMode.Read : LockMode.Write, () =>
+                    _locker.AcquireLock(readOnly ? LockMode.Read : LockMode.Write, () =>
                     {
-                        _settings.ReadOnly = @readonly;
+                        _settings.ReadOnly = readOnly;
 
                         _engine = new LiteEngine(_settings);
                     });

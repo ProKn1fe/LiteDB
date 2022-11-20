@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -24,7 +25,7 @@ namespace LiteDB
     {
         #region CreateInstance
 
-        private static readonly Dictionary<Type, CreateObject> _cacheCtor = new Dictionary<Type, CreateObject>();
+        private static readonly ConcurrentDictionary<Type, CreateObject> _cacheCtor = new ConcurrentDictionary<Type, CreateObject>();
 
         /// <summary>
         /// Create a new instance from a Type
@@ -37,64 +38,49 @@ namespace LiteDB
                 {
                     return c(null);
                 }
+
+                if (type.IsClass)
+                {
+                    _cacheCtor.TryAdd(type, c = CreateClass(type));
+                }
+                else if (type.IsInterface) // some know interfaces
+                {
+                    if (type.IsGenericType)
+                    {
+                        var typeDef = type.GetGenericTypeDefinition();
+
+                        if (typeDef == typeof(ISet<>))
+                        {
+                            return CreateInstance(GetGenericSetOfType(UnderlyingTypeOf(type)));
+                        }
+                        else if (typeDef == typeof(IDictionary<,>))
+                        {
+                            var k = type.GetGenericArguments()[0];
+                            var v = type.GetGenericArguments()[1];
+
+                            return CreateInstance(GetGenericDictionaryOfType(k, v));
+                        }
+                        else if (typeDef == typeof(IList<>) ||
+                                 typeDef == typeof(ICollection<>) ||
+                                 typeDef == typeof(IEnumerable<>) ||
+                                 typeof(IEnumerable).IsAssignableFrom(typeDef))
+                        {
+                            return CreateInstance(GetGenericListOfType(UnderlyingTypeOf(type)));
+                        }
+                    }
+
+                    throw LiteException.InvalidCtor(type, null);
+                }
+                else // structs
+                {
+                    _cacheCtor.TryAdd(type, c = CreateStruct(type));
+                }
+
+                return c(null);
             }
             catch (Exception ex)
             {
                 throw LiteException.InvalidCtor(type, ex);
-            }
-
-            lock (_cacheCtor)
-            {
-                try
-                {
-                    if (_cacheCtor.TryGetValue(type, out CreateObject c))
-                    {
-                        return c(null);
-                    }
-
-                    if (type.IsClass)
-                    {
-                        _cacheCtor.Add(type, c = CreateClass(type));
-                    }
-                    else if (type.IsInterface) // some know interfaces
-                    {
-                        if (type.IsGenericType)
-                        {
-                            var typeDef = type.GetGenericTypeDefinition();
-
-                            if (typeDef == typeof(ISet<>))
-                            {
-                                return CreateInstance(GetGenericSetOfType(UnderlyingTypeOf(type)));
-                            }
-                            else if (typeDef == typeof(IDictionary<,>))
-                            {
-                                var k = type.GetGenericArguments()[0];
-                                var v = type.GetGenericArguments()[1];
-
-                                return CreateInstance(GetGenericDictionaryOfType(k, v));
-                            }
-                            else if (typeDef == typeof(IList<>) ||
-                                     typeDef == typeof(ICollection<>) ||
-                                     typeDef == typeof(IEnumerable<>) ||
-                                     typeof(IEnumerable).IsAssignableFrom(typeDef))
-                            {
-                                return CreateInstance(GetGenericListOfType(UnderlyingTypeOf(type)));
-                            }
-                        }
-
-                        throw LiteException.InvalidCtor(type, null);
-                    }
-                    else // structs
-                    {
-                        _cacheCtor.Add(type, c = CreateStruct(type));
-                    }
-
-                    return c(null);
-                }
-                catch (Exception ex)
-                {
-                    throw LiteException.InvalidCtor(type, ex);
-                }
             }
         }
 
@@ -238,8 +224,8 @@ namespace LiteDB
         /// </summary>
         public static bool IsCollection(Type type)
         {
-            return 
-                type.GetTypeInfo().IsGenericType && 
+            return
+                type.GetTypeInfo().IsGenericType &&
                 type.GetGenericTypeDefinition().Equals(typeof(ICollection<>)) ||
                 type.GetInterfaces().Any(x => x == typeof(ICollection) ||
                 (x.GetTypeInfo().IsGenericType && x.GetGenericTypeDefinition() == typeof(ICollection<>)));
@@ -250,8 +236,8 @@ namespace LiteDB
         /// </summary>
         public static bool IsDictionary(Type type)
         {
-            return 
-                type.GetTypeInfo().IsGenericType && 
+            return
+                type.GetTypeInfo().IsGenericType &&
                 type.GetGenericTypeDefinition().Equals(typeof(IDictionary<,>)) ||
                 type.GetInterfaces().Any(x => x == typeof(IDictionary) ||
                 (x.GetTypeInfo().IsGenericType && x.GetGenericTypeDefinition().Equals(typeof(IDictionary<,>))));
@@ -286,20 +272,16 @@ namespace LiteDB
         /// </summary>
         public static string MethodName(MethodInfo method, int skipParameters = 0)
         {
-            lock (_cacheName)
+            if (_cacheName.TryGetValue(method, out var value))
             {
-                if (_cacheName.TryGetValue(method, out var value))
-                {
-                    return value;
-                }
-
-                value = MethodNameInternal(method, skipParameters);
-
-                _cacheName.Add(method, value);
-
-
                 return value;
             }
+
+            value = MethodNameInternal(method, skipParameters);
+
+            _cacheName.Add(method, value);
+
+            return value;
         }
 
         private static string MethodNameInternal(MethodInfo method, int skipParameters = 0)

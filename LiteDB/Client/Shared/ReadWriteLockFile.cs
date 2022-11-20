@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 using static LiteDB.Constants;
 
-
 namespace LiteDB
 {
     internal class ReadWriteLockFile : IDisposable

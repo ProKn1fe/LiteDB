@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
+
 using static LiteDB.Constants;
 
 namespace LiteDB
@@ -29,7 +30,7 @@ namespace LiteDB
         /// <summary>
         /// Mapping cache between Class/BsonDocument
         /// </summary>
-        private readonly Dictionary<Type, EntityMapper> _entities = new Dictionary<Type, EntityMapper>();
+        private readonly ConcurrentDictionary<Type, EntityMapper> _entities = new ConcurrentDictionary<Type, EntityMapper>();
 
         /// <summary>
         /// Map serializer/deserialize for custom types
@@ -222,15 +223,7 @@ namespace LiteDB
             //TODO: needs check if Type if BsonDocument? Returns empty EntityMapper?
 
             if (!_entities.TryGetValue(type, out EntityMapper mapper))
-            {
-                lock (_entities)
-                {
-                    if (!_entities.TryGetValue(type, out mapper))
-                    {
-                        return _entities[type] = BuildEntityMapper(type);
-                    }
-                }
-            }
+                return _entities[type] = BuildEntityMapper(type);
 
             return mapper;
         }
@@ -431,7 +424,7 @@ namespace LiteDB
             var newExpr = Expression.New(ctor, pars.ToArray());
 
             // get lambda expression
-            var fn = mapper.ForType.IsClass ? 
+            var fn = mapper.ForType.IsClass ?
                 Expression.Lambda<CreateObject>(newExpr, pDoc).Compile() : // Class
                 Expression.Lambda<CreateObject>(Expression.Convert(newExpr, typeof(object)), pDoc).Compile(); // Struct
 
@@ -514,7 +507,7 @@ namespace LiteDB
                     }
 
                     return m.Deserialize(entity.ForType, doc);
-                    
+
                 }
                 else
                 {
