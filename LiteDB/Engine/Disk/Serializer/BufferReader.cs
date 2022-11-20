@@ -122,6 +122,38 @@ namespace LiteDB.Engine
             return bufferPosition;
         }
 
+#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+        /// <summary>
+        /// Read bytes from source and copy into buffer. Return how many bytes was read
+        /// </summary>
+        public int Read(Span<byte> buffer)
+        {
+            var bufferPosition = 0;
+            var count = buffer.Length;
+
+            while (bufferPosition < count)
+            {
+                var bytesLeft = _current.Count - _currentPosition;
+                var bytesToCopy = Math.Min(count - bufferPosition, bytesLeft);
+
+                // fill buffer
+                var sliceCount = Math.Min(bytesLeft, count - bufferPosition);
+                new Span<byte>(_current.Array, _current.Offset + _currentPosition, sliceCount).CopyTo(buffer[bufferPosition..]);
+
+                bufferPosition += bytesToCopy;
+
+                // move position in current segment (and go to next segment if finish)
+                MoveForward(bytesToCopy);
+
+                if (_isEOF) break;
+            }
+
+            ENSURE(count == bufferPosition, "current value must fit inside defined buffer");
+
+            return bufferPosition;
+        }
+#endif
+
         /// <summary>
         /// Skip bytes (same as Read but with no array copy)
         /// </summary>
@@ -238,35 +270,57 @@ namespace LiteDB.Engine
 
         #region Read Numbers
 
-        private T ReadNumber<T>(Func<byte[], int, T> convert, int size)
+        public int ReadInt32()
         {
-            T value;
-
-            // if fits in current segment, use inner array - otherwise copy from multiples segments
-            if (_currentPosition + size <= _current.Count)
-            {
-                value = convert(_current.Array, _current.Offset + _currentPosition);
-
-                MoveForward(size);
-            }
-            else
-            {
-                var buffer = BufferPool.Rent(size);
-
-                Read(buffer, 0, size);
-
-                value = convert(buffer, 0);
-
-                BufferPool.Return(buffer);
-            }
-
-            return value;
+#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+            Span<byte> buffer = stackalloc byte[4];
+            Read(buffer);
+            return BitConverter.ToInt32(buffer);
+#else
+            var buffer = new byte[4];
+            Read(buffer, 0, 4);
+            return BitConverter.ToInt32(buffer, 0);
+#endif
         }
 
-        public int ReadInt32() => ReadNumber(BitConverter.ToInt32, 4);
-        public long ReadInt64() => ReadNumber(BitConverter.ToInt64, 8);
-        public uint ReadUInt32() => ReadNumber(BitConverter.ToUInt32, 4);
-        public double ReadDouble() => ReadNumber(BitConverter.ToDouble, 8);
+        public long ReadInt64()
+        {
+#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+            Span<byte> buffer = stackalloc byte[8];
+            Read(buffer);
+            return BitConverter.ToInt64(buffer);
+#else
+            var buffer = new byte[8];
+            Read(buffer, 0, 8);
+            return BitConverter.ToInt64(buffer, 0);
+#endif
+        }
+
+        public uint ReadUInt32()
+        {
+#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+            Span<byte> buffer = stackalloc byte[4];
+            Read(buffer);
+            return BitConverter.ToUInt32(buffer);
+#else
+            var buffer = new byte[4];
+            Read(buffer, 0, 4);
+            return BitConverter.ToUInt32(buffer, 0);
+#endif
+        }
+
+        public double ReadDouble()
+        {
+#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+            Span<byte> buffer = stackalloc byte[8];
+            Read(buffer);
+            return BitConverter.ToDouble(buffer);
+#else
+            var buffer = new byte[8];
+            Read(buffer, 0, 8);
+            return BitConverter.ToDouble(buffer, 0);
+#endif
+        }
 
         public decimal ReadDecimal()
         {
@@ -277,7 +331,7 @@ namespace LiteDB.Engine
             return new decimal(new int[] { a, b, c, d });
         }
 
-        #endregion
+#endregion
 
         #region Complex Types
 

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -98,10 +100,10 @@ namespace LiteDB.Engine
                 // fill buffer
                 if (buffer != null)
                 {
-                    Buffer.BlockCopy(buffer, 
+                    Buffer.BlockCopy(buffer,
                         offset + bufferPosition,
                         _current.Array,
-                        _current.Offset + _currentPosition, 
+                        _current.Offset + _currentPosition,
                         bytesToCopy);
                 }
 
@@ -118,6 +120,38 @@ namespace LiteDB.Engine
             return bufferPosition;
         }
 
+#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+        /// <summary>
+        /// Write bytes from buffer into segmentsr. Return how many bytes was write
+        /// </summary>
+        public int Write(Span<byte> buffer)
+        {
+            var bufferPosition = 0;
+            var count = buffer.Length;
+
+            while (bufferPosition < count)
+            {
+                var bytesLeft = _current.Count - _currentPosition;
+                var bytesToCopy = Math.Min(count - bufferPosition, bytesLeft);
+
+                // fill buffer
+                var sliceCount = Math.Min(bytesLeft, count - bufferPosition);
+                buffer[bufferPosition..].CopyTo(new Span<byte>(_current.Array, _current.Offset + _currentPosition, sliceCount));
+
+                bufferPosition += bytesToCopy;
+
+                // move position in current segment (and go to next segment if finish)
+                MoveForward(bytesToCopy);
+
+                if (_isEOF) break;
+            }
+
+            ENSURE(count == bufferPosition, "current value must fit inside defined buffer");
+
+            return bufferPosition;
+        }
+#endif
+
         /// <summary>
         /// Write bytes from buffer into segmentsr. Return how many bytes was write
         /// </summary>
@@ -133,7 +167,7 @@ namespace LiteDB.Engine
         /// </summary>
         public void Consume()
         {
-            if(_source != null)
+            if (_source != null)
             {
                 while (_source.MoveNext())
                 {
@@ -221,30 +255,53 @@ namespace LiteDB.Engine
 
         #region Numbers
 
-        private void WriteNumber<T>(T value, Action<T, byte[], int> toBytes, int size)
+        public void Write(int value)
         {
-            if (_currentPosition + size <= _current.Count)
-            {
-                toBytes(value, _current.Array, _current.Offset + _currentPosition);
-
-                MoveForward(size);
-            }
-            else
-            {
-                var buffer = BufferPool.Rent(size);
-
-                toBytes(value, buffer, 0);
-
-                Write(buffer, 0, size);
-
-                BufferPool.Return(buffer);
-            }
+#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+            Span<byte> buffer = stackalloc byte[4];
+            BitConverter.TryWriteBytes(buffer, value);
+            Write(buffer);
+#else
+            var buffer = BitConverter.GetBytes(value);
+            Write(buffer, 0, 4);
+#endif
         }
 
-        public void Write(int value) => WriteNumber(value, BufferExtensions.ToBytes, 4);
-        public void Write(long value) => WriteNumber(value, BufferExtensions.ToBytes, 8);
-        public void Write(uint value) => WriteNumber(value, BufferExtensions.ToBytes, 4);
-        public void Write(double value) => WriteNumber(value, BufferExtensions.ToBytes, 8);
+        public void Write(long value)
+        {
+#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+            Span<byte> buffer = stackalloc byte[8];
+            BitConverter.TryWriteBytes(buffer, value);
+            Write(buffer);
+#else
+            var buffer = BitConverter.GetBytes(value);
+            Write(buffer, 0, 8);
+#endif
+        }
+
+        public void Write(uint value)
+        {
+#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+            Span<byte> buffer = stackalloc byte[4];
+            BitConverter.TryWriteBytes(buffer, value);
+            Write(buffer);
+#else
+            var buffer = BitConverter.GetBytes(value);
+            Write(buffer, 0, 4);
+#endif
+        }
+
+        public void Write(double value)
+        {
+#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+            Span<byte> buffer = stackalloc byte[8];
+            BitConverter.TryWriteBytes(buffer, value);
+            Write(buffer);
+#else
+            var buffer = BitConverter.GetBytes(value);
+            Write(buffer, 0, 8);
+#endif
+        }
 
         public void Write(decimal value)
         {
@@ -255,7 +312,7 @@ namespace LiteDB.Engine
             Write(bits[3]);
         }
 
-#endregion
+        #endregion
 
         #region Complex Types
 
