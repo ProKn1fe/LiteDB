@@ -291,7 +291,7 @@ namespace LiteDB
 
             foreach (var p in method.GetParameters().Skip(skipParameters))
             {
-                if (index++ > 0) sb.Append(",");
+                if (index++ > 0) sb.Append(',');
 
                 sb.Append(FriendlyTypeName(p.ParameterType));
 
@@ -301,15 +301,15 @@ namespace LiteDB
 
                     var types = generic.GetGenericArguments();
 
-                    sb.Append("<");
+                    sb.Append('<');
 
                     sb.Append(string.Join(",", types.Select(x => FriendlyTypeName(x))));
 
-                    sb.Append(">");
+                    sb.Append('>');
                 }
             }
 
-            sb.Append(")");
+            sb.Append(')');
             return sb.ToString();
         }
 

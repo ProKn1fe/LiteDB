@@ -105,7 +105,7 @@ namespace LiteDB
         {
             var buffer = new byte[count];
 
-            System.Buffer.BlockCopy(_buffer, _pos, buffer, 0, count);
+            Buffer.BlockCopy(_buffer, _pos, buffer, 0, count);
 
             _pos += count;
 

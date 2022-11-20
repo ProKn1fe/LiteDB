@@ -15,7 +15,7 @@ namespace LiteDB
         public List<BsonExpression> Where { get; } = new List<BsonExpression>();
 
         public BsonExpression OrderBy { get; set; } = null;
-        public int Order { get; set; } = Query.Ascending;
+        public int Order { get; set; } = Ascending;
 
         public BsonExpression GroupBy { get; set; } = null;
         public BsonExpression Having { get; set; } = null;
@@ -83,7 +83,7 @@ namespace LiteDB
 
             if (OrderBy != null)
             {
-                sb.AppendLine($"ORDER BY {OrderBy.Source} {(Order == Query.Ascending ? "ASC" : "DESC")}");
+                sb.AppendLine($"ORDER BY {OrderBy.Source} {(Order == Ascending ? "ASC" : "DESC")}");
             }
 
             if (Limit != int.MaxValue)

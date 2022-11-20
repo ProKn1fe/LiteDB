@@ -51,11 +51,11 @@ namespace LiteDB
         {
             get
             {
-                return RawValue.GetOrDefault(key, BsonValue.Null);
+                return RawValue.GetOrDefault(key, Null);
             }
             set
             {
-                RawValue[key] = value ?? BsonValue.Null;
+                RawValue[key] = value ?? Null;
             }
         }
 
@@ -119,7 +119,7 @@ namespace LiteDB
             }
         }
 
-        public void Add(string key, BsonValue value) => RawValue.Add(key, value ?? BsonValue.Null);
+        public void Add(string key, BsonValue value) => RawValue.Add(key, value ?? Null);
 
         public bool Remove(string key) => RawValue.Remove(key);
 

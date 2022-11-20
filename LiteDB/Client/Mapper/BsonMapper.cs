@@ -300,7 +300,7 @@ namespace LiteDB
 
                 if (dbRef != null && memberInfo is PropertyInfo)
                 {
-                    BsonMapper.RegisterDbRef(this, member, _typeNameBinder, dbRef.Collection ?? ResolveCollectionName((memberInfo as PropertyInfo).PropertyType));
+                    RegisterDbRef(this, member, _typeNameBinder, dbRef.Collection ?? ResolveCollectionName((memberInfo as PropertyInfo).PropertyType));
                 }
 
                 // support callback to user modify member mapper

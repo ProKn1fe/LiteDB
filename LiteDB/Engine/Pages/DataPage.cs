@@ -33,7 +33,7 @@ namespace LiteDB.Engine
         /// </summary>
         public DataBlock GetBlock(byte index)
         {
-            var segment = base.Get(index);
+            var segment = Get(index);
 
             return new DataBlock(this, index, segment);
         }
@@ -43,7 +43,7 @@ namespace LiteDB.Engine
         /// </summary>
         public DataBlock InsertBlock(int bytesLength, bool extend)
         {
-            var segment = base.Insert((ushort)(bytesLength + DataBlock.DATA_BLOCK_FIXED_SIZE), out var index);
+            var segment = Insert((ushort)(bytesLength + DataBlock.DATA_BLOCK_FIXED_SIZE), out var index);
 
             return new DataBlock(this, index, segment, extend, PageAddress.Empty);
         }
@@ -53,7 +53,7 @@ namespace LiteDB.Engine
         /// </summary>
         public DataBlock UpdateBlock(DataBlock currentBlock, int bytesLength)
         {
-            var segment = base.Update(currentBlock.Position.Index, (ushort)(bytesLength + DataBlock.DATA_BLOCK_FIXED_SIZE));
+            var segment = Update(currentBlock.Position.Index, (ushort)(bytesLength + DataBlock.DATA_BLOCK_FIXED_SIZE));
 
             return new DataBlock(this, currentBlock.Position.Index, segment, currentBlock.Extend, currentBlock.NextBlock);
         }
@@ -63,7 +63,7 @@ namespace LiteDB.Engine
         /// </summary>
         public void DeleteBlock(byte index)
         {
-            base.Delete(index);
+            Delete(index);
         }
 
         /// <summary>
@@ -71,9 +71,9 @@ namespace LiteDB.Engine
         /// </summary>
         public IEnumerable<PageAddress> GetBlocks()
         {
-            foreach(var index in base.GetUsedIndexs())
+            foreach(var index in GetUsedIndexs())
             {
-                var slotPosition = BasePage.CalcPositionAddr(index);
+                var slotPosition = CalcPositionAddr(index);
                 var position = _buffer.ReadUInt16(slotPosition);
 
                 var extend = _buffer.ReadBool(position + DataBlock.P_EXTEND);

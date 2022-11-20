@@ -32,18 +32,17 @@ namespace LiteDB
         /// </summary>
         public byte[] Encrypt(byte[] bytes)
         {
-            using (var encryptor = _aes.CreateEncryptor())
-            using (var stream = new MemoryStream())
-            using (var crypto = new CryptoStream(stream, encryptor, CryptoStreamMode.Write))
-            {
-                crypto.Write(bytes, 0, bytes.Length);
-                crypto.FlushFinalBlock();
-                stream.Position = 0;
-                var encrypted = new byte[stream.Length];
-                stream.Read(encrypted, 0, encrypted.Length);
+            using var encryptor = _aes.CreateEncryptor();
+            using var stream = new MemoryStream();
+            using var crypto = new CryptoStream(stream, encryptor, CryptoStreamMode.Write);
 
-                return encrypted;
-            }
+            crypto.Write(bytes, 0, bytes.Length);
+            crypto.FlushFinalBlock();
+            stream.Position = 0;
+            var encrypted = new byte[stream.Length];
+            stream.Read(encrypted, 0, encrypted.Length);
+
+            return encrypted;
         }
 
         /// <summary>
@@ -51,18 +50,17 @@ namespace LiteDB
         /// </summary>
         public byte[] Decrypt(byte[] encryptedValue, int offset = 0, int count = -1)
         {
-            using (var decryptor = _aes.CreateDecryptor())
-            using (var stream = new MemoryStream())
-            using (var crypto = new CryptoStream(stream, decryptor, CryptoStreamMode.Write))
-            {
-                crypto.Write(encryptedValue, offset, count == -1 ? encryptedValue.Length : count);
-                crypto.FlushFinalBlock();
-                stream.Position = 0;
-                var decryptedBytes = new byte[stream.Length];
-                stream.Read(decryptedBytes, 0, decryptedBytes.Length);
+            using var decryptor = _aes.CreateDecryptor();
+            using var stream = new MemoryStream();
+            using var crypto = new CryptoStream(stream, decryptor, CryptoStreamMode.Write);
 
-                return decryptedBytes;
-            }
+            crypto.Write(encryptedValue, offset, count == -1 ? encryptedValue.Length : count);
+            crypto.FlushFinalBlock();
+            stream.Position = 0;
+            var decryptedBytes = new byte[stream.Length];
+            stream.Read(decryptedBytes, 0, decryptedBytes.Length);
+
+            return decryptedBytes;
         }
 
         /// <summary>

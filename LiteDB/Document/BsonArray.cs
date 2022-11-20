@@ -45,7 +45,7 @@ namespace LiteDB
             }
             set
             {
-                RawValue[index] = value ?? BsonValue.Null;
+                RawValue[index] = value ?? Null;
             }
         }
 
@@ -53,7 +53,7 @@ namespace LiteDB
 
         public bool IsReadOnly => false;
 
-        public void Add(BsonValue item) => RawValue.Add(item ?? BsonValue.Null);
+        public void Add(BsonValue item) => RawValue.Add(item ?? Null);
 
         public void AddRange<TCollection>(TCollection collection)
             where TCollection : ICollection<BsonValue>
@@ -82,21 +82,21 @@ namespace LiteDB
 
             foreach (var item in items)
             {
-                Add(item ?? BsonValue.Null);
+                Add(item ?? Null);
             }
         }
 
         public void Clear() => RawValue.Clear();
 
-        public bool Contains(BsonValue item) => RawValue.Contains(item ?? BsonValue.Null);
+        public bool Contains(BsonValue item) => RawValue.Contains(item ?? Null);
 
         public void CopyTo(BsonValue[] array, int arrayIndex) => RawValue.CopyTo(array, arrayIndex);
 
         public IEnumerator<BsonValue> GetEnumerator() => RawValue.GetEnumerator();
 
-        public int IndexOf(BsonValue item) => RawValue.IndexOf(item ?? BsonValue.Null);
+        public int IndexOf(BsonValue item) => RawValue.IndexOf(item ?? Null);
 
-        public void Insert(int index, BsonValue item) => RawValue.Insert(index, item ?? BsonValue.Null);
+        public void Insert(int index, BsonValue item) => RawValue.Insert(index, item ?? Null);
 
         public bool Remove(BsonValue item) => RawValue.Remove(item);
 

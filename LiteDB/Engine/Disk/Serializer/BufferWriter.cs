@@ -255,7 +255,7 @@ namespace LiteDB.Engine
             Write(bits[3]);
         }
 
-        #endregion
+#endregion
 
         #region Complex Types
 

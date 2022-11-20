@@ -32,7 +32,7 @@ namespace LiteDB.Engine
         public Stream GetStream(bool readOnly)
         {
             var stream = new FileStream(_filename,
-                readOnly ? System.IO.FileMode.Open : System.IO.FileMode.OpenOrCreate,
+                readOnly ? FileMode.Open : FileMode.OpenOrCreate,
                 readOnly ? FileAccess.Read : FileAccess.ReadWrite,
                 readOnly ? FileShare.ReadWrite : FileShare.Read,
                 PAGE_SIZE,

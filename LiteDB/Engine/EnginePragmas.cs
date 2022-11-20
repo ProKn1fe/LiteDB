@@ -113,7 +113,7 @@ namespace LiteDB.Engine
                     Validate = (v, h) =>
                     {
                         if (v < 4 * PAGE_SIZE) throw new LiteException(0, "Pragma LIMIT_SIZE must be at least 4 pages (32768 bytes)");
-                        if (h != null && v.AsInt64 < (h.LastPageID + 1) * Constants.PAGE_SIZE) throw new LiteException(0, "Pragma LIMIT_SIZE must be greater or equal to the current file size");
+                        if (h != null && v.AsInt64 < (h.LastPageID + 1) * PAGE_SIZE) throw new LiteException(0, "Pragma LIMIT_SIZE must be greater or equal to the current file size");
                     },
                     Write = (b) => b.Write(LimitSize, P_LIMIT_SIZE)
                 },

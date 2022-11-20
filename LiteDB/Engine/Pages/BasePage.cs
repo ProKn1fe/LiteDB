@@ -723,7 +723,7 @@ namespace LiteDB.Engine
         {
             ENSURE(pageID >= 0, "page could not be less than 0.");
 
-            return BasePage.GetPagePosition((uint)pageID);
+            return GetPagePosition((uint)pageID);
         }
 
         /// <summary>
