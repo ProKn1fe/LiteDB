@@ -5,8 +5,10 @@
     /// </summary>
     internal class BufferPool
     {
-        private static object _lock;
-        private static ArrayPool<byte> _bytePool;
+#if NETFRAMEWORK || NETSTANDARD2_0
+
+        private static readonly object _lock;
+        private static readonly ArrayPool<byte> _bytePool;
 
         static BufferPool()
         {
@@ -30,4 +32,21 @@
             }
         }
     }
+
+#else
+
+        private static System.Buffers.ArrayPool<byte> _bytePool => System.Buffers.ArrayPool<byte>.Shared;
+
+        public static byte[] Rent(int count)
+        {
+            return _bytePool.Rent(count);
+        }
+
+        public static void Return(byte[] buffer)
+        {
+            _bytePool.Return(buffer);
+        }
+    }
+
+#endif
 }

@@ -26,7 +26,7 @@ namespace LiteDB
         private readonly string _lockFilename;
         private readonly FileStream _stream;
 
-        private byte[] _buffer = new byte[FILE_SIZE];
+        private readonly byte[] _buffer = new byte[FILE_SIZE];
         private byte _slot = byte.MaxValue;
 
         public ReadWriteLockFile(string lockFilename, TimeSpan timeout)

@@ -24,7 +24,7 @@ namespace LiteDB
     {
         #region CreateInstance
 
-        private static Dictionary<Type, CreateObject> _cacheCtor = new Dictionary<Type, CreateObject>();
+        private static readonly Dictionary<Type, CreateObject> _cacheCtor = new Dictionary<Type, CreateObject>();
 
         /// <summary>
         /// Create a new instance from a Type
@@ -242,7 +242,7 @@ namespace LiteDB
                 type.GetTypeInfo().IsGenericType && 
                 type.GetGenericTypeDefinition().Equals(typeof(ICollection<>)) ||
                 type.GetInterfaces().Any(x => x == typeof(ICollection) ||
-                (x.GetTypeInfo().IsGenericType ? x.GetGenericTypeDefinition() == typeof(ICollection<>) : false));
+                (x.GetTypeInfo().IsGenericType && x.GetGenericTypeDefinition() == typeof(ICollection<>)));
         }
 
         /// <summary>
@@ -254,7 +254,7 @@ namespace LiteDB
                 type.GetTypeInfo().IsGenericType && 
                 type.GetGenericTypeDefinition().Equals(typeof(IDictionary<,>)) ||
                 type.GetInterfaces().Any(x => x == typeof(IDictionary) ||
-                (x.GetTypeInfo().IsGenericType ? x.GetGenericTypeDefinition().Equals(typeof(IDictionary<,>)) : false));
+                (x.GetTypeInfo().IsGenericType && x.GetGenericTypeDefinition().Equals(typeof(IDictionary<,>))));
         }
 
         /// <summary>
@@ -279,7 +279,7 @@ namespace LiteDB
 
         #region MethodName
 
-        private static Dictionary<MethodInfo, string> _cacheName = new Dictionary<MethodInfo, string>();
+        private static readonly Dictionary<MethodInfo, string> _cacheName = new Dictionary<MethodInfo, string>();
 
         /// <summary>
         /// Get a friendly method name with parameter types

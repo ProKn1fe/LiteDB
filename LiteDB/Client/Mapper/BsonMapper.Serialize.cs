@@ -14,7 +14,7 @@ namespace LiteDB
             if (entity == null) throw new ArgumentNullException(nameof(entity));
 
             // if object is BsonDocument, just return them
-            if (entity is BsonDocument) return (BsonDocument)(object)entity;
+            if (entity is BsonDocument document) return document;
 
             return Serialize(type, entity, 0).AsDocument;
         }
@@ -58,9 +58,9 @@ namespace LiteDB
                 return custom(obj);
             }
             // test string - mapper has some special options
-            else if (obj is string)
+            else if (obj is string str)
             {
-                var str = TrimWhitespace ? (obj as string).Trim() : (string)obj;
+                str = TrimWhitespace ? (obj as string).Trim() : str;
 
                 if (EmptyStringToNull && str.Length == 0)
                 {
@@ -72,15 +72,15 @@ namespace LiteDB
                 }
             }
             // basic Bson data types (cast datatype for better performance optimization)
-            else if (obj is int) return new BsonValue((int)obj);
-            else if (obj is long) return new BsonValue((long)obj);
-            else if (obj is double) return new BsonValue((double)obj);
-            else if (obj is decimal) return new BsonValue((decimal)obj);
-            else if (obj is byte[]) return new BsonValue((byte[])obj);
-            else if (obj is ObjectId) return new BsonValue((ObjectId)obj);
-            else if (obj is Guid) return new BsonValue((Guid)obj);
-            else if (obj is bool) return new BsonValue((bool)obj);
-            else if (obj is DateTime) return new BsonValue((DateTime)obj);
+            else if (obj is int intVal) return new BsonValue(intVal);
+            else if (obj is long longVal) return new BsonValue(longVal);
+            else if (obj is double doubleVal) return new BsonValue(doubleVal);
+            else if (obj is decimal decimalVal) return new BsonValue(decimalVal);
+            else if (obj is byte[] bytesVal) return new BsonValue(bytesVal);
+            else if (obj is ObjectId objectId) return new BsonValue(objectId);
+            else if (obj is Guid guid) return new BsonValue(guid);
+            else if (obj is bool boolVal) return new BsonValue(boolVal);
+            else if (obj is DateTime dt) return new BsonValue(dt);
             // basic .net type to convert to bson
             else if (obj is short || obj is ushort || obj is byte || obj is sbyte)
             {
@@ -90,9 +90,8 @@ namespace LiteDB
             {
                 return new BsonValue(Convert.ToInt64(obj));
             }
-            else if (obj is ulong)
+            else if (obj is ulong ulng)
             {
-                var ulng = ((ulong)obj);
                 var lng = unchecked((long)ulng);
 
                 return new BsonValue(lng);
@@ -130,9 +129,9 @@ namespace LiteDB
                 return SerializeDictionary(itemType, dict, depth);
             }
             // check if is a list or array
-            else if (obj is IEnumerable)
+            else if (obj is IEnumerable ie)
             {
-                return SerializeArray(Reflection.GetListItemType(obj.GetType()), obj as IEnumerable, depth);
+                return SerializeArray(Reflection.GetListItemType(obj.GetType()), ie, depth);
             }
             // otherwise serialize as a plain object
             else

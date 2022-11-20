@@ -176,7 +176,7 @@ namespace LiteDB.Engine
             return level;
         }
 
-        private Dictionary<PageAddress, IndexNode> _cache = new Dictionary<PageAddress, IndexNode>();
+        private readonly Dictionary<PageAddress, IndexNode> _cache = new Dictionary<PageAddress, IndexNode>();
 
         /// <summary>
         /// Get a node inside a page using PageAddress - Returns null if address IsEmpty

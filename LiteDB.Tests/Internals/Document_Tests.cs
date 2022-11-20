@@ -22,9 +22,9 @@ namespace LiteDB.Internals
             document.Add("decimal", new BsonValue((decimal) 1));
             document.Add("double", new BsonValue((double) 1.0));
             document.Add("guid", new BsonValue(Guid.NewGuid()));
-            document.Add("int", new BsonValue((int) 1));
+            document.Add("int", new BsonValue(1));
             document.Add("long", new BsonValue((long) 1));
-            document.Add("bytes", new BsonValue(new byte[] {(byte) 1}));
+            document.Add("bytes", new BsonValue(new byte[] { 1 }));
             document.Add("bsonDocument", new BsonDocument());
 
             // ACT

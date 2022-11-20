@@ -10,7 +10,7 @@ namespace LiteDB
         #region Basic direct .NET convert types
 
         // direct bson types
-        private HashSet<Type> _bsonTypes = new HashSet<Type>
+        private readonly HashSet<Type> _bsonTypes = new HashSet<Type>
         {
             typeof(string),
             typeof(int),
@@ -25,7 +25,7 @@ namespace LiteDB
         };
 
         // simple convert types
-        private HashSet<Type> _basicTypes = new HashSet<Type>
+        private readonly HashSet<Type> _basicTypes = new HashSet<Type>
         {
             typeof(short),
             typeof(ushort),

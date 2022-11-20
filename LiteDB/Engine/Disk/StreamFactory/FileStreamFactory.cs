@@ -45,7 +45,7 @@ namespace LiteDB.Engine
                 File.SetAttributes(_filename, FileAttributes.Hidden);
             }
 
-            return _password == null ? (Stream)stream : new AesStream(_password, stream);
+            return _password == null ? stream : new AesStream(_password, stream);
         }
 
         /// <summary>

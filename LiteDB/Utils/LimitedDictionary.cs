@@ -124,7 +124,7 @@ namespace LiteDB.Utils
             }
         }
 
-        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => new Enumerator(this) as IEnumerator<KeyValuePair<TKey, TValue>>;
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => new Enumerator(this);
 
         public bool Remove(TKey key)
         {
@@ -177,7 +177,7 @@ namespace LiteDB.Utils
             object IEnumerator.Current => current;
 
             private IEnumerator ordDictEnumerator;
-            private LimitedDictionary<TKey, TValue> dict;
+            private readonly LimitedDictionary<TKey, TValue> dict;
 
 
             internal Enumerator(LimitedDictionary<TKey, TValue> dict)

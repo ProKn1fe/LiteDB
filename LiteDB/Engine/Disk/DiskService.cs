@@ -14,13 +14,13 @@ namespace LiteDB.Engine
     internal class DiskService : IDisposable
     {
         private readonly MemoryCache _cache;
-        private DiskWriterQueue _queue;
+        private readonly DiskWriterQueue _queue;
 
         private IStreamFactory _streamFactory;
 
         private StreamPool _streamPool;
 
-        private HeaderPage _header;
+        private readonly HeaderPage _header;
 
         private long _logStartPosition;
         private long _logEndPosition;

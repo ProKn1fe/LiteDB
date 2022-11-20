@@ -52,7 +52,7 @@ namespace LiteDB
             if (type.IsValueType)
             {
                 return memberInfo is FieldInfo ?
-                    (GenericSetter)fieldInfo.SetValue :
+                    fieldInfo.SetValue :
                     ((t, v) => propertyInfo.SetValue(t, v, null));
             }
 

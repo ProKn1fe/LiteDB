@@ -645,7 +645,7 @@ namespace LiteDB
                             UseSource = useSource,
                             IsScalar = true,
                             Fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase).AddRange(new string[] { key }),
-                            Expression = Expression.Call(_memberPathMethod, context.Root, Expression.Constant(key)) as Expression,
+                            Expression = Expression.Call(_memberPathMethod, context.Root, Expression.Constant(key)),
                             Source = "$." + (fname.IsWord() ? fname : "[" + fname + "]")
                         };
                     }

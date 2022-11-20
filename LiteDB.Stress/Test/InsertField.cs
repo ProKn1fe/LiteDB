@@ -8,11 +8,11 @@ namespace LiteDB.Stress
 
     public class InsertField
     {
-        private Random _rnd = new Random();
+        private readonly Random _rnd = new Random();
 
         #region Names
 
-        private static string[] _firstNames = new string[]
+        private static readonly string[] _firstNames = new string[]
         {
             "Blaze", "Zenia", "Malik", "Palmer", "Valentine", "Quinn", "Preston", "John", "Ferdinand", "Cassidy", "Kai", "Alma", "Cullen",
             "Colorado", "Sean", "Kadeem", "Faith", "Dexter", "Olympia", "Alden", "Gloria", "Dahlia", "Melissa", "Fiona", "Oliver", "Daryl",
@@ -93,7 +93,7 @@ namespace LiteDB.Stress
             "Perry", "Jason", "Levi", "Deacon", "Reese", "Arsenio", "Molly", "Cade", "Mufutau", "Cole", "Tamara", "Ann"
         };
 
-        private static string[] _lastNames = new string[]
+        private static readonly string[] _lastNames = new string[]
         {
             "Hakeem", "Jena", "Donna", "Cameron", "Ramona", "Guy", "Frances", "Price", "Sydnee", "Miriam", "Quinlan", "Margaret", "Mikayla", "Chester",
             "Dean", "Priscilla", "Astra", "Debra", "Kasimir", "Kane", "Amelia", "Phoebe", "Justina", "Brady", "Sybil", "Zeus", "Amethyst", "Dante",

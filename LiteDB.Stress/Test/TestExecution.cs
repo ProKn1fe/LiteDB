@@ -93,7 +93,7 @@ namespace LiteDB.Stress
 
                             info.TotalRun += info.Elapsed.Elapsed;
 
-                            if (info.Result.IsInt32) info.ResultSum += (long)info.Result.AsInt32;
+                            if (info.Result.IsInt32) info.ResultSum += info.Result.AsInt32;
 
                             info.Counter++;
                             info.LastRun = DateTime.Now;

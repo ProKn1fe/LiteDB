@@ -132,25 +132,21 @@ namespace LiteDB
             else if (value is ObjectId) Type = BsonType.ObjectId;
             else if (value is Guid) Type = BsonType.Guid;
             else if (value is bool) Type = BsonType.Boolean;
-            else if (value is DateTime)
+            else if (value is DateTime dt)
             {
                 Type = BsonType.DateTime;
-                RawValue = ((DateTime)value).Truncate();
+                RawValue = dt.Truncate();
             }
-            else if (value is BsonValue)
+            else if (value is BsonValue bv)
             {
-                var v = (BsonValue)value;
-                Type = v.Type;
-                RawValue = v.RawValue;
+                Type = bv.Type;
+                RawValue = bv.RawValue;
             }
             else
             {
                 // test for array or dictionary (document)
-                var enumerable = value as System.Collections.IEnumerable;
-                var dictionary = value as System.Collections.IDictionary;
-
                 // test first for dictionary (because IDictionary implements IEnumerable)
-                if (dictionary != null)
+                if (value is System.Collections.IDictionary dictionary)
                 {
                     var dict = new Dictionary<string, BsonValue>();
 
@@ -162,7 +158,7 @@ namespace LiteDB
                     Type = BsonType.Document;
                     RawValue = dict;
                 }
-                else if (enumerable != null)
+                else if (value is System.Collections.IEnumerable enumerable)
                 {
                     var list = new List<BsonValue>();
 
@@ -575,8 +571,8 @@ namespace LiteDB
 
         public static bool operator ==(BsonValue lhs, BsonValue rhs)
         {
-            if (object.ReferenceEquals(lhs, null)) return object.ReferenceEquals(rhs, null);
-            if (object.ReferenceEquals(rhs, null)) return false; // don't check type because sometimes different types can be ==
+            if (lhs is null) return rhs is null;
+            if (rhs is null) return false; // don't check type because sometimes different types can be ==
 
             return lhs.Equals(rhs);
         }

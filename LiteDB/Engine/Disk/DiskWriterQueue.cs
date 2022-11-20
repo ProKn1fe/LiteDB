@@ -18,7 +18,7 @@ namespace LiteDB.Engine
         // async thread controls
         private Task _task;
 
-        private ConcurrentQueue<PageBuffer> _queue = new ConcurrentQueue<PageBuffer>();
+        private readonly ConcurrentQueue<PageBuffer> _queue = new ConcurrentQueue<PageBuffer>();
 
         public DiskWriterQueue(Stream stream)
         {

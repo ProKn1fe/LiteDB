@@ -139,7 +139,7 @@ namespace LiteDB
 
         public void CopyTo(KeyValuePair<string, BsonValue>[] array, int arrayIndex)
         {
-            ((ICollection<KeyValuePair<string, BsonValue>>)RawValue).CopyTo(array, arrayIndex);
+            RawValue.CopyTo(array, arrayIndex);
         }
 
         public void CopyTo(BsonDocument other)

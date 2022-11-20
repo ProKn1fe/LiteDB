@@ -39,7 +39,7 @@ namespace LiteDB.Stress
                 else
                 {
                     var item = el.Name == "insert" ?
-                        (ITestItem)new InsertTaskItem(el) :
+                        new InsertTaskItem(el) :
                         (ITestItem)new SqlTaskItem(el);
 
                     Tasks.Add(item);

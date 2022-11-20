@@ -15,13 +15,12 @@ namespace LiteDB
         #region Properties
 
         private readonly ILiteEngine _engine;
-        private readonly BsonMapper _mapper;
         private readonly bool _disposeOnClose;
 
         /// <summary>
         /// Get current instance of BsonMapper used in this database instance (can be BsonMapper.Global)
         /// </summary>
-        public BsonMapper Mapper => _mapper;
+        public BsonMapper Mapper { get; private set; }
 
         #endregion
 
@@ -49,7 +48,7 @@ namespace LiteDB
             }
 
             _engine = connectionString.CreateEngine();
-            _mapper = mapper ?? BsonMapper.Global;
+            Mapper = mapper ?? BsonMapper.Global;
             _disposeOnClose = true;
         }
 
@@ -67,7 +66,7 @@ namespace LiteDB
             };
 
             _engine = new LiteEngine(settings);
-            _mapper = mapper ?? BsonMapper.Global;
+            Mapper = mapper ?? BsonMapper.Global;
             _disposeOnClose = true;
         }
 
@@ -77,7 +76,7 @@ namespace LiteDB
         public LiteDatabase(ILiteEngine engine, BsonMapper mapper = null, bool disposeOnClose = true)
         {
             _engine = engine ?? throw new ArgumentNullException(nameof(engine));
-            _mapper = mapper ?? BsonMapper.Global;
+            Mapper = mapper ?? BsonMapper.Global;
             _disposeOnClose = disposeOnClose;
         }
 
@@ -92,7 +91,7 @@ namespace LiteDB
         /// <param name="autoId">Define autoId data type (when object contains no id field)</param>
         public ILiteCollection<T> GetCollection<T>(string name, BsonAutoId autoId = BsonAutoId.ObjectId)
         {
-            return new LiteCollection<T>(name, autoId, _engine, _mapper);
+            return new LiteCollection<T>(name, autoId, _engine, Mapper);
         }
 
         /// <summary>
@@ -120,7 +119,7 @@ namespace LiteDB
         {
             if (name.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(name));
 
-            return new LiteCollection<BsonDocument>(name, autoId, _engine, _mapper);
+            return new LiteCollection<BsonDocument>(name, autoId, _engine, Mapper);
         }
 
         #endregion

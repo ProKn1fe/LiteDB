@@ -9,7 +9,7 @@ namespace LiteDB.Shell
     /// </summary>
     internal class OptionSet
     {
-        private Dictionary<string, OptionsParam> _options = new Dictionary<string, OptionsParam>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, OptionsParam> _options = new Dictionary<string, OptionsParam>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Register all extra non parameter (without -- or /)
@@ -73,7 +73,7 @@ namespace LiteDB.Shell
                     if (equals.Length > 0)
                     {
                         var value = arg.Substring(match.Value.Length);
-                        var val = (object)Convert.ChangeType(value, param.Type);
+                        var val = Convert.ChangeType(value, param.Type);
                         param.Action(val);
                     }
                     else
@@ -82,7 +82,7 @@ namespace LiteDB.Shell
                         if (i < args.Length - 1)
                         {
                             var value = args[++i];
-                            var val = (object)Convert.ChangeType(value, param.Type);
+                            var val = Convert.ChangeType(value, param.Type);
                             param.Action(val);
                         }
                         else
