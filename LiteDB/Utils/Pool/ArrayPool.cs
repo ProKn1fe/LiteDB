@@ -5,7 +5,7 @@ namespace LiteDB
 {
     internal class ArrayPool<T>
     {
-        private static readonly T[] Emptry = new T[0];
+        private static readonly T[] Emptry = Array.Empty<T>();
 
         private const int SLOT_COUNT = 8;
 

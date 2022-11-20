@@ -9,7 +9,7 @@ namespace LiteDB.Shell.Commands
         public string Name { get; set; }
         public string Syntax { get; set; }
         public string Description { get; set; }
-        public string[] Examples { get; set; } = new string[0];
+        public string[] Examples { get; set; } = Array.Empty<string>();
     }
 
     internal class Help : IShellCommand

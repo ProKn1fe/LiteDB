@@ -1,4 +1,6 @@
-﻿using static LiteDB.Constants;
+﻿using System;
+
+using static LiteDB.Constants;
 
 namespace LiteDB.Engine
 {
@@ -161,15 +163,15 @@ namespace LiteDB.Engine
         public IndexNode(BsonDocument doc)
         {
             _page = null;
-            _segment = new BufferSlice(new byte[0], 0, 0);
+            _segment = new BufferSlice(Array.Empty<byte>(), 0, 0);
 
             Position = new PageAddress(0, 0);
             Slot = 0;
             Level = 0;
             DataBlock = PageAddress.Empty;
             NextNode = PageAddress.Empty;
-            Next = new PageAddress[0];
-            Prev = new PageAddress[0];
+            Next = Array.Empty<PageAddress>();
+            Prev = Array.Empty<PageAddress>();
 
             // index node key IS document
             Key = doc;

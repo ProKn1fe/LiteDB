@@ -349,7 +349,7 @@ namespace LiteDB.Engine
                 {
                     var page = ReadPage(extendPageID);
 
-                    if (page["pageType"].AsInt32 != 5) return new byte[0];
+                    if (page["pageType"].AsInt32 != 5) return Array.Empty<byte>();
 
                     buffer.Write(page["data"].AsBinary, 0, page["itemCount"].AsInt32);
 

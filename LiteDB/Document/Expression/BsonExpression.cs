@@ -229,7 +229,7 @@ namespace LiteDB
         public BsonValue ExecuteScalar(Collation collation = null)
         {
             var root = new BsonDocument();
-            var source = new BsonDocument[] { };
+            var source = Array.Empty<BsonDocument>();
 
             return ExecuteScalar(source, root, root, collation);
         }

@@ -140,7 +140,7 @@ namespace LiteDB
 
                 if (pattern == null) throw new NotSupportedException($"Member {member.Name} are not support in {member.DeclaringType.Name} when convert to BsonExpression ({node}).");
 
-                ResolvePattern(pattern, node.Expression, new Expression[0]);
+                ResolvePattern(pattern, node.Expression, Array.Empty<Expression>());
             }
             else
             {
