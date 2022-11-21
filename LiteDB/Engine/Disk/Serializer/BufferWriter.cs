@@ -200,7 +200,7 @@ namespace LiteDB.Engine
             }
             else
             {
-                var buffer = BufferPool.Rent(bytesCount);
+                var buffer = BufferPool<byte>.Rent(bytesCount);
 
                 Encoding.UTF8.GetBytes(value, 0, value.Length, buffer, 0);
 
@@ -210,7 +210,7 @@ namespace LiteDB.Engine
 
                 MoveForward(1);
 
-                BufferPool.Return(buffer);
+                BufferPool<byte>.Return(buffer);
             }
         }
 
@@ -236,13 +236,13 @@ namespace LiteDB.Engine
             else
             {
                 // rent a buffer to be re-usable
-                var buffer = BufferPool.Rent(count);
+                var buffer = BufferPool<byte>.Rent(count);
 
                 Encoding.UTF8.GetBytes(value, 0, value.Length, buffer, 0);
 
                 Write(buffer, 0, count);
 
-                BufferPool.Return(buffer);
+                BufferPool<byte>.Return(buffer);
             }
 
             if (specs)
@@ -350,13 +350,13 @@ namespace LiteDB.Engine
             }
             else
             {
-                var buffer = BufferPool.Rent(12);
+                var buffer = BufferPool<byte>.Rent(12);
 
                 value.ToByteArray(buffer, 0);
 
                 Write(buffer, 0, 12);
 
-                BufferPool.Return(buffer);
+                BufferPool<byte>.Return(buffer);
             }
         }
 

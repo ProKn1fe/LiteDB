@@ -43,7 +43,7 @@ namespace LiteDB.Engine
 
             _reader = new Lazy<Stream>(() => _disk.GetReader());
 
-            var bytes = BufferPool.Rent(disk.ContainerSize);
+            var bytes = BufferPool<byte>.Rent(disk.ContainerSize);
 
             _buffer = new BufferSlice(bytes, 0, _containerSize);
         }
@@ -63,7 +63,7 @@ namespace LiteDB.Engine
             }
 
             // return array buffer into pool
-            BufferPool.Return(_buffer.Array);
+            BufferPool<byte>.Return(_buffer.Array);
 
             // return open strem into disk
             if (_reader.IsValueCreated)

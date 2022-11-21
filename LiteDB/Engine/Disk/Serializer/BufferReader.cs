@@ -193,13 +193,13 @@ namespace LiteDB.Engine
             else
             {
                 // rent a buffer to be re-usable
-                var buffer = BufferPool.Rent(count);
+                var buffer = BufferPool<byte>.Rent(count);
 
                 Read(buffer, 0, count);
 
                 value = Encoding.UTF8.GetString(buffer, 0, count);
 
-                BufferPool.Return(buffer);
+                BufferPool<byte>.Return(buffer);
             }
 
             return value;
@@ -382,13 +382,13 @@ namespace LiteDB.Engine
             }
             else
             {
-                var buffer = BufferPool.Rent(12);
+                var buffer = BufferPool<byte>.Rent(12);
 
                 Read(buffer, 0, 12);
 
                 value = new ObjectId(buffer, 0);
 
-                BufferPool.Return(buffer);
+                BufferPool<byte>.Return(buffer);
             }
 
             return value;
