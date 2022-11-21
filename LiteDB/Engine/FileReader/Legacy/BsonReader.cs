@@ -34,7 +34,7 @@ namespace LiteDB
             while (reader.Position < end)
             {
                 var value = ReadElement(reader, out string name);
-                obj.RawValue[name] = value;
+                obj.RawDictionary[name] = value;
             }
 
             reader.ReadByte(); // zero

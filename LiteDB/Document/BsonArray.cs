@@ -6,13 +6,20 @@ namespace LiteDB
 {
     public class BsonArray : BsonValue, IList<BsonValue>
     {
+        private const int InitialArraySize = 32;
+
         public BsonArray()
-            : base(BsonType.Array, new List<BsonValue>())
+            : base(BsonType.Array, new List<BsonValue>(InitialArraySize))
+        {
+        }
+
+        private BsonArray(int? initialCapacity = InitialArraySize)
+            : base(BsonType.Array, new List<BsonValue>(initialCapacity < InitialArraySize ? InitialArraySize : initialCapacity.Value))
         {
         }
 
         public BsonArray(List<BsonValue> array)
-            : this()
+            : this(array?.Count)
         {
             if (array == null) throw new ArgumentNullException(nameof(array));
 
@@ -20,11 +27,19 @@ namespace LiteDB
         }
 
         public BsonArray(params BsonValue[] array)
-            : this()
+            : this(array?.Length)
         {
             if (array == null) throw new ArgumentNullException(nameof(array));
 
             AddRange(array);
+        }
+
+        public BsonArray(BsonValue value)
+            : this()
+        {
+            if (value == null) throw new ArgumentNullException(nameof(value));
+
+            Add(value);
         }
 
         public BsonArray(IEnumerable<BsonValue> items)
@@ -35,25 +50,29 @@ namespace LiteDB
             AddRange(items);
         }
 
-        public new IList<BsonValue> RawValue => (IList<BsonValue>)base.RawValue;
+        private IList<BsonValue> _rawArray;
+        public IList<BsonValue> RawArray
+        {
+            get => _rawArray ??= RawValue as IList<BsonValue>;
+        }
 
         public override BsonValue this[int index]
         {
             get
             {
-                return RawValue[index];
+                return RawArray[index];
             }
             set
             {
-                RawValue[index] = value ?? Null;
+                RawArray[index] = value ?? Null;
             }
         }
 
-        public int Count => RawValue.Count;
+        public int Count => RawArray.Count;
 
         public bool IsReadOnly => false;
 
-        public void Add(BsonValue item) => RawValue.Add(item ?? Null);
+        public void Add(BsonValue item) => RawArray.Add(item ?? Null);
 
         public void AddRange<TCollection>(TCollection collection)
             where TCollection : ICollection<BsonValue>
@@ -71,7 +90,7 @@ namespace LiteDB
 
             foreach (var bsonValue in collection)
             {
-                list.Add(bsonValue ?? Null);    
+                list.Add(bsonValue ?? Null);
             }
             
         }
@@ -86,25 +105,25 @@ namespace LiteDB
             }
         }
 
-        public void Clear() => RawValue.Clear();
+        public void Clear() => RawArray.Clear();
 
-        public bool Contains(BsonValue item) => RawValue.Contains(item ?? Null);
+        public bool Contains(BsonValue item) => RawArray.Contains(item ?? Null);
 
-        public void CopyTo(BsonValue[] array, int arrayIndex) => RawValue.CopyTo(array, arrayIndex);
+        public void CopyTo(BsonValue[] array, int arrayIndex) => RawArray.CopyTo(array, arrayIndex);
 
-        public IEnumerator<BsonValue> GetEnumerator() => RawValue.GetEnumerator();
+        public IEnumerator<BsonValue> GetEnumerator() => RawArray.GetEnumerator();
 
-        public int IndexOf(BsonValue item) => RawValue.IndexOf(item ?? Null);
+        public int IndexOf(BsonValue item) => RawArray.IndexOf(item ?? Null);
 
-        public void Insert(int index, BsonValue item) => RawValue.Insert(index, item ?? Null);
+        public void Insert(int index, BsonValue item) => RawArray.Insert(index, item ?? Null);
 
-        public bool Remove(BsonValue item) => RawValue.Remove(item);
+        public bool Remove(BsonValue item) => RawArray.Remove(item);
 
-        public void RemoveAt(int index) => RawValue.RemoveAt(index);
+        public void RemoveAt(int index) => RawArray.RemoveAt(index);
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            foreach (var value in RawValue)
+            foreach (var value in RawArray)
             {
                 yield return value;
             }
@@ -137,7 +156,7 @@ namespace LiteDB
             if (recalc == false && _length > 0) return _length;
 
             var length = 5;
-            var array = RawValue;
+            var array = RawArray;
             
             for (var i = 0; i < array.Count; i++)
             {
@@ -145,6 +164,11 @@ namespace LiteDB
             }
 
             return _length = length;
+        }
+
+        private void AllocateArray()
+        {
+
         }
     }
 }

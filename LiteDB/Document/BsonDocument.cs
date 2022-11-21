@@ -10,13 +10,20 @@ namespace LiteDB
 {
     public class BsonDocument : BsonValue, IDictionary<string, BsonValue>
     {
+        private const int InitialDictionarySize = 32;
+
         public BsonDocument()
-            : base(BsonType.Document, new Dictionary<string, BsonValue>(StringComparer.OrdinalIgnoreCase))
+            : base(BsonType.Document, new Dictionary<string, BsonValue>(InitialDictionarySize, StringComparer.OrdinalIgnoreCase))
+        {
+        }
+
+        private BsonDocument(int? initialCapacity = InitialDictionarySize)
+            : base(BsonType.Document, new Dictionary<string, BsonValue>(initialCapacity < InitialDictionarySize ? InitialDictionarySize : initialCapacity.Value, StringComparer.OrdinalIgnoreCase))
         {
         }
 
         public BsonDocument(ConcurrentDictionary<string, BsonValue> dict)
-            : this()
+            : this(dict?.Count)
         {
             if (dict == null) throw new ArgumentNullException(nameof(dict));
 
@@ -27,7 +34,7 @@ namespace LiteDB
         }
 
         public BsonDocument(IDictionary<string, BsonValue> dict)
-            : this()
+            : this(dict?.Count)
         {
             if (dict == null) throw new ArgumentNullException(nameof(dict));
 
@@ -37,7 +44,11 @@ namespace LiteDB
             }
         }
 
-        public new IDictionary<string, BsonValue> RawValue => base.RawValue as IDictionary<string, BsonValue>;
+        private IDictionary<string, BsonValue> _rawDictionary;
+        public IDictionary<string, BsonValue> RawDictionary
+        {
+            get => _rawDictionary ??= RawValue as IDictionary<string, BsonValue>;
+        }
 
         /// <summary>
         /// Get/Set position of this document inside database. It's filled when used in Find operation.
@@ -51,11 +62,11 @@ namespace LiteDB
         {
             get
             {
-                return RawValue.GetOrDefault(key, Null);
+                return RawDictionary.GetOrDefault(key, Null);
             }
             set
             {
-                RawValue[key] = value ?? Null;
+                RawDictionary[key] = value ?? Null;
             }
         }
 
@@ -93,53 +104,53 @@ namespace LiteDB
 
         #region IDictionary
 
-        public ICollection<string> Keys => RawValue.Keys;
+        public ICollection<string> Keys => RawDictionary.Keys;
 
-        public ICollection<BsonValue> Values => RawValue.Values;
+        public ICollection<BsonValue> Values => RawDictionary.Values;
 
-        public int Count => RawValue.Count;
+        public int Count => RawDictionary.Count;
 
         public bool IsReadOnly => false;
 
-        public bool ContainsKey(string key) => RawValue.ContainsKey(key);
+        public bool ContainsKey(string key) => RawDictionary.ContainsKey(key);
 
         /// <summary>
         /// Get all document elements - Return "_id" as first of all (if exists)
         /// </summary>
         public IEnumerable<KeyValuePair<string, BsonValue>> GetElements()
         {
-            if(RawValue.TryGetValue("_id", out var id))
+            if(RawDictionary.TryGetValue("_id", out var id))
             {
                 yield return new KeyValuePair<string, BsonValue>("_id", id);
             }
 
-            foreach(var item in RawValue.Where(x => x.Key != "_id"))
+            foreach(var item in RawDictionary.Where(x => x.Key != "_id"))
             {
                 yield return item;
             }
         }
 
-        public void Add(string key, BsonValue value) => RawValue.Add(key, value ?? Null);
+        public void Add(string key, BsonValue value) => RawDictionary.Add(key, value ?? Null);
 
-        public bool Remove(string key) => RawValue.Remove(key);
+        public bool Remove(string key) => RawDictionary.Remove(key);
 
-        public void Clear() => RawValue.Clear();
+        public void Clear() => RawDictionary.Clear();
 
-        public bool TryGetValue(string key, out BsonValue value) => RawValue.TryGetValue(key, out value);
+        public bool TryGetValue(string key, out BsonValue value) => RawDictionary.TryGetValue(key, out value);
 
         public void Add(KeyValuePair<string, BsonValue> item) => Add(item.Key, item.Value);
 
-        public bool Contains(KeyValuePair<string, BsonValue> item) => RawValue.Contains(item);
+        public bool Contains(KeyValuePair<string, BsonValue> item) => RawDictionary.Contains(item);
 
         public bool Remove(KeyValuePair<string, BsonValue> item) => Remove(item.Key);
 
-        public IEnumerator<KeyValuePair<string, BsonValue>> GetEnumerator() => RawValue.GetEnumerator();
+        public IEnumerator<KeyValuePair<string, BsonValue>> GetEnumerator() => RawDictionary.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => RawValue.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => RawDictionary.GetEnumerator();
 
         public void CopyTo(KeyValuePair<string, BsonValue>[] array, int arrayIndex)
         {
-            RawValue.CopyTo(array, arrayIndex);
+            RawDictionary.CopyTo(array, arrayIndex);
         }
 
         public void CopyTo(BsonDocument other)
@@ -160,7 +171,7 @@ namespace LiteDB
 
             var length = 5;
 
-            foreach(var element in RawValue)
+            foreach(var element in RawDictionary)
             {
                 length += GetBytesCountElement(element.Key, element.Value);
             }
