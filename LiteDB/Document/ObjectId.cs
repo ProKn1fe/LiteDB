@@ -118,6 +118,36 @@ namespace LiteDB
                 bytes[startIndex + 11];
         }
 
+#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+        /// <summary>
+        /// Initializes a new instance of the ObjectId class from byte array.
+        /// </summary>
+        public ObjectId(Span<byte> bytes)
+        {
+            if (bytes == null) throw new ArgumentNullException(nameof(bytes));
+
+            Timestamp =
+                (bytes[0] << 24) +
+                (bytes[1] << 16) +
+                (bytes[2] << 8) +
+                bytes[3];
+
+            Machine =
+                (bytes[4] << 16) +
+                (bytes[5] << 8) +
+                bytes[6];
+
+            Pid = (short)
+                ((bytes[7] << 8) +
+                bytes[8]);
+
+            Increment =
+                (bytes[9] << 16) +
+                (bytes[10] << 8) +
+                bytes[11];
+        }
+#endif
+
         /// <summary>
         /// Convert hex value string in byte array
         /// </summary>

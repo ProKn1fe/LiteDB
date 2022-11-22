@@ -352,6 +352,11 @@ namespace LiteDB.Engine
         /// </summary>
         public Guid ReadGuid()
         {
+#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+            Span<byte> bytes = stackalloc byte[16];
+            Read(bytes);
+            return new Guid(bytes);
+#else
             Guid value;
 
             if (_currentPosition + 16 <= _current.Count)
@@ -367,6 +372,7 @@ namespace LiteDB.Engine
             }
 
             return value;
+#endif
         }
 
         /// <summary>
@@ -374,6 +380,11 @@ namespace LiteDB.Engine
         /// </summary>
         public ObjectId ReadObjectId()
         {
+#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+            Span<byte> bytes = stackalloc byte[12];
+            Read(bytes);
+            return new ObjectId(bytes);
+#else
             ObjectId value;
 
             if (_currentPosition + 12 <= _current.Count)
@@ -394,6 +405,7 @@ namespace LiteDB.Engine
             }
 
             return value;
+#endif
         }
 
         /// <summary>
@@ -471,7 +483,7 @@ namespace LiteDB.Engine
             }
         }
 
-        #endregion
+#endregion
 
         #region BsonDocument as SPECS
 
@@ -516,7 +528,7 @@ namespace LiteDB.Engine
 
             while (_position < end)
             {
-                var value = ReadElement(null, out string name);
+                var value = ReadElement(null, out string _);
                 arr.Add(value);
             }
 
@@ -580,13 +592,14 @@ namespace LiteDB.Engine
                 var length = ReadInt32();
                 var subType = ReadByte();
 #if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
-                Span<byte> bytes = length < STACKALLOC_MAX_SIZE ? stackalloc byte[length] : new byte[length];
-                Read(bytes);
                 
                 switch (subType)
                 {
-                    case 0x00: return bytes.ToArray();
-                    case 0x04: return new Guid(bytes);
+                    case 0x00:
+                        Span<byte> bytes = length < STACKALLOC_MAX_SIZE ? stackalloc byte[length] : new byte[length];
+                        Read(bytes);
+                        return bytes.ToArray();
+                    case 0x04: return ReadGuid();
                 }
 #else
                 var bytes = ReadBytes(length);
