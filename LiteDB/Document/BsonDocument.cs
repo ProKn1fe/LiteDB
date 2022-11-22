@@ -17,7 +17,7 @@ namespace LiteDB
         {
         }
 
-        private BsonDocument(int? initialCapacity = InitialDictionarySize)
+        internal BsonDocument(int? initialCapacity = InitialDictionarySize)
             : base(BsonType.Document, new Dictionary<string, BsonValue>(initialCapacity < InitialDictionarySize ? InitialDictionarySize : initialCapacity.Value, StringComparer.OrdinalIgnoreCase))
         {
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -138,7 +139,8 @@ namespace LiteDB.Engine
 
                 // fill buffer
                 var sliceCount = Math.Min(bytesLeft, count - bufferPosition);
-                new Span<byte>(_current.Array, _current.Offset + _currentPosition, sliceCount).CopyTo(buffer[bufferPosition..]);
+                new Span<byte>(_current.Array, _current.Offset + _currentPosition, sliceCount)
+                    .CopyTo(buffer[bufferPosition..(bufferPosition + sliceCount)]);
 
                 bufferPosition += bytesToCopy;
 
@@ -558,25 +560,35 @@ namespace LiteDB.Engine
             {
                 return ReadDouble();
             }
-            else if (type == 0x02) // String
+            if (type == 0x02) // String
             {
                 var length = ReadInt32();
                 var value = ReadString(length - 1);
                 MoveForward(1); // read '\0'
                 return value;
             }
-            else if (type == 0x03) // Document
+            if (type == 0x03) // Document
             {
                 return ReadDocument();
             }
-            else if (type == 0x04) // Array
+            if (type == 0x04) // Array
             {
                 return ReadArray();
             }
-            else if (type == 0x05) // Binary
+            if (type == 0x05) // Binary
             {
                 var length = ReadInt32();
                 var subType = ReadByte();
+#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+                Span<byte> bytes = length < Pragmas.STACKALLOC_MAX_SIZE ? stackalloc byte[length] : new byte[length];
+                Read(bytes);
+                
+                switch (subType)
+                {
+                    case 0x00: return bytes.ToArray();
+                    case 0x04: return new Guid(bytes);
+                }
+#else
                 var bytes = ReadBytes(length);
 
                 switch (subType)
@@ -584,16 +596,17 @@ namespace LiteDB.Engine
                     case 0x00: return bytes;
                     case 0x04: return new Guid(bytes);
                 }
+#endif
             }
-            else if (type == 0x07) // ObjectId
+            if (type == 0x07) // ObjectId
             {
                 return ReadObjectId();
             }
-            else if (type == 0x08) // Boolean
+            if (type == 0x08) // Boolean
             {
                 return ReadBoolean();
             }
-            else if (type == 0x09) // DateTime
+            if (type == 0x09) // DateTime
             {
                 var ts = ReadInt64();
 
@@ -605,27 +618,27 @@ namespace LiteDB.Engine
 
                 return _utcDate ? date : date.ToLocalTime();
             }
-            else if (type == 0x0A) // Null
+            if (type == 0x0A) // Null
             {
                 return BsonValue.Null;
             }
-            else if (type == 0x10) // Int32
+            if (type == 0x10) // Int32
             {
                 return ReadInt32();
             }
-            else if (type == 0x12) // Int64
+            if (type == 0x12) // Int64
             {
                 return ReadInt64();
             }
-            else if (type == 0x13) // Decimal
+            if (type == 0x13) // Decimal
             {
                 return ReadDecimal();
             }
-            else if (type == 0xFF) // MinKey
+            if (type == 0xFF) // MinKey
             {
                 return BsonValue.MinValue;
             }
-            else if (type == 0x7F) // MaxKey
+            if (type == 0x7F) // MaxKey
             {
                 return BsonValue.MaxValue;
             }

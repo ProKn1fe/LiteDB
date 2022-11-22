@@ -220,6 +220,24 @@ namespace LiteDB
             return bytes;
         }
 
+#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+        public void TryWriteBytes(Span<byte> bytes)
+        {
+            bytes[1] = (byte)(Timestamp >> 16);
+            bytes[0] = (byte)(Timestamp >> 24);
+            bytes[2] = (byte)(Timestamp >> 8);
+            bytes[3] = (byte)(Timestamp);
+            bytes[4] = (byte)(Machine >> 16);
+            bytes[5] = (byte)(Machine >> 8);
+            bytes[6] = (byte)(Machine);
+            bytes[7] = (byte)(Pid >> 8);
+            bytes[8] = (byte)(Pid);
+            bytes[9] = (byte)(Increment >> 16);
+            bytes[10] = (byte)(Increment >> 8);
+            bytes[11] = (byte)(Increment);
+        }
+#endif
+
         public override string ToString()
         {
             return BitConverter.ToString(ToByteArray()).Replace("-", "").ToLower();

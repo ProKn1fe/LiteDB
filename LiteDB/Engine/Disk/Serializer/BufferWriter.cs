@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Text;
 
@@ -136,7 +137,8 @@ namespace LiteDB.Engine
 
                 // fill buffer
                 var sliceCount = Math.Min(bytesLeft, count - bufferPosition);
-                buffer[bufferPosition..].CopyTo(new Span<byte>(_current.Array, _current.Offset + _currentPosition, sliceCount));
+                buffer[bufferPosition..(bufferPosition + sliceCount)]
+                    .CopyTo(new Span<byte>(_current.Array, _current.Offset + _currentPosition, sliceCount));
 
                 bufferPosition += bytesToCopy;
 
@@ -186,6 +188,13 @@ namespace LiteDB.Engine
         {
             if (value.IndexOf('\0') > -1) throw LiteException.InvalidNullCharInString();
 
+#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+            var count = Encoding.UTF8.GetByteCount(value);
+            Span<byte> bytes = count < Pragmas.STACKALLOC_MAX_SIZE ? stackalloc byte[count + 1] : new byte[count + 1];
+            Encoding.UTF8.GetBytes(value, bytes);
+            bytes[^1] = 0x00;
+            Write(bytes);
+#else
             var bytesCount = Encoding.UTF8.GetByteCount(value);
             var available = _current.Count - _currentPosition; // avaiable in current segment
 
@@ -212,6 +221,7 @@ namespace LiteDB.Engine
 
                 BufferPool<byte>.Return(buffer);
             }
+#endif
         }
 
         /// <summary>
@@ -222,6 +232,13 @@ namespace LiteDB.Engine
         {
             var count = Encoding.UTF8.GetByteCount(value);
 
+#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+            Span<byte> bytes = count < Pragmas.STACKALLOC_MAX_SIZE ? stackalloc byte[count + 5] : new byte[count + 5];
+            BitConverter.TryWriteBytes(bytes, count + 1);
+            Encoding.UTF8.GetBytes(value, bytes[4..]);
+            bytes[^1] = 0x00;
+            Write(specs ? bytes : bytes[4..(count + 4)]);
+#else
             if (specs)
             {
                 Write(count + 1); // write Length + 1 (for \0)
@@ -249,6 +266,8 @@ namespace LiteDB.Engine
             {
                 Write((byte)0x00);
             }
+#endif
+
         }
 
         #endregion
@@ -305,7 +324,12 @@ namespace LiteDB.Engine
 
         public void Write(decimal value)
         {
+#if NET5_0_OR_GREATER
+            Span<int> bits = stackalloc int[4];
+            decimal.GetBits(value, bits);
+#else
             var bits = decimal.GetBits(value);
+#endif
             Write(bits[0]);
             Write(bits[1]);
             Write(bits[2]);
@@ -331,10 +355,14 @@ namespace LiteDB.Engine
         /// </summary>
         public void Write(Guid value)
         {
-            // there is no avaiable value.TryWriteBytes (TODO: implement conditional compile)?
+#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+            Span<byte> bytes = stackalloc byte[16];
+            value.TryWriteBytes(bytes);
+            Write(bytes);
+#else
             var bytes = value.ToByteArray();
-
             Write(bytes, 0, 16);
+#endif
         }
 
         /// <summary>
@@ -342,22 +370,15 @@ namespace LiteDB.Engine
         /// </summary>
         public void Write(ObjectId value)
         {
-            if (_currentPosition + 12 <= _current.Count)
-            {
-                value.ToByteArray(_current.Array, _current.Offset + _currentPosition);
-
-                MoveForward(12);
-            }
-            else
-            {
-                var buffer = BufferPool<byte>.Rent(12);
-
-                value.ToByteArray(buffer, 0);
-
-                Write(buffer, 0, 12);
-
-                BufferPool<byte>.Return(buffer);
-            }
+#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+            Span<byte> bytes = stackalloc byte[12];
+            value.TryWriteBytes(bytes);
+            Write(bytes);
+#else
+            var buffer = new byte[12];
+            value.ToByteArray(buffer, 0);
+            Write(buffer, 0, 12);
+#endif
         }
 
         /// <summary>
@@ -383,8 +404,15 @@ namespace LiteDB.Engine
         /// </summary>
         internal void Write(PageAddress address)
         {
+#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+            Span<byte> bytes = stackalloc byte[5];
+            BitConverter.TryWriteBytes(bytes, address.PageID);
+            bytes[4] = address.Index;
+            Write(bytes);
+#else
             Write(address.PageID);
             Write(address.Index);
+#endif
         }
 
         #endregion
