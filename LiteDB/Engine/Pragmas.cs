@@ -8,7 +8,5 @@ namespace LiteDB.Engine
         public const string LIMIT_SIZE = nameof(LIMIT_SIZE);
         public const string UTC_DATE = nameof(UTC_DATE);
         public const string CHECKPOINT = nameof(CHECKPOINT);
-
-        public const int STACKALLOC_MAX_SIZE = 1024;
     }
 }

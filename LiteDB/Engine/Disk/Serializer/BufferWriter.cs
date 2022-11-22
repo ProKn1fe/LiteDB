@@ -190,7 +190,7 @@ namespace LiteDB.Engine
 
 #if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
             var count = Encoding.UTF8.GetByteCount(value);
-            Span<byte> bytes = count < Pragmas.STACKALLOC_MAX_SIZE ? stackalloc byte[count + 1] : new byte[count + 1];
+            Span<byte> bytes = count < STACKALLOC_MAX_SIZE ? stackalloc byte[count + 1] : new byte[count + 1];
             Encoding.UTF8.GetBytes(value, bytes);
             bytes[^1] = 0x00;
             Write(bytes);
@@ -233,7 +233,7 @@ namespace LiteDB.Engine
             var count = Encoding.UTF8.GetByteCount(value);
 
 #if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
-            Span<byte> bytes = count < Pragmas.STACKALLOC_MAX_SIZE ? stackalloc byte[count + 5] : new byte[count + 5];
+            Span<byte> bytes = count < STACKALLOC_MAX_SIZE ? stackalloc byte[count + 5] : new byte[count + 5];
             BitConverter.TryWriteBytes(bytes, count + 1);
             Encoding.UTF8.GetBytes(value, bytes[4..]);
             bytes[^1] = 0x00;

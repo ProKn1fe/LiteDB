@@ -580,7 +580,7 @@ namespace LiteDB.Engine
                 var length = ReadInt32();
                 var subType = ReadByte();
 #if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
-                Span<byte> bytes = length < Pragmas.STACKALLOC_MAX_SIZE ? stackalloc byte[length] : new byte[length];
+                Span<byte> bytes = length < STACKALLOC_MAX_SIZE ? stackalloc byte[length] : new byte[length];
                 Read(bytes);
                 
                 switch (subType)

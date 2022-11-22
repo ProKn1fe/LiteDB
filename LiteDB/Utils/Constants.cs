@@ -94,7 +94,12 @@ namespace LiteDB
         /// Define how many bytes each merge sort container will be created
         /// </summary>
         public const int CONTAINER_SORT_SIZE = 100 * PAGE_SIZE;
-        
+
+        /// <summary>
+        /// Max possible allocation with stackalloc
+        /// </summary>
+        public const int STACKALLOC_MAX_SIZE = 1024;
+
         /// <summary>
         /// Log a message using Debug.WriteLine
         /// </summary>
