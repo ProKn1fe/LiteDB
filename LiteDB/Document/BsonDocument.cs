@@ -119,14 +119,13 @@ namespace LiteDB
         /// </summary>
         public IEnumerable<KeyValuePair<string, BsonValue>> GetElements()
         {
-            if(RawDictionary.TryGetValue("_id", out var id))
-            {
+            if (RawDictionary.TryGetValue("_id", out var id))
                 yield return new KeyValuePair<string, BsonValue>("_id", id);
-            }
 
-            foreach(var item in RawDictionary.Where(x => x.Key != "_id"))
+            foreach (var key in RawDictionary.Keys)
             {
-                yield return item;
+                if (key == "_id") continue;
+                yield return new KeyValuePair<string, BsonValue>(key, RawDictionary[key]);
             }
         }
 
@@ -171,9 +170,9 @@ namespace LiteDB
 
             var length = 5;
 
-            foreach(var element in RawDictionary)
+            foreach(var key in RawDictionary.Keys)
             {
-                length += GetBytesCountElement(element.Key, element.Value);
+                length += GetBytesCountElement(key, RawDictionary[key]);
             }
 
             return _length = length;
