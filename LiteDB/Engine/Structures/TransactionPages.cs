@@ -12,7 +12,7 @@ namespace LiteDB.Engine
         /// <summary>
         /// Get how many pages are involved in this transaction across all snapshots - Will be clear when get MAX_TRANSACTION_SIZE
         /// </summary>
-        public int TransactionSize { get; set; } = 0;
+        public int TransactionSize { get; set; }
 
         /// <summary>
         /// Contains all dirty pages already persist in LOG file (used in all snapshots). Store in [uint, PagePosition] to reuse same method in save pages into log and get saved page positions on log
@@ -25,7 +25,7 @@ namespace LiteDB.Engine
         public List<uint> NewPages { get; } = new List<uint>();
 
         /// <summary>
-        /// First deleted pageID 
+        /// First deleted pageID
         /// </summary>
         public uint FirstDeletedPageID { get; set; } = uint.MaxValue;
 
@@ -57,7 +57,7 @@ namespace LiteDB.Engine
         /// </summary>
         public bool HeaderChanged =>
             NewPages.Count > 0 ||
-            DeletedPages > 0 || 
+            DeletedPages > 0 ||
             Commit != null;
     }
 }

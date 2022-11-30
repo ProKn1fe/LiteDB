@@ -64,35 +64,35 @@ namespace XTSSharp
 			_bufferSize = s.SectorSize;
 		}
 
-        /// <summary>
-        /// Gets a value indicating whether the current stream supports reading.
-        /// </summary>
-        /// <returns>true if the stream supports reading; otherwise, false.</returns>
-        public override bool CanRead => _s.CanRead;
+		/// <summary>
+		/// Gets a value indicating whether the current stream supports reading.
+		/// </summary>
+		/// <returns>true if the stream supports reading; otherwise, false.</returns>
+		public override bool CanRead => _s.CanRead;
 
-        /// <summary>
-        /// Gets a value indicating whether the current stream supports seeking.
-        /// </summary>
-        /// <returns>true if the stream supports seeking; otherwise, false.</returns>
-        public override bool CanSeek => _s.CanSeek;
+		/// <summary>
+		/// Gets a value indicating whether the current stream supports seeking.
+		/// </summary>
+		/// <returns>true if the stream supports seeking; otherwise, false.</returns>
+		public override bool CanSeek => _s.CanSeek;
 
-        /// <summary>
-        /// Gets a value indicating whether the current stream supports writing.
-        /// </summary>
-        /// <returns>true if the stream supports writing; otherwise, false.</returns>
-        public override bool CanWrite => _s.CanWrite;
+		/// <summary>
+		/// Gets a value indicating whether the current stream supports writing.
+		/// </summary>
+		/// <returns>true if the stream supports writing; otherwise, false.</returns>
+		public override bool CanWrite => _s.CanWrite;
 
-        /// <summary>
-        /// Gets the length in bytes of the stream.
-        /// </summary>
-        /// <returns>A long value representing the length of the stream in bytes.</returns>
-        public override long Length => _s.Length + _bufferPos;
+		/// <summary>
+		/// Gets the length in bytes of the stream.
+		/// </summary>
+		/// <returns>A long value representing the length of the stream in bytes.</returns>
+		public override long Length => _s.Length + _bufferPos;
 
-        /// <summary>
-        /// Gets or sets the position within the current stream.
-        /// </summary>
-        /// <returns>The current position within the stream.</returns>
-        public override long Position
+		/// <summary>
+		/// Gets or sets the position within the current stream.
+		/// </summary>
+		/// <returns>The current position within the stream.</returns>
+		public override long Position
 		{
 			get { return _bufferLoaded ? (_s.Position - _bufferSize + _bufferPos) : _s.Position + _bufferPos; }
 			set
@@ -100,7 +100,7 @@ namespace XTSSharp
 				if (value < 0L)
 					throw new ArgumentOutOfRangeException("value");
 
-				var sectorPosition = (value%_bufferSize);
+				var sectorPosition = value % _bufferSize;
 				var position = value - sectorPosition;
 
 				//see if its within the current sector
@@ -109,7 +109,7 @@ namespace XTSSharp
 					var basePosition = _s.Position - _bufferSize;
 					if (value > basePosition && value < basePosition + _bufferSize)
 					{
-						_bufferPos = (int) sectorPosition;
+						_bufferPos = (int)sectorPosition;
 						return;
 					}
 				}
@@ -125,7 +125,7 @@ namespace XTSSharp
 				ReadSector();
 
 				//bump us forward if need be
-				_bufferPos = (int) sectorPosition;
+				_bufferPos = (int)sectorPosition;
 			}
 		}
 
@@ -187,11 +187,11 @@ namespace XTSSharp
 		/// <param name="value">The desired length of the current stream in bytes.</param>
 		public override void SetLength(long value)
 		{
-			var remainder = value%_s.SectorSize;
+			var remainder = value % _s.SectorSize;
 
 			if (remainder > 0)
 			{
-				value = (value - remainder) + _bufferSize;
+				value = value - remainder + _bufferSize;
 			}
 
 			_s.SetLength(value);
@@ -210,7 +210,7 @@ namespace XTSSharp
 
 			if (position + count > _s.Length)
 			{
-				count = (int) (_s.Length - position);
+				count = (int)(_s.Length - position);
 			}
 
 			if (!_bufferLoaded)

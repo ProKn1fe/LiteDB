@@ -34,8 +34,8 @@ namespace XTSSharp
 	/// </summary>
 	/// <remarks>
 	/// The reason that it doesn't implement ICryptoTransform, as the interface is different.
-	/// 
-	/// Most of the logic was taken from the LibTomCrypt project - http://libtom.org and 
+	///
+	/// Most of the logic was taken from the LibTomCrypt project - http://libtom.org and
 	/// converted to C#
 	/// </remarks>
 	public class XtsCryptoTransform : IDisposable
@@ -57,14 +57,8 @@ namespace XTSSharp
 		/// <param name="decrypting">Is this a decryption transform?</param>
 		public XtsCryptoTransform(ICryptoTransform key1, ICryptoTransform key2, bool decrypting)
 		{
-			if (key1 == null)
-				throw new ArgumentNullException("key1");
-
-			if (key2 == null)
-				throw new ArgumentNullException("key2");
-
-			_key1 = key1;
-			_key2 = key2;
+			_key1 = key1 ?? throw new ArgumentNullException("key1");
+			_key2 = key2 ?? throw new ArgumentNullException("key2");
 			_decrypting = decrypting;
 		}
 
@@ -178,14 +172,14 @@ namespace XTSSharp
 		/// <param name="sector">The sector number</param>
 		private static void FillArrayFromSector(byte[] value, ulong sector)
 		{
-			value[7] = (byte) ((sector >> 56) & 255);
-			value[6] = (byte) ((sector >> 48) & 255);
-			value[5] = (byte) ((sector >> 40) & 255);
-			value[4] = (byte) ((sector >> 32) & 255);
-			value[3] = (byte) ((sector >> 24) & 255);
-			value[2] = (byte) ((sector >> 16) & 255);
-			value[1] = (byte) ((sector >> 8) & 255);
-			value[0] = (byte) (sector & 255);
+			value[7] = (byte)((sector >> 56) & 255);
+			value[6] = (byte)((sector >> 48) & 255);
+			value[5] = (byte)((sector >> 40) & 255);
+			value[4] = (byte)((sector >> 32) & 255);
+			value[3] = (byte)((sector >> 24) & 255);
+			value[2] = (byte)((sector >> 16) & 255);
+			value[1] = (byte)((sector >> 8) & 255);
+			value[0] = (byte)(sector & 255);
 		}
 
 		/// <summary>
@@ -195,14 +189,14 @@ namespace XTSSharp
 		{
 			for (var x = 0; x < 16; x++)
 			{
-				outputBuffer[x + outputOffset] = (byte) (inputBuffer[x + inputOffset] ^ t[x]);
+				outputBuffer[x + outputOffset] = (byte)(inputBuffer[x + inputOffset] ^ t[x]);
 			}
 
 			_key1.TransformBlock(outputBuffer, outputOffset, 16, outputBuffer, outputOffset);
 
 			for (var x = 0; x < 16; x++)
 			{
-				outputBuffer[x + outputOffset] = (byte) (outputBuffer[x + outputOffset] ^ t[x]);
+				outputBuffer[x + outputOffset] = (byte)(outputBuffer[x + outputOffset] ^ t[x]);
 			}
 
 			MultiplyByX(t);
@@ -218,8 +212,8 @@ namespace XTSSharp
 
 			for (var x = 0; x < 16; x++)
 			{
-				tt = (byte) (i[x] >> 7);
-				i[x] = (byte) (((i[x] << 1) | t) & 0xFF);
+				tt = (byte)(i[x] >> 7);
+				i[x] = (byte)(((i[x] << 1) | t) & 0xFF);
 				t = tt;
 			}
 

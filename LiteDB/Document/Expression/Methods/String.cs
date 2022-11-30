@@ -57,7 +57,6 @@ namespace LiteDB
             }
 
             return BsonValue.Null;
-
         }
 
         /// <summary>
@@ -173,7 +172,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Slit value string based on separator 
+        /// Slit value string based on separator
         /// </summary>
         public static IEnumerable<BsonValue> SPLIT(BsonValue value, BsonValue separator)
         {
@@ -207,7 +206,7 @@ namespace LiteDB
             }
             else
             {
-                foreach(var str in SPLIT(value, pattern))
+                foreach (var str in SPLIT(value, pattern))
                 {
                     yield return str;
                 }
@@ -221,7 +220,7 @@ namespace LiteDB
         {
             if (format.IsString)
             {
-                return string.Format("{0:" +  format.AsString + "}", value.RawValue);
+                return string.Format("{0:" + format.AsString + "}", value.RawValue);
             }
 
             return BsonValue.Null;
@@ -256,7 +255,7 @@ namespace LiteDB
         /// </summary>
         public static BsonValue IS_MATCH(BsonValue value, BsonValue pattern)
         {
-            if (value.IsString == false || pattern.IsString == false) return false;
+            if (!value.IsString || !pattern.IsString) return false;
 
             return Regex.IsMatch(value.AsString, pattern.AsString);
         }
@@ -266,11 +265,11 @@ namespace LiteDB
         /// </summary>
         public static BsonValue MATCH(BsonValue value, BsonValue pattern, BsonValue group)
         {
-            if (value.IsString == false || pattern.IsString == false) return null;
+            if (!value.IsString || !pattern.IsString) return null;
 
             var match = Regex.Match(value.AsString, pattern.AsString);
 
-            if (match.Success == false) return BsonValue.Null;
+            if (!match.Success) return BsonValue.Null;
 
             if (group.IsNumber)
             {

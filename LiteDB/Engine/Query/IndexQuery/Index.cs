@@ -10,7 +10,7 @@ namespace LiteDB.Engine
         /// <summary>
         /// Index name
         /// </summary>
-        public string Name { get; private set; }
+        public string Name { get; }
 
         /// <summary>
         /// Get/Set index order

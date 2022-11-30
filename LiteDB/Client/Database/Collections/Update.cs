@@ -26,7 +26,7 @@ namespace LiteDB
         public bool Update(BsonValue id, T entity)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
-            if (id == null || id.IsNull) throw new ArgumentNullException(nameof(id));
+            if (id?.IsNull == true) throw new ArgumentNullException(nameof(id));
 
             // get BsonDocument from object
             var doc = _mapper.ToDocument(entity);
@@ -65,7 +65,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Update many document based on merge current document with extend expression. Use your class with initializers. 
+        /// Update many document based on merge current document with extend expression. Use your class with initializers.
         /// Eg: col.UpdateMany(x => new Customer { Name = x.Name.ToUpper(), Salary: 100 }, x => x.Name == "John")
         /// </summary>
         public int UpdateMany(Expression<Func<T, T>> extend, Expression<Func<T, bool>> predicate)

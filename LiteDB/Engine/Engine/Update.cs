@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -96,22 +97,22 @@ namespace LiteDB.Engine
         {
             // normalize id before find
             var id = doc["_id"];
-            
+
             // validate id for null, min/max values
             if (id.IsNull || id.IsMinValue || id.IsMaxValue)
             {
                 throw LiteException.InvalidDataType("_id", id);
             }
-            
+
             // find indexNode from pk index
             var pkNode = indexer.Find(col.PK, id, false, LiteDB.Query.Ascending);
-            
+
             // if not found document, no updates
             if (pkNode == null) return false;
-            
+
             // update data storage
             data.Update(col, pkNode.DataBlock, doc);
-            
+
             // get all current non-pk index nodes from this data block (slot, key, nodePosition)
             var oldKeys = indexer.GetNodeList(pkNode.NextNode)
                 .Select(x => new Tuple<byte, BsonValue, PageAddress>(x.Slot, x.Key, x.Position))
@@ -135,12 +136,12 @@ namespace LiteDB.Engine
 
             // get a list of all nodes that are in oldKeys but not in newKeys (must delete)
             var toDelete = new HashSet<PageAddress>(oldKeys
-                .Where(x => newKeys.Any(n => n.Item1 == x.Item1 && n.Item2 == x.Item2) == false)
+                .Where(x => !newKeys.Any(n => n.Item1 == x.Item1 && n.Item2 == x.Item2))
                 .Select(x => x.Item3));
 
             // get a list of all keys that are not in oldKeys (must insert)
             var toInsert = newKeys
-                .Where(x => oldKeys.Any(o => o.Item1 == x.Item1 && o.Item2 == x.Item2) == false)
+                .Where(x => !oldKeys.Any(o => o.Item1 == x.Item1 && o.Item2 == x.Item2))
                 .ToArray();
 
             // if nothing to change, just exit
@@ -150,7 +151,7 @@ namespace LiteDB.Engine
             var last = indexer.DeleteList(pkNode.Position, toDelete);
 
             // now, insert all new nodes
-            foreach(var elem in toInsert)
+            foreach (var elem in toInsert)
             {
                 var index = col.GetCollectionIndex(elem.Item3);
 

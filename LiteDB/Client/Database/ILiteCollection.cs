@@ -70,7 +70,7 @@ namespace LiteDB
         int UpdateMany(BsonExpression transform, BsonExpression predicate);
 
         /// <summary>
-        /// Update many document based on merge current document with extend expression. Use your class with initializers. 
+        /// Update many document based on merge current document with extend expression. Use your class with initializers.
         /// Eg: col.UpdateMany(x => new Customer { Name = x.Name.ToUpper(), Salary: 100 }, x => x.Name == "John")
         /// </summary>
         int UpdateMany(Expression<Func<T, T>> extend, Expression<Func<T, bool>> predicate);

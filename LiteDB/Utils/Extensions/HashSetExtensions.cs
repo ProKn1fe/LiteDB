@@ -8,7 +8,7 @@ namespace LiteDB
         {
             if (items == null) return hash;
 
-            foreach(var item in items)
+            foreach (var item in items)
             {
                 hash.Add(item);
             }

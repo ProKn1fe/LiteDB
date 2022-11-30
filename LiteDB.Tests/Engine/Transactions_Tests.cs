@@ -2,8 +2,11 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using FluentAssertions;
+
 using LiteDB.Engine;
+
 using Xunit;
 
 namespace LiteDB.Tests.Engine
@@ -65,7 +68,6 @@ namespace LiteDB.Tests.Engine
                 await Task.WhenAll(ta, tb);
             }
         }
-
 
         [Fact]
         public async Task Transaction_Avoid_Dirty_Read()

@@ -16,10 +16,10 @@ namespace LiteDB.Engine
         private readonly bool _utcDate;
 
         private BufferSlice _current;
-        private int _currentPosition = 0; // position in _current
-        private int _position = 0; // global position
+        private int _currentPosition; // position in _current
+        private int _position; // global position
 
-        private bool _isEOF = false;
+        private bool _isEOF;
 
         /// <summary>
         /// Current global cursor position
@@ -72,7 +72,7 @@ namespace LiteDB.Engine
             // request new source array if _current all consumed
             if (_currentPosition == _current.Count)
             {
-                if (_source == null || _source.MoveNext() == false)
+                if (_source?.MoveNext() != true)
                 {
                     _isEOF = true;
                 }
@@ -103,10 +103,10 @@ namespace LiteDB.Engine
                 // fill buffer
                 if (buffer != null)
                 {
-                    Buffer.BlockCopy(_current.Array, 
-                        _current.Offset + _currentPosition, 
-                        buffer, 
-                        offset + bufferPosition, 
+                    Buffer.BlockCopy(_current.Array,
+                        _current.Offset + _currentPosition,
+                        buffer,
+                        offset + bufferPosition,
                         bytesToCopy);
                 }
 
@@ -229,7 +229,7 @@ namespace LiteDB.Engine
                     MoveForward(initialCount);
 
                     // and go to next segment
-                    while (_current[_currentPosition] != 0x00 && _isEOF == false)
+                    while (_current[_currentPosition] != 0x00 && !_isEOF)
                     {
                         mem.WriteByte(_current[_currentPosition]);
 
@@ -243,9 +243,9 @@ namespace LiteDB.Engine
             }
         }
 
-        /// <summary>	
-        /// Try read CString in current segment avoind read byte-to-byte over segments	
-        /// </summary>	
+        /// <summary>
+        /// Try read CString in current segment avoind read byte-to-byte over segments
+        /// </summary>
         private bool TryReadCStringCurrentSegment(out string value)
         {
             var pos = _currentPosition;
@@ -333,7 +333,7 @@ namespace LiteDB.Engine
             return new decimal(new int[] { a, b, c, d });
         }
 
-#endregion
+        #endregion
 
         #region Complex Types
 
@@ -461,7 +461,7 @@ namespace LiteDB.Engine
                 case BsonType.Int64: return ReadInt64();
                 case BsonType.Double: return ReadDouble();
                 case BsonType.Decimal: return ReadDecimal();
-                
+
                 // Use +1 byte only for length
                 case BsonType.String: return ReadString(ReadByte());
 
@@ -483,7 +483,7 @@ namespace LiteDB.Engine
             }
         }
 
-#endregion
+        #endregion
 
         #region BsonDocument as SPECS
 
@@ -546,7 +546,7 @@ namespace LiteDB.Engine
             name = ReadCString();
 
             // check if need skip this element
-            if (remaining != null && !remaining.Contains(name))
+            if (remaining?.Contains(name) == false)
             {
                 // define skip length according type
                 var length =
@@ -592,7 +592,7 @@ namespace LiteDB.Engine
                 var length = ReadInt32();
                 var subType = ReadByte();
 #if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
-                
+
                 switch (subType)
                 {
                     case 0x00:

@@ -39,7 +39,7 @@ namespace LiteDB.Engine
                 readOnly ? FileOptions.RandomAccess : FileOptions.SequentialScan);
 
             // new file
-            if (readOnly == false && stream.Length == 0 && _hidden)
+            if (!readOnly && stream.Length == 0 && _hidden)
             {
                 // hidden sort file
                 File.SetAttributes(_filename, FileAttributes.Hidden);

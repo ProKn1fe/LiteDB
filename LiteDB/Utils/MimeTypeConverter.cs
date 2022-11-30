@@ -7,7 +7,7 @@ namespace LiteDB
     /// <summary>
     /// Convert filename to mimetype (http://stackoverflow.com/questions/1029740/get-mime-type-from-filename-extension)
     /// </summary>
-    internal class MimeTypeConverter
+    internal static class MimeTypeConverter
     {
         private static readonly IDictionary<string, string> _mappings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {

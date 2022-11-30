@@ -15,7 +15,7 @@ namespace LiteDB
             }
 
             return new DateTime(dt.Year, dt.Month, dt.Day,
-                dt.Hour, dt.Minute, dt.Second, dt.Millisecond, 
+                dt.Hour, dt.Minute, dt.Second, dt.Millisecond,
                 dt.Kind);
         }
 
@@ -23,9 +23,9 @@ namespace LiteDB
         {
             // https://stackoverflow.com/a/1526116/3286260
 
-            int compMonth = (endDate.Month + endDate.Year * 12) - (startDate.Month + startDate.Year * 12);
+            int compMonth = endDate.Month + (endDate.Year * 12) - (startDate.Month + (startDate.Year * 12));
             double daysInEndMonth = (endDate - endDate.AddMonths(1)).Days;
-            double months = compMonth + (startDate.Day - endDate.Day) / daysInEndMonth;
+            double months = compMonth + ((startDate.Day - endDate.Day) / daysInEndMonth);
 
             return Convert.ToInt32(Math.Truncate(months));
         }

@@ -9,7 +9,7 @@ namespace LiteDB
     {
         public static bool IsAnonymousType(this Type type)
         {
-            bool isAnonymousType = 
+            bool isAnonymousType =
                 type.FullName.Contains("AnonymousType") &&
                 type.GetCustomAttributes(typeof(CompilerGeneratedAttribute), false).Any();
 
@@ -18,7 +18,7 @@ namespace LiteDB
 
         public static bool IsEnumerable(this Type type)
         {
-            return 
+            return
                 type != typeof(string) &&
                 typeof(IEnumerable).IsAssignableFrom(type);
         }

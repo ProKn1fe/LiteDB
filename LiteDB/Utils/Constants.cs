@@ -13,7 +13,7 @@ namespace LiteDB
     /// <summary>
     /// Class with all constants used in LiteDB + Debbuger HELPER
     /// </summary>
-    internal class Constants
+    internal static class Constants
     {
         /// <summary>
         /// The size of each page in disk - use 8192 as all major databases
@@ -128,7 +128,7 @@ namespace LiteDB
         [DebuggerHidden]
         public static void ENSURE(bool conditional, string message = null)
         {
-            if (conditional == false)
+            if (!conditional)
             {
                 if (Debugger.IsAttached)
                 {
@@ -147,7 +147,7 @@ namespace LiteDB
         [DebuggerHidden]
         public static void ENSURE(bool ifTest, bool conditional, string message = null)
         {
-            if (ifTest && conditional == false)
+            if (ifTest && !conditional)
             {
                 if (Debugger.IsAttached)
                 {
@@ -167,7 +167,7 @@ namespace LiteDB
         [Conditional("DEBUG")]
         public static void DEBUG(bool conditional, string message = null)
         {
-            if (conditional == false)
+            if (!conditional)
             {
                 if (Debugger.IsAttached)
                 {

@@ -51,11 +51,11 @@ namespace LiteDB.Engine
 
             // continue enumeration of the original _enumerator, until it is finished. 
             // this adds items to the cache and increment 
-            for (; _enumerator != null && _enumerator.MoveNext(); index++)
+            for (; _enumerator?.MoveNext() == true; index++)
             {
                 var current = _enumerator.Current;
 
-                ENSURE(current.RawId.IsEmpty == false, "rawId must have a valid value");
+                ENSURE(!current.RawId.IsEmpty, "rawId must have a valid value");
 
                 _cache.Add(current.RawId);
 
@@ -73,7 +73,7 @@ namespace LiteDB.Engine
             for (; index < _cache.Count; index++)
             {
                 var rawId = _cache[index];
-            
+
                 yield return _lookup.Load(rawId);
             }
         }

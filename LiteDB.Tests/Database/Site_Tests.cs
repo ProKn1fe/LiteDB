@@ -59,7 +59,6 @@ namespace LiteDB.Tests.Database
 
                 results2.Count.Should().Be(1);
                 reader.ToList().Count.Should().Be(1);
-
             }
         }
 

@@ -28,6 +28,6 @@ namespace LiteDB.Benchmarks.Models
 
         public bool ShouldBeShown { get; set; }
 
-        public virtual bool IsValid => ValidFrom == null || ValidFrom <= DateTimeOffset.UtcNow && ValidTo == null || ValidTo > DateTimeOffset.UtcNow;
+        public virtual bool IsValid => ValidFrom == null || (ValidFrom <= DateTimeOffset.UtcNow && ValidTo == null) || ValidTo > DateTimeOffset.UtcNow;
     }
 }

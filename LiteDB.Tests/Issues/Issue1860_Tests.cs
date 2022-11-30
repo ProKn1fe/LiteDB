@@ -109,7 +109,6 @@ namespace LiteDB.Tests.Issues
 
         public enum EnumAB
         {
-            
             A = 1,
             B = 2,
         }

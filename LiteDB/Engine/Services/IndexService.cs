@@ -13,15 +13,14 @@ namespace LiteDB.Engine
     internal class IndexService
     {
         private readonly Snapshot _snapshot;
-        private readonly Collation _collation;
 
         public IndexService(Snapshot snapshot, Collation collation)
         {
             _snapshot = snapshot;
-            _collation = collation;
+            Collation = collation;
         }
 
-        public Collation Collation => _collation;
+        public Collation Collation { get; }
 
         /// <summary>
         /// Create a new index and returns head page address (skip list)
@@ -63,7 +62,7 @@ namespace LiteDB.Engine
             // do not accept Min/Max value as index key (only head/tail can have this value)
             if (key.IsMaxValue || key.IsMinValue)
             {
-                throw LiteException.InvalidIndexKey($"BsonValue MaxValue/MinValue are not supported as index key");
+                throw LiteException.InvalidIndexKey("BsonValue MaxValue/MinValue are not supported as index key");
             }
 
             // random level (flip coin mode) - return number between 1-32
@@ -111,13 +110,13 @@ namespace LiteDB.Engine
                 cache = cache != null && cache.Position == cur.Next[i] ? cache : GetNode(cur.Next[i]);
 
                 // for(; <while_not_this>; <do_this>) { ... }
-                for (; cur.Next[i].IsEmpty == false; cur = cache)
+                for (; !cur.Next[i].IsEmpty; cur = cache)
                 {
                     // get cache for last node
                     cache = cache != null && cache.Position == cur.Next[i] ? cache : GetNode(cur.Next[i]);
 
                     // read next node to compare
-                    var diff = cache.Key.CompareTo(key, _collation);
+                    var diff = cache.Key.CompareTo(key, Collation);
 
                     // if unique and diff = 0, throw index exception (must rollback transaction - others nodes can be dirty)
                     if (diff == 0 && index.Unique) throw LiteException.IndexDuplicateKey(index.Name, key);
@@ -159,7 +158,6 @@ namespace LiteDB.Engine
             return node;
         }
 
-
         /// <summary>
         /// Flip coin - skip list - returns level node (start in 1)
         /// </summary>
@@ -199,7 +197,6 @@ namespace LiteDB.Engine
 
                 return node;
             }
-
         }
 
         /// <summary>
@@ -293,7 +290,7 @@ namespace LiteDB.Engine
             var slot = index.Slot;
             var pkIndex = _snapshot.CollectionPage.PK;
 
-            foreach(var pkNode in FindAll(pkIndex, Query.Ascending))
+            foreach (var pkNode in FindAll(pkIndex, Query.Ascending))
             {
                 var next = pkNode.NextNode;
                 var last = pkNode;
@@ -324,7 +321,7 @@ namespace LiteDB.Engine
         }
 
         #region Find
-        
+
         /// <summary>
         /// Return all index nodes from an index
         /// </summary>
@@ -344,7 +341,7 @@ namespace LiteDB.Engine
         }
 
         /// <summary>
-        /// Find first node that index match with value . 
+        /// Find first node that index match with value .
         /// If index are unique, return unique value - if index are not unique, return first found (can start, middle or end)
         /// If not found but sibling = true, returns near node (only non-unique index)
         /// </summary>
@@ -354,10 +351,10 @@ namespace LiteDB.Engine
 
             for (int i = index.MaxLevel - 1; i >= 0; i--)
             {
-                for (; cur.GetNextPrev((byte)i, order).IsEmpty == false; cur = GetNode(cur.GetNextPrev((byte)i, order)))
+                for (; !cur.GetNextPrev((byte)i, order).IsEmpty; cur = GetNode(cur.GetNextPrev((byte)i, order)))
                 {
                     var next = GetNode(cur.GetNextPrev((byte)i, order));
-                    var diff = next.Key.CompareTo(value, _collation);
+                    var diff = next.Key.CompareTo(value, Collation);
 
                     if (diff == order && (i > 0 || !sibling)) break;
                     if (diff == order && i == 0 && sibling)

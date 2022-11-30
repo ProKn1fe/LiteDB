@@ -27,7 +27,7 @@ namespace LiteDB
         {
             if (dict == null) throw new ArgumentNullException(nameof(dict));
 
-            foreach(var element in dict)
+            foreach (var element in dict)
             {
                 Add(element);
             }
@@ -88,7 +88,7 @@ namespace LiteDB
             var i = 0;
             var stop = Math.Min(thisLength, otherLength);
 
-            for (; 0 == result && i < stop; i++)
+            for (; result == 0 && i < stop; i++)
                 result = this[thisKeys[i]].CompareTo(otherDoc[thisKeys[i]]);
 
             // are different
@@ -154,7 +154,7 @@ namespace LiteDB
 
         public void CopyTo(BsonDocument other)
         {
-            foreach(var element in this)
+            foreach (var element in this)
             {
                 other[element.Key] = element.Value;
             }
@@ -162,15 +162,15 @@ namespace LiteDB
 
         #endregion
 
-        private int _length = 0;
+        private int _length;
 
         internal override int GetBytesCount(bool recalc)
         {
-            if (recalc == false && _length > 0) return _length;
+            if (!recalc && _length > 0) return _length;
 
             var length = 5;
 
-            foreach(var key in RawDictionary.Keys)
+            foreach (var key in RawDictionary.Keys)
             {
                 length += GetBytesCountElement(key, RawDictionary[key]);
             }

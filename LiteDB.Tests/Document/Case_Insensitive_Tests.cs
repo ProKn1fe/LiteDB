@@ -1,5 +1,7 @@
 ﻿using System.Linq;
+
 using FluentAssertions;
+
 using Xunit;
 
 namespace LiteDB.Tests.Document

@@ -1,5 +1,7 @@
 ﻿using FluentAssertions;
+
 using System;
+
 using Xunit;
 
 namespace LiteDB.Tests.Document
@@ -9,9 +11,9 @@ namespace LiteDB.Tests.Document
         [Fact]
         public void BsonValue_Implicit_Convert()
         {
-            int i = int.MaxValue;
-            long l = long.MaxValue;
-            ulong u = ulong.MaxValue;
+            const int i = int.MaxValue;
+            const long l = long.MaxValue;
+            const ulong u = ulong.MaxValue;
 
             BsonValue bi = i;
             BsonValue bl = l;

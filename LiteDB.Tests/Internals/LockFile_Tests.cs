@@ -15,7 +15,7 @@ namespace LiteDB.Internals
         [Fact]
         public void LockFile_MultiRead()
         {
-            using(var l = new LockTest(TimeSpan.FromSeconds(60)))
+            using (var l = new LockTest(TimeSpan.FromSeconds(60)))
             {
                 l.Lock(LockMode.Read, 1000);
                 l.Lock(LockMode.Read, 700);
@@ -25,7 +25,7 @@ namespace LiteDB.Internals
                 l.Lock(LockMode.Write, 1000);
 
                 l.Wait(); // all queue executed - delete lock-file
-                
+
                 l.Lock(LockMode.Read, 1000);
                 l.Lock(LockMode.Read, 100);
                 l.Lock(LockMode.Read, 2000);
@@ -55,7 +55,7 @@ namespace LiteDB.Internals
             private readonly List<Task> _tasks = new List<Task>();
             private readonly TempFile _lock = new TempFile();
             private readonly TempFile _db = new TempFile();
-            private int _id = 0;
+            private int _id;
 
             public LockTest(TimeSpan timeout)
             {
@@ -135,6 +135,4 @@ namespace LiteDB.Internals
             }
         }
     }
-
-
 }

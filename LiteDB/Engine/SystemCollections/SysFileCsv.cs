@@ -52,7 +52,7 @@ namespace LiteDB.Engine
                     var index = 0;
                     var doc = new BsonDocument();
 
-                    while(true)
+                    while (true)
                     {
                         var value = ReadString(reader, delimiter, out var newLine);
 
@@ -122,7 +122,7 @@ namespace LiteDB.Engine
 
                     var idxValue = 0;
 
-                    foreach(var field in headerFields)
+                    foreach (var field in headerFields)
                     {
                         var value = doc[field];
 
@@ -187,7 +187,7 @@ namespace LiteDB.Engine
             var c = reader.Read();
 
             // eat possible new line before read string
-            while(c == '\n' || c == '\r')
+            while (c == '\n' || c == '\r')
             {
                 c = reader.Read();
             }
@@ -199,11 +199,11 @@ namespace LiteDB.Engine
             }
 
             // read " string
-            if(c == '"')
+            if (c == '"')
             {
                 var last = c;
 
-                while(c != -1)
+                while (c != -1)
                 {
                     c = reader.Read();
 
@@ -229,14 +229,14 @@ namespace LiteDB.Engine
             }
             else
             {
-                while(!(c == '\n' || c == '\r' || c == delimiter || c == -1))
+                while (!(c == '\n' || c == '\r' || c == delimiter || c == -1))
                 {
                     sb.Append((char)c);
                     c = reader.Read();
                 }
             }
 
-            newLine = (c == '\n' || c == '\r');
+            newLine = c == '\n' || c == '\r';
 
             return sb.ToString();
         }

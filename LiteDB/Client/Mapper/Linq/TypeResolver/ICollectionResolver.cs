@@ -7,7 +7,7 @@ namespace LiteDB
         public override string ResolveMethod(MethodInfo method)
         {
             // special Contains method
-            switch(method.Name)
+            switch (method.Name)
             {
                 case "Contains": return "# ANY = @0";
             };

@@ -10,7 +10,7 @@ namespace LiteDB
             {
                 case "Split": return "SPLIT(@0, @1, true)";
                 case "IsMatch": return "IS_MATCH(@0, @1)";
-                // missing "Match"
+                    // missing "Match"
             }
 
             return null;

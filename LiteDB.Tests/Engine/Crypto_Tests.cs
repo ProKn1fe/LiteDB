@@ -1,8 +1,11 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Text;
+
 using FluentAssertions;
+
 using LiteDB.Engine;
+
 using Xunit;
 
 namespace LiteDB.Tests.Engine

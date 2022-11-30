@@ -11,8 +11,8 @@ namespace LiteDB.Tests.Database
         [Fact]
         public void Create_Database_With_Initial_Size()
         {
-            var initial = 10 * 8192; // initial size: 80kb
-            var minimal = 8192 * 4; // 1 header + 1 collection + 1 data + 1 index = 4 pages minimal
+            const int initial = 10 * 8192; // initial size: 80kb
+            const int minimal = 8192 * 4; // 1 header + 1 collection + 1 data + 1 index = 4 pages minimal
 
             using (var file = new TempFile())
             {

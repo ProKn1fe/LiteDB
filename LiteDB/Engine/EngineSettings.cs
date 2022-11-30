@@ -11,7 +11,7 @@ namespace LiteDB.Engine
         /// <summary>
         /// Get/Set custom stream to be used as datafile (can be MemoryStrem or TempStream). Do not use FileStream - to use physical file, use "filename" attribute (and keep DataStrem null)
         /// </summary>
-        public Stream DataStream { get; set; } = null;
+        public Stream DataStream { get; set; }
 
         /// <summary>
         /// Full path or relative path from DLL directory. Can use ':temp:' for temp database or ':memory:' for in-memory database. (default: null)
@@ -36,7 +36,7 @@ namespace LiteDB.Engine
         /// <summary>
         /// Indicate that engine will open files in readonly mode (and will not support any database change)
         /// </summary>
-        public bool ReadOnly { get; set; } = false;
+        public bool ReadOnly { get; set; }
 
         /// <summary>
         /// Create new IStreamFactory for datafile

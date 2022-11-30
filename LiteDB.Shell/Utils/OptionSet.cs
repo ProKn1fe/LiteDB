@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 namespace LiteDB.Shell
 {
     /// <summary>
-    /// Very simple class that parse command line arguments 
+    /// Very simple class that parse command line arguments
     /// </summary>
     internal class OptionSet
     {

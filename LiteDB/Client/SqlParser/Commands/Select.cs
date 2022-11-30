@@ -44,7 +44,7 @@ namespace LiteDB
                 //TODO: i think will be better add all sql into engine
                 var result = query.Select.Execute(_collation.Value);
 
-                var defaultName = "expr";
+                const string defaultName = "expr";
 
                 return new BsonDataReader(result.Select(x => x.IsDocument ? x.AsDocument : new BsonDocument { [defaultName] = x }), null);
             }
@@ -70,7 +70,7 @@ namespace LiteDB
                 // read first INCLUDE (before)
                 _tokenizer.ReadToken();
 
-                foreach(var path in ParseListOfExpressions())
+                foreach (var path in ParseListOfExpressions())
                 {
                     query.Includes.Add(path);
                 }

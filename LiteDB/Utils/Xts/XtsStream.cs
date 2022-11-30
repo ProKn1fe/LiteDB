@@ -54,7 +54,6 @@ namespace XTSSharp
 		{
 		}
 
-
 		/// <summary>
 		/// Creates a new stream
 		/// </summary>

@@ -1,7 +1,10 @@
 ﻿using System.IO;
 using System.Linq;
+
 using FluentAssertions;
+
 using LiteDB.Engine;
+
 using Xunit;
 
 namespace LiteDB.Internals

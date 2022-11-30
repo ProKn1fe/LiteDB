@@ -8,20 +8,18 @@ namespace LiteDB
     /// </summary>
     public class BsonDataReader : IBsonDataReader
     {
-        private readonly IEnumerator<BsonValue> _source = null;
-        private readonly string _collection = null;
-        private readonly bool _hasValues;
+        private readonly IEnumerator<BsonValue> _source;
 
-        private BsonValue _current = null;
+        private BsonValue _current;
         private bool _isFirst;
-        private bool _disposed = false;
+        private bool _disposed;
 
         /// <summary>
         /// Initialize with no value
         /// </summary>
         internal BsonDataReader()
         {
-            _hasValues = false;
+            HasValues = false;
         }
 
         /// <summary>
@@ -30,8 +28,8 @@ namespace LiteDB
         internal BsonDataReader(BsonValue value, string collection = null)
         {
             _current = value;
-            _isFirst = _hasValues = true;
-            _collection = collection;
+            _isFirst = HasValues = true;
+            Collection = collection;
         }
 
         /// <summary>
@@ -40,11 +38,11 @@ namespace LiteDB
         internal BsonDataReader(IEnumerable<BsonValue> values, string collection)
         {
             _source = values.GetEnumerator();
-            _collection = collection;
+            Collection = collection;
 
             if (_source.MoveNext())
             {
-                _hasValues = _isFirst = true;
+                HasValues = _isFirst = true;
                 _current = _source.Current;
             }
         }
@@ -52,7 +50,7 @@ namespace LiteDB
         /// <summary>
         /// Return if has any value in result
         /// </summary>
-        public bool HasValues => _hasValues;
+        public bool HasValues { get; }
 
         /// <summary>
         /// Return current value
@@ -62,35 +60,32 @@ namespace LiteDB
         /// <summary>
         /// Return collection name
         /// </summary>
-        public string Collection => _collection;
+        public string Collection { get; }
 
         /// <summary>
         /// Move cursor to next result. Returns true if read was possible
         /// </summary>
         public bool Read()
         {
-            if (!_hasValues) return false;
+            if (!HasValues) return false;
 
             if (_isFirst)
             {
                 _isFirst = false;
                 return true;
             }
+            else if (_source != null)
+            {
+                var read = _source.MoveNext();
+                _current = _source.Current;
+                return read;
+            }
             else
             {
-                if (_source != null)
-                {
-                    var read = _source.MoveNext();
-                    _current = _source.Current;
-                    return read;
-                }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
         }
-        
+
         public BsonValue this[string field]
         {
             get

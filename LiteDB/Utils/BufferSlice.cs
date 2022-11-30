@@ -77,7 +77,7 @@ namespace LiteDB
             var output = new StringBuilder();
             var position = 0L;
 
-            while(position < Count)
+            while (position < Count)
             {
                 //output.Append(position.ToString("X3") + "  ");
 
@@ -89,7 +89,6 @@ namespace LiteDB
                 }
 
                 output.AppendLine();
-
             }
 
             return output.ToString();

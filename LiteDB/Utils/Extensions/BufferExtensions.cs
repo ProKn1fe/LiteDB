@@ -15,7 +15,7 @@ namespace LiteDB
             var i = 0;
             var stop = Math.Min(lh.Length, rh.Length);
 
-            for (; 0 == result && i < stop; i++)
+            for (; result == 0 && i < stop; i++)
                 result = lh[i].CompareTo(rh[i]);
 
             if (result != 0) return result < 0 ? -1 : 1;
@@ -37,7 +37,7 @@ namespace LiteDB
 
                 while (b < e)
                 {
-                    if ((*(b) | *(b + 1) | *(b + 2) | *(b + 3) | *(b + 4) |
+                    if ((*b | *(b + 1) | *(b + 2) | *(b + 3) | *(b + 4) |
                         *(b + 5) | *(b + 6) | *(b + 7) | *(b + 8) |
                         *(b + 9) | *(b + 10) | *(b + 11) | *(b + 12) |
                         *(b + 13) | *(b + 14) | *(b + 15)) != 0)
@@ -58,7 +58,7 @@ namespace LiteDB
         /// </summary>
         public static byte[] Fill(this byte[] array, byte value, int offset, int count)
         {
-            for(var i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 array[i + offset] = value;
             }
@@ -159,7 +159,7 @@ namespace LiteDB
         /// </summary>
         public static unsafe void ToBytes(this float value, byte[] array, int startIndex)
         {
-            ToBytes(*(uint*)(&value), array, startIndex);
+            ToBytes(*(uint*)&value, array, startIndex);
 
             //fixed (byte* ptr = &array[startIndex])
             //{
@@ -172,7 +172,7 @@ namespace LiteDB
         /// </summary>
         public static unsafe void ToBytes(this double value, byte[] array, int startIndex)
         {
-            ToBytes(*(ulong*)(&value), array, startIndex);
+            ToBytes(*(ulong*)&value, array, startIndex);
 
             //fixed (byte* ptr = &array[startIndex])
             //{

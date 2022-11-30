@@ -32,7 +32,7 @@ namespace LiteDB
 
             switch (ahead.Value.ToUpper())
             {
-                case "SELECT": 
+                case "SELECT":
                 case "EXPLAIN":
                     return ParseSelect();
                 case "INSERT": return ParseInsert();
@@ -51,7 +51,7 @@ namespace LiteDB
 
                 case "PRAGMA": return ParsePragma();
 
-                default:  throw LiteException.UnexpectedToken(ahead);
+                default: throw LiteException.UnexpectedToken(ahead);
             }
         }
     }

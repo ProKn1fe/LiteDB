@@ -71,14 +71,14 @@ namespace LiteDB.Engine
         /// </summary>
         public IEnumerable<PageAddress> GetBlocks()
         {
-            foreach(var index in GetUsedIndexs())
+            foreach (var index in GetUsedIndexs())
             {
                 var slotPosition = CalcPositionAddr(index);
                 var position = _buffer.ReadUInt16(slotPosition);
 
                 var extend = _buffer.ReadBool(position + DataBlock.P_EXTEND);
 
-                if (extend == false)
+                if (!extend)
                 {
                     yield return new PageAddress(PageID, index);
                 }

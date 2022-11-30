@@ -78,6 +78,5 @@ namespace LiteDB.Tests.Database
             result[0].Id.Should().Be("B");
             result[1].Id.Should().Be("C");
         }
-
     }
 }

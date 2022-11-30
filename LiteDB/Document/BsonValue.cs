@@ -368,7 +368,7 @@ namespace LiteDB
         }
 
         // Binary
-        public static implicit operator byte[] (BsonValue value)
+        public static implicit operator byte[](BsonValue value)
         {
             return (byte[])value.RawValue;
         }
@@ -615,8 +615,8 @@ namespace LiteDB
         public override int GetHashCode()
         {
             var hash = 17;
-            hash = 37 * hash + Type.GetHashCode();
-            hash = 37 * hash + (RawValue?.GetHashCode() ?? 0);
+            hash = (37 * hash) + Type.GetHashCode();
+            hash = (37 * hash) + (RawValue?.GetHashCode() ?? 0);
             return hash;
         }
 

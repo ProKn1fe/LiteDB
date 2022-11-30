@@ -1,5 +1,7 @@
 ﻿using FluentAssertions;
+
 using LiteDB.Engine;
+
 using Xunit;
 
 namespace LiteDB.Tests.Engine
@@ -11,7 +13,7 @@ namespace LiteDB.Tests.Engine
         {
             using (var db = new LiteEngine())
             {
-                var doc = new BsonDocument {["_id"] = 1, ["name"] = "Mauricio", ["phones"] = new BsonArray() {"51", "11"}};
+                var doc = new BsonDocument { ["_id"] = 1, ["name"] = "Mauricio", ["phones"] = new BsonArray() { "51", "11" } };
 
                 db.Insert("col1", doc);
 
@@ -19,7 +21,7 @@ namespace LiteDB.Tests.Engine
                 db.EnsureIndex("col1", "idx_phones", "phones[*]", false);
 
                 doc["name"] = "David";
-                doc["phones"] = new BsonArray() {"11", "25"};
+                doc["phones"] = new BsonArray() { "11", "25" };
 
                 db.Update("col1", doc);
 
@@ -34,7 +36,7 @@ namespace LiteDB.Tests.Engine
         {
             using (var db = new LiteEngine())
             {
-                var doc = new BsonDocument {["_id"] = 1, ["d"] = new byte[1000]};
+                var doc = new BsonDocument { ["_id"] = 1, ["d"] = new byte[1000] };
 
                 db.Insert("col1", doc);
 
@@ -87,7 +89,7 @@ namespace LiteDB.Tests.Engine
         [Fact]
         public void Update_Empty_Collection()
         {
-            using(var e = new LiteEngine())
+            using (var e = new LiteEngine())
             {
                 var d = new BsonDocument { ["_id"] = 1, ["a"] = "demo" };
                 var r = e.Update("col1", new BsonDocument[] { d });

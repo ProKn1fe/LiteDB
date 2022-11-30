@@ -18,10 +18,10 @@ namespace LiteDB
         private readonly BsonValue _fileId;
         private readonly FileAccess _mode;
 
-        private long _streamPosition = 0;
-        private int _currentChunkIndex = 0;
-        private byte[] _currentChunkData = null;
-        private int _positionInChunk = 0;
+        private long _streamPosition;
+        private int _currentChunkIndex;
+        private byte[] _currentChunkData;
+        private int _positionInChunk;
         private MemoryStream _buffer;
 
         internal LiteFileStream(ILiteCollection<LiteFileInfo<TFileId>> files, ILiteCollection<BsonDocument> chunks, LiteFileInfo<TFileId> file, BsonValue fileId, FileAccess mode)
@@ -37,7 +37,7 @@ namespace LiteDB
                 // initialize first data block
                 _currentChunkData = GetChunkData(_currentChunkIndex);
             }
-            else if(mode == FileAccess.Write)
+            else if (mode == FileAccess.Write)
             {
                 _buffer = new MemoryStream(MAX_CHUNK_SIZE);
 
@@ -98,7 +98,7 @@ namespace LiteDB
 
         #region Dispose
 
-        private bool _disposed = false;
+        private bool _disposed;
 
         protected override void Dispose(bool disposing)
         {

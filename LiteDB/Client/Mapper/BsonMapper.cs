@@ -103,7 +103,7 @@ namespace LiteDB
         public Action<Type, MemberInfo, MemberMapper> ResolveMember;
 
         /// <summary>
-        /// Custom resolve name collection based on Type 
+        /// Custom resolve name collection based on Type
         /// </summary>
         public Func<Type, string> ResolveCollectionName;
 
@@ -126,14 +126,13 @@ namespace LiteDB
 
             #region Register CustomTypes
 
-            RegisterType<Uri>(uri => uri.AbsoluteUri, bson => new Uri(bson.AsString));
+            RegisterType(uri => uri.AbsoluteUri, bson => new Uri(bson.AsString));
             RegisterType<DateTimeOffset>(value => new BsonValue(value.UtcDateTime), bson => bson.AsDateTime.ToUniversalTime());
-            RegisterType<TimeSpan>(value => new BsonValue(value.Ticks), bson => new TimeSpan(bson.AsInt64));
-            RegisterType<Regex>(
+            RegisterType(value => new BsonValue(value.Ticks), bson => new TimeSpan(bson.AsInt64));
+            RegisterType(
                 r => r.Options == RegexOptions.None ? new BsonValue(r.ToString()) : new BsonDocument { { "p", r.ToString() }, { "o", (int)r.Options } },
                 value => value.IsString ? new Regex(value) : new Regex(value.AsDocument["p"].AsString, (RegexOptions)value.AsDocument["o"].AsInt32)
             );
-
 
             #endregion
 
@@ -256,7 +255,7 @@ namespace LiteDB
                 var field = (BsonFieldAttribute)CustomAttributeExtensions.GetCustomAttributes(memberInfo, fieldAttr, true).FirstOrDefault();
 
                 // check if property has [BsonField] with a custom field name
-                if (field != null && field.Name != null)
+                if (field?.Name != null)
                 {
                     name = field.Name;
                 }
@@ -285,7 +284,7 @@ namespace LiteDB
                 // create a property mapper
                 var member = new MemberMapper
                 {
-                    AutoId = autoId == null || autoId.AutoId,
+                    AutoId = autoId?.AutoId != false,
                     FieldName = name,
                     MemberName = memberInfo.Name,
                     DataType = dataType,
@@ -307,7 +306,7 @@ namespace LiteDB
                 ResolveMember?.Invoke(type, memberInfo, member);
 
                 // test if has name and there is no duplicate field
-                if (member.FieldName != null && mapper.Members.Any(x => x.FieldName.Equals(name, StringComparison.OrdinalIgnoreCase)) == false)
+                if (member.FieldName != null && !mapper.Members.Any(x => x.FieldName.Equals(name, StringComparison.OrdinalIgnoreCase)))
                 {
                     mapper.Members.Add(member);
                 }
@@ -344,7 +343,7 @@ namespace LiteDB
 
             if (IncludeFields)
             {
-                members.AddRange(type.GetFields(flags).Where(x => !x.Name.EndsWith("k__BackingField") && x.IsStatic == false).Select(x => x as MemberInfo));
+                members.AddRange(type.GetFields(flags).Where(x => !x.Name.EndsWith("k__BackingField") && !x.IsStatic).Select(x => x as MemberInfo));
             }
 
             return members;
@@ -361,9 +360,9 @@ namespace LiteDB
             var ctors = mapper.ForType.GetConstructors();
 
             var ctor =
-                ctors.FirstOrDefault(x => x.GetCustomAttribute<BsonCtorAttribute>() != null && x.GetParameters().All(p => Reflection.ConvertType.ContainsKey(p.ParameterType) || _basicTypes.Contains(p.ParameterType) || p.ParameterType.GetTypeInfo().IsEnum)) ??
-                ctors.FirstOrDefault(x => x.GetParameters().Length == 0) ??
-                ctors.FirstOrDefault(x => x.GetParameters().All(p => Reflection.ConvertType.ContainsKey(p.ParameterType) || _customDeserializer.ContainsKey(p.ParameterType) || _basicTypes.Contains(p.ParameterType) || p.ParameterType.GetTypeInfo().IsEnum));
+                Array.Find(ctors, x => x.GetCustomAttribute<BsonCtorAttribute>() != null && x.GetParameters().All(p => Reflection.ConvertType.ContainsKey(p.ParameterType) || _basicTypes.Contains(p.ParameterType) || p.ParameterType.GetTypeInfo().IsEnum)) ??
+                Array.Find(ctors, x => x.GetParameters().Length == 0) ??
+                Array.Find(ctors, x => x.GetParameters().All(p => Reflection.ConvertType.ContainsKey(p.ParameterType) || _customDeserializer.ContainsKey(p.ParameterType) || _basicTypes.Contains(p.ParameterType) || p.ParameterType.GetTypeInfo().IsEnum));
 
             if (ctor == null) return null;
 
@@ -374,7 +373,7 @@ namespace LiteDB
             foreach (var p in ctor.GetParameters())
             {
                 // try first get converted named (useful for Id => _id)
-                var name = mapper.Members.FirstOrDefault(x => x.MemberName.Equals(p.Name, StringComparison.OrdinalIgnoreCase))?.FieldName ??
+                var name = mapper.Members.Find(x => x.MemberName.Equals(p.Name, StringComparison.OrdinalIgnoreCase))?.FieldName ??
                     p.Name;
 
                 var expr = Expression.MakeIndex(pDoc,
@@ -489,12 +488,12 @@ namespace LiteDB
             member.Deserialize = (bson, m) =>
             {
                 // if not a document (maybe BsonValue.null) returns null
-                if (bson == null || bson.IsDocument == false) return null;
+                if (bson?.IsDocument != true) return null;
 
                 var doc = bson.AsDocument;
                 var idRef = doc["$id"];
                 var missing = doc["$missing"] == true;
-                var included = doc.ContainsKey("$ref") == false;
+                var included = !doc.ContainsKey("$ref");
 
                 if (missing) return null;
 
@@ -507,7 +506,6 @@ namespace LiteDB
                     }
 
                     return m.Deserialize(entity.ForType, doc);
-
                 }
                 else
                 {
@@ -516,7 +514,6 @@ namespace LiteDB
                             new BsonDocument { ["_id"] = idRef, ["_type"] = bson["$type"] } :
                             new BsonDocument { ["_id"] = idRef }); // if has $id, deserialize object using only _id object
                 }
-
             };
         }
 
@@ -561,7 +558,7 @@ namespace LiteDB
 
             member.Deserialize = (bson, m) =>
             {
-                if (bson.IsArray == false) return null;
+                if (!bson.IsArray) return null;
 
                 var array = bson.AsArray;
 
@@ -572,12 +569,12 @@ namespace LiteDB
 
                 foreach (var item in array)
                 {
-                    if (item.IsDocument == false) continue;
+                    if (!item.IsDocument) continue;
 
                     var doc = item.AsDocument;
                     var idRef = doc["$id"];
                     var missing = doc["$missing"] == true;
-                    var included = doc.ContainsKey("$ref") == false;
+                    var included = !doc.ContainsKey("$ref");
 
                     // if referece document are missing, do not inlcude on output list
                     if (missing) continue;
@@ -604,7 +601,6 @@ namespace LiteDB
 
                         result.Add(bsonDocument);
                     }
-
                 }
 
                 return m.Deserialize(member.DataType, result);

@@ -24,7 +24,7 @@
 
                 return new BsonDataReader(result);
             }
-            else if(token.Is("COLLECTION"))
+            else if (token.Is("COLLECTION"))
             {
                 var collection = _tokenizer.ReadToken().Expect(TokenType.Word).Value;
 

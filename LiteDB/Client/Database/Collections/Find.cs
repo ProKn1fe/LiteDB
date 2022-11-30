@@ -60,7 +60,7 @@ namespace LiteDB
         /// </summary>
         public T FindById(BsonValue id)
         {
-            if (id == null || id.IsNull) throw new ArgumentNullException(nameof(id));
+            if (id?.IsNull == true) throw new ArgumentNullException(nameof(id));
 
             return Find(BsonExpression.Create("_id = @0", id)).FirstOrDefault();
         }

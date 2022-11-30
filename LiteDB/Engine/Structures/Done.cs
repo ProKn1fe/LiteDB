@@ -5,7 +5,7 @@
     /// </summary>
     internal class Done
     {
-        public bool Running = false;
-        public int Count = 0;
+        public bool Running;
+        public int Count;
     }
 }

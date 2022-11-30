@@ -26,7 +26,6 @@ namespace LiteDB.Tests.Database
 
                 // the same BsonExpression predicate works fine in FindOne
                 var r = c1.FindOne(e1);
-
             }
         }
     }

@@ -16,7 +16,7 @@ namespace LiteDB.Tests.Engine
 
                 var col = db.GetCollection("col");
 
-                col.Insert(new BsonDocument {["a"] = 1});
+                col.Insert(new BsonDocument { ["a"] = 1 });
 
                 db.GetCollectionNames().Should().Contain("col");
 

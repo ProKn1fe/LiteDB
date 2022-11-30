@@ -38,7 +38,7 @@
 
                 var type = _tokenizer.ReadToken().Expect(TokenType.Word);
 
-                switch(type.Value.ToUpper())
+                switch (type.Value.ToUpper())
                 {
                     case "GUID": return BsonAutoId.Guid;
                     case "INT": return BsonAutoId.Int32;

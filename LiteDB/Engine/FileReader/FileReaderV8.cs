@@ -14,7 +14,7 @@ namespace LiteDB.Engine
         private readonly Dictionary<string, uint> _collections;
         private readonly Stream _stream;
         private readonly byte[] _buffer = new byte[PAGE_SIZE];
-        private BasePage _cachedPage = null;
+        private BasePage _cachedPage;
 
         public FileReaderV8(HeaderPage header, DiskService disk)
         {
@@ -39,7 +39,7 @@ namespace LiteDB.Engine
         {
             var page = ReadPage<CollectionPage>(_collections[collection]);
 
-            foreach(var index in page.GetCollectionIndexes().Where(x => x.Name != "_id"))
+            foreach (var index in page.GetCollectionIndexes().Where(x => x.Name != "_id"))
             {
                 yield return new IndexInfo
                 {

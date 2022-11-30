@@ -1,6 +1,9 @@
 ﻿using System.Linq;
+
 using FluentAssertions;
+
 using LiteDB.Engine;
+
 using Xunit;
 
 namespace LiteDB.Internals
@@ -42,7 +45,7 @@ namespace LiteDB.Internals
             // let's create another page instance based on same page buffer
             var page2 = new BasePage(buffer);
 
-            ((int) page.PageID).Should().Be(1);
+            ((int)page.PageID).Should().Be(1);
             page.PageType.Should().Be(PageType.Empty);
 
             page.Get(index0).All(1).Should().BeTrue();
@@ -68,13 +71,13 @@ namespace LiteDB.Internals
 
             var full = page.FreeBytes - BasePage.SLOT_SIZE;
 
-            page.Insert((ushort) full, out var index0).Fill(1);
+            page.Insert((ushort)full, out var index0).Fill(1);
 
             page.ItemsCount.Should().Be(1);
-            ((int) page.UsedBytes).Should().Be(full);
+            ((int)page.UsedBytes).Should().Be(full);
 
             page.FreeBytes.Should().Be(0);
-            ((int) page.NextFreePosition).Should().Be(32 + full);
+            ((int)page.NextFreePosition).Should().Be(32 + full);
 
             buffer.ShareCounter = 0;
         }
@@ -225,8 +228,6 @@ namespace LiteDB.Internals
 
             seg3f.All(13).Should().BeTrue();
 
-
-
             buffer.ShareCounter = 0;
         }
 
@@ -361,7 +362,5 @@ namespace LiteDB.Internals
 
             buffer.ShareCounter = 0;
         }
-
-
     }
 }

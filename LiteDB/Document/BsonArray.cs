@@ -77,7 +77,7 @@ namespace LiteDB
         public void AddRange<TCollection>(TCollection collection)
             where TCollection : ICollection<BsonValue>
         {
-            if(collection == null)
+            if (collection == null)
                 throw new ArgumentNullException(nameof(collection));
 
             var list = (List<BsonValue>)base.RawValue;
@@ -92,9 +92,8 @@ namespace LiteDB
             {
                 list.Add(bsonValue ?? Null);
             }
-            
         }
-        
+
         public void AddRange(IEnumerable<BsonValue> items)
         {
             if (items == null) throw new ArgumentNullException(nameof(items));
@@ -141,7 +140,7 @@ namespace LiteDB
             var stop = Math.Min(Count, otherArray.Count);
 
             // compare each element
-            for (; 0 == result && i < stop; i++)
+            for (; result == 0 && i < stop; i++)
                 result = this[i].CompareTo(otherArray[i]);
 
             if (result != 0) return result;
@@ -153,22 +152,17 @@ namespace LiteDB
 
         internal override int GetBytesCount(bool recalc)
         {
-            if (recalc == false && _length > 0) return _length;
+            if (!recalc && _length > 0) return _length;
 
             var length = 5;
             var array = RawArray;
-            
+
             for (var i = 0; i < array.Count; i++)
             {
                 length += GetBytesCountElement(i.ToString(), array[i]);
             }
 
             return _length = length;
-        }
-
-        private void AllocateArray()
-        {
-
         }
     }
 }

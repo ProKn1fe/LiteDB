@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 using Xunit;
 using Xunit.Extensions.Ordering;
@@ -18,13 +17,19 @@ namespace LiteDB.Tests.Database
 
         public CreateLoadReload_Tests()
         {
-            TestModels = new List<TestModel>(Random.Shared.Next(50, 300));
+#if NET5_0_OR_GREATER
+            var random = Random.Shared;
+#else
+            var random = new Random();
+#endif
+
+            TestModels = new List<TestModel>(random.Next(50, 300));
             for (var a = 0; a < TestModels.Capacity; ++a)
             {
                 TestModels.Add(new TestModel
                 {
-                    Name = Random.Shared.Next().ToString(),
-                    Age = Random.Shared.Next()
+                    Name = random.Next().ToString(),
+                    Age = random.Next()
                 });
             }
         }
@@ -58,7 +63,7 @@ namespace LiteDB.Tests.Database
 
             foreach (var item in collection.FindAll())
             {
-                var itemFromList = TestModels.FirstOrDefault(a => a.Name == item.Name);
+                var itemFromList = TestModels.Find(a => a.Name == item.Name);
                 Assert.True(itemFromList != null);
             }
 

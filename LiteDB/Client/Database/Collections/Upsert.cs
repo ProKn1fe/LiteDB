@@ -31,7 +31,7 @@ namespace LiteDB
         public bool Upsert(BsonValue id, T entity)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
-            if (id == null || id.IsNull) throw new ArgumentNullException(nameof(id));
+            if (id?.IsNull == true) throw new ArgumentNullException(nameof(id));
 
             // get BsonDocument from object
             var doc = _mapper.ToDocument(entity);

@@ -44,11 +44,11 @@ namespace LiteDB.Stress
             {
                 var count = _rnd.Next(MinRange, MaxRange);
 
-                for(var i = 0; i < count; i++)
+                for (var i = 0; i < count; i++)
                 {
                     var doc = new BsonDocument();
 
-                    foreach(var field in Fields)
+                    foreach (var field in Fields)
                     {
                         doc[field.Name] = field.GetValue();
                     }

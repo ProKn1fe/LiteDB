@@ -45,7 +45,6 @@ namespace LiteDB.Tests.Mapper
 
         public class ConcreteClass : BaseClass
         {
-
         }
 
         [Fact]

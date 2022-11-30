@@ -53,7 +53,7 @@ namespace LiteDB.Tests.Mapper
             // remove milliseconds from now (BSON format do not support milliseconds)
             var now = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"));
 
-            var u = new User {Date = now};
+            var u = new User { Date = now };
 
             // date properties
             Eval(u, x => x.Date.Year, u.Date.Year);
@@ -81,7 +81,7 @@ namespace LiteDB.Tests.Mapper
         [Fact]
         public void Linq_Predicate_Eval()
         {
-            var u = new User {Id = 1, Active = false};
+            var u = new User { Id = 1, Active = false };
 
             Eval(u, x => x.Id == 1, true);
             Eval(u, x => x.Id != 1, false);
@@ -106,7 +106,7 @@ namespace LiteDB.Tests.Mapper
         [Fact]
         public void Linq_Document_Navigation_Eval()
         {
-            var u = new User {Id = 1, Name = "John", Address = new Address {Number = 123, Street = "Ipiranga"}};
+            var u = new User { Id = 1, Name = "John", Address = new Address { Number = 123, Street = "Ipiranga" } };
 
             // return root $
             Eval(u, x => x, u);
@@ -122,13 +122,13 @@ namespace LiteDB.Tests.Mapper
         [Fact]
         public void Linq_Math_Eval()
         {
-            var u = new User {Id = 5};
+            var u = new User { Id = 5 };
 
-            Eval(u, x => u.Id + 10 * 2, 25);
+            Eval(u, x => u.Id + (10 * 2), 25);
             Eval(u, x => (u.Id + 10) * 2, 30);
 
             Eval(u, x => Math.Abs(u.Id - 20), 15);
-            Eval(u, x => Math.Round((double) u.Id / 3, 2), 1.67);
+            Eval(u, x => Math.Round((double)u.Id / 3, 2), 1.67);
         }
 
         [Fact]
@@ -160,7 +160,7 @@ namespace LiteDB.Tests.Mapper
         private void Eval<T, K>(T entity, Expression<Func<T, K>> expr, params K[] expect)
         {
             var expression = _mapper.GetExpression(expr);
-            var doc = _mapper.ToDocument<T>(entity);
+            var doc = _mapper.ToDocument(entity);
 
             var results = expression.Execute(doc).ToArray();
             var index = 0;

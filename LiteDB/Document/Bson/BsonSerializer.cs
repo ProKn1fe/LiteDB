@@ -9,7 +9,7 @@ namespace LiteDB
     /// Class to call method for convert BsonDocument to/from byte[] - based on http://bsonspec.org/spec.html
     /// In v5 this class use new BufferRead/Writer to work with byte[] segments. This class are just a shortchut
     /// </summary>
-    public class BsonSerializer
+    public static class BsonSerializer
     {
         /// <summary>
         /// Serialize BsonDocument into a binary array
@@ -18,7 +18,7 @@ namespace LiteDB
         {
             if (doc == null) throw new ArgumentNullException(nameof(doc));
 
-            var buffer = new byte[doc.GetBytesCount(true)]; 
+            var buffer = new byte[doc.GetBytesCount(true)];
 
             using (var writer = new BufferWriter(buffer))
             {

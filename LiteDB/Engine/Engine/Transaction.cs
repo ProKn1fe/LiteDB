@@ -18,7 +18,7 @@ namespace LiteDB.Engine
 
             if (transacion.OpenCursors.Count > 0) throw new LiteException(0, "This thread contains an open cursors/query. Close cursors before Begin()");
 
-            LOG(isNew, $"begin trans", "COMMAND");
+            LOG(isNew, "begin trans", "COMMAND");
 
             return isNew;
         }
@@ -53,7 +53,7 @@ namespace LiteDB.Engine
         {
             var transaction = _monitor.GetTransaction(false, false, out _);
 
-            if (transaction != null && transaction.State == TransactionState.Active)
+            if (transaction?.State == TransactionState.Active)
             {
                 transaction.Rollback();
 
@@ -82,7 +82,7 @@ namespace LiteDB.Engine
 
                 return result;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 LOG(ex.Message, "ERROR");
 
@@ -100,7 +100,7 @@ namespace LiteDB.Engine
 
             _monitor.ReleaseTransaction(transaction);
 
-            if (_header.Pragmas.Checkpoint > 0 && 
+            if (_header.Pragmas.Checkpoint > 0 &&
                 transaction.Mode == LockMode.Write &&
                 _disk.LogLength > (_header.Pragmas.Checkpoint * PAGE_SIZE))
             {

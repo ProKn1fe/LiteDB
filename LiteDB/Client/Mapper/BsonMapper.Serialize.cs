@@ -189,7 +189,7 @@ namespace LiteDB
                 // get member value
                 var value = member.Getter(obj);
 
-                if (value == null && SerializeNullValues == false && member.FieldName != "_id") continue;
+                if (value == null && !SerializeNullValues && member.FieldName != "_id") continue;
 
                 // if member has a custom serialization, use it
                 if (member.Serialize != null)

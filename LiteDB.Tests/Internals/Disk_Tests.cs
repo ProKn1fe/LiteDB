@@ -27,7 +27,7 @@ namespace LiteDB.Internals
             {
                 var p = disk.Cache.NewPage();
 
-                p.Fill((byte) i); // fills with 1 - 100
+                p.Fill((byte)i); // fills with 1 - 100
 
                 p.Write(i, 0); // but fix a valid pageID
 
@@ -50,7 +50,7 @@ namespace LiteDB.Internals
             {
                 var p = reader.ReadPage(i * 8192, false);
 
-                p.Slice(4, PAGE_SIZE - 4).All((byte) i).Should().BeTrue(); // remove pageID 4 first bytes
+                p.Slice(4, PAGE_SIZE - 4).All((byte)i).Should().BeTrue(); // remove pageID 4 first bytes
 
                 p.Release();
             }

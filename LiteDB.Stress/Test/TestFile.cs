@@ -30,7 +30,7 @@ namespace LiteDB.Stress
             Setup = new List<string>();
             Tasks = new List<ITestItem>();
 
-            foreach(XmlElement el in children)
+            foreach (XmlElement el in children)
             {
                 if (el.Name == "setup")
                 {

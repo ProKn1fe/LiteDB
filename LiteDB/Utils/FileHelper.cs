@@ -17,11 +17,11 @@ namespace LiteDB
         public static string GetSufixFile(string filename, string suffix = "-temp", bool checkIfExists = true)
         {
             var count = 0;
-            var temp = Path.Combine(Path.GetDirectoryName(filename), 
-                Path.GetFileNameWithoutExtension(filename) + suffix + 
+            var temp = Path.Combine(Path.GetDirectoryName(filename),
+                Path.GetFileNameWithoutExtension(filename) + suffix +
                 Path.GetExtension(filename));
 
-            while(checkIfExists && File.Exists(temp))
+            while (checkIfExists && File.Exists(temp))
             {
                 temp = Path.Combine(Path.GetDirectoryName(filename),
                     Path.GetFileNameWithoutExtension(filename) + suffix +
@@ -39,7 +39,7 @@ namespace LiteDB
         {
             var sw = Stopwatch.StartNew();
 
-            while(sw.ElapsedMilliseconds < 60000)
+            while (sw.ElapsedMilliseconds < 60000)
             {
                 try
                 {

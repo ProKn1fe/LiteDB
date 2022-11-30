@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Globalization;
+
 using FluentAssertions;
+
 using Xunit;
 
 namespace LiteDB.Tests.Document
@@ -30,7 +32,6 @@ namespace LiteDB.Tests.Document
             doc["Items"].AsArray.Add(true);
             doc["Items"].AsArray.Add(DateTime.Now);
 
-
             return doc;
         }
 
@@ -54,19 +55,19 @@ namespace LiteDB.Tests.Document
         [Fact]
         public void JsonWriterTest()
         {
-            var specialChars = "ÁÀÃÂÄÉÈÊËÉÍÌÎÏÓÒÕÔÖÚÙÛÜÇáàãâäéèêëéíìîïóòõôöúùûüç";
+            const string specialChars = "ÁÀÃÂÄÉÈÊËÉÍÌÎÏÓÒÕÔÖÚÙÛÜÇáàãâäéèêëéíìîïóòõôöúùûüç";
             JsonSerializer.Serialize(specialChars).Should().Be('\"' + specialChars + '\"');
         }
 
         [Fact]
         public void Json_Number_Deserialize_Test()
         {
-            int positiveInt32 = 5000000;
-            int negativeInt32 = -5000000;
-            long positiveInt64 = 210000000000L;
-            long negativeInt64 = -210000000000L;
-            double positiveDouble = 210000000000D;
-            double negativeDouble = -210000000000D;
+            const int positiveInt32 = 5000000;
+            const int negativeInt32 = -5000000;
+            const long positiveInt64 = 210000000000L;
+            const long negativeInt64 = -210000000000L;
+            const double positiveDouble = 210000000000D;
+            const double negativeDouble = -210000000000D;
 
             JsonSerializer.Deserialize(positiveInt32.ToString()).Should().Be(positiveInt32);
             JsonSerializer.Deserialize(negativeInt32.ToString()).Should().Be(negativeInt32);

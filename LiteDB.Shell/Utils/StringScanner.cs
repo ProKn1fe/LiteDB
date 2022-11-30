@@ -8,7 +8,7 @@ namespace LiteDB.Shell
     /// </summary>
     public class StringScanner
     {
-        public string Source { get; private set; }
+        public string Source { get; }
         public int Index { get; set; }
 
         /// <summary>

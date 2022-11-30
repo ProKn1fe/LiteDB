@@ -14,7 +14,7 @@ namespace LiteDB.Tests.Engine
         [Fact(Skip = "Must fix parallel query fetch")]
         public void Query_Parallel()
         {
-            using(var db = new LiteDatabase(new MemoryStream()))
+            using (var db = new LiteDatabase(new MemoryStream()))
             {
                 var col = db.GetCollection<Person>("person");
                 var all = DataGen.Person().ToArray();
@@ -41,7 +41,6 @@ namespace LiteDB.Tests.Engine
                 });
 
                 all.Length.Should().Be(bag.Count);
-
             }
         }
     }

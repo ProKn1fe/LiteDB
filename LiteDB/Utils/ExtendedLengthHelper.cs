@@ -16,7 +16,7 @@ namespace LiteDB
             var lengthLSByte = lengthByte;
             var lengthMSByte = (byte)(typeByte & 0b1100_0000);
             type = (BsonType)bsonType;
-            length = (ushort)((lengthMSByte << 2) | (lengthLSByte));
+            length = (ushort)((lengthMSByte << 2) | lengthLSByte);
         }
 
         /// <summary>

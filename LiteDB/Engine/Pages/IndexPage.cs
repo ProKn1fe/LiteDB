@@ -72,7 +72,7 @@ namespace LiteDB.Engine
         }
 
         /// <summary>
-        /// Get page index slot on FreeIndexPageID 
+        /// Get page index slot on FreeIndexPageID
         /// 8160 - 600 : Slot #0
         /// 599  -   0 : Slot #1 (no page in list)
         /// </summary>

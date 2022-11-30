@@ -79,10 +79,7 @@ namespace LiteDB.Engine
                 }
 
                 // rename collection and set page as dirty (there is no need to set IsDirty in HeaderPage)
-                transaction.Pages.Commit += (h) =>
-                {
-                    h.RenameCollection(collection, newName);
-                };
+                transaction.Pages.Commit += (h) => h.RenameCollection(collection, newName);
 
                 return true;
             });

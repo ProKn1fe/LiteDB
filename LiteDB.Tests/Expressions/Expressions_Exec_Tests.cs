@@ -1,6 +1,8 @@
 ﻿using FluentAssertions;
+
 using System;
 using System.Collections.Generic;
+
 using Xunit;
 
 namespace LiteDB.Tests.Expressions
@@ -220,7 +222,6 @@ namespace LiteDB.Tests.Expressions
             S("DATEADD('d', -1, $.mydate)").ExpectValue(DateTime.Parse("2018-04-30T15:30:45Z"));
             S("DATEADD('M', 12, $.mydate)").ExpectValue(DateTime.Parse("2019-05-01T15:30:45Z"));
 
-
             S("DATEDIFF('M', $.mydate, DATE_UTC(2018, 6, 1))").ExpectValue(1);
             S("DATEDIFF('M', $.mydate, DATE_UTC(2018, 4, 1))").ExpectValue(-1);
 
@@ -259,7 +260,7 @@ namespace LiteDB.Tests.Expressions
             P("ARRAY(arr[@ > @0])", 3).ExpectArray(4, 5);
 
             // using map
-            P("ARRAY(MAP(ITEMS(@0) => (@ + @1)))", new BsonArray(new BsonValue[] {10, 11, 12}), 5)
+            P("ARRAY(MAP(ITEMS(@0) => (@ + @1)))", new BsonArray(new BsonValue[] { 10, 11, 12 }), 5)
                 .ExpectArray(15, 16, 17);
 
             // sort ascending

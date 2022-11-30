@@ -27,7 +27,7 @@ namespace LiteDB
                 var reader = new JsonReader(_tokenizer);
                 var json = reader.Deserialize();
 
-                if (json.IsDocument == false) throw LiteException.UnexpectedToken(next);
+                if (!json.IsDocument) throw LiteException.UnexpectedToken(next);
 
                 if (json["password"].IsString)
                 {

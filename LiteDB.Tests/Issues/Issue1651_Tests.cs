@@ -4,7 +4,6 @@ using System.Linq;
 
 namespace LiteDB.Tests.Issues
 {
-
     public class Issue1651_Tests
     {
         public class Order : BaseEntity
@@ -63,8 +62,8 @@ namespace LiteDB.Tests.Issues
             Assert.Equal(2, actualOrders.Count);
             Assert.Equal(new[] { customer.Name, customer.Name },
                 actualOrders.Select(actualOrder => actualOrder.Customer.Name));
-            Assert.Equal(2, (_customerCollection.FindAll().ToList()).Count);
-            Assert.Equal(3, (_orderCollection.FindAll().ToList()).Count);
+            Assert.Equal(2, _customerCollection.FindAll().ToList().Count);
+            Assert.Equal(3, _orderCollection.FindAll().ToList().Count);
         }
     }
 }

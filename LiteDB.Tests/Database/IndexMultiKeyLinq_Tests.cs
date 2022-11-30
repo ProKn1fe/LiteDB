@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using FluentAssertions;
+
 using Xunit;
 
 namespace LiteDB.Tests.Database
@@ -81,10 +83,7 @@ namespace LiteDB.Tests.Database
                 var docsPhoneAll = queryPhoneAll.ToArray();
 
                 docsPhoneAll.Length.Should().Be(0);
-
-
             }
         }
-
     }
 }

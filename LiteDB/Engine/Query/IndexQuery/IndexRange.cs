@@ -38,7 +38,7 @@ namespace LiteDB.Engine
             var endEquals = Order == Query.Ascending ? _endEquals : _startEquals;
 
             // find first indexNode (or get from head/tail if Min/Max value)
-            var first = 
+            var first =
                 start.Type == BsonType.MinValue ? indexer.GetNode(index.Head) :
                 start.Type == BsonType.MaxValue ? indexer.GetNode(index.Tail) :
                 indexer.Find(index, start, true, Order);
@@ -99,19 +99,19 @@ namespace LiteDB.Engine
 
         public override string ToString()
         {
-            if (_start.IsMinValue && _endEquals == false)
+            if (_start.IsMinValue && !_endEquals)
             {
                 return string.Format("INDEX SCAN({0} < {1})", Name, _end);
             }
-            else if (_start.IsMinValue && _endEquals == true)
+            else if (_start.IsMinValue && _endEquals)
             {
                 return string.Format("INDEX SCAN({0} <= {1})", Name, _end);
             }
-            else if (_end.IsMaxValue && _startEquals == false)
+            else if (_end.IsMaxValue && !_startEquals)
             {
                 return string.Format("INDEX SCAN({0} > {1})", Name, _start);
             }
-            else if (_end.IsMaxValue && _startEquals == true)
+            else if (_end.IsMaxValue && _startEquals)
             {
                 return string.Format("INDEX SCAN({0} >= {1})", Name, _start);
             }

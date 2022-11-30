@@ -23,7 +23,7 @@ namespace LiteDB.Shell.Commands
         {
             if (env.Database == null) throw new Exception("Database not connected");
 
-            var filename = Regex.Replace(s.Scan(@".+").TrimToNull(), @";\s*$", "").Trim();
+            var filename = Regex.Replace(s.Scan(".+").TrimToNull(), @";\s*$", "").Trim();
 
             foreach (var line in File.ReadAllLines(filename))
             {

@@ -8,14 +8,13 @@ namespace LiteDB.Engine
     /// </summary>
     internal class SystemCollection
     {
-        private readonly string _name;
-        private readonly Func<IEnumerable<BsonDocument>> _input = null;
+        private readonly Func<IEnumerable<BsonDocument>> _input;
 
         public SystemCollection(string name)
         {
             if (!name.StartsWith("$")) throw new ArgumentException("System collection name must starts with $");
 
-            _name = name;
+            Name = name;
         }
 
         public SystemCollection(string name, Func<IEnumerable<BsonDocument>> input)
@@ -27,7 +26,7 @@ namespace LiteDB.Engine
         /// <summary>
         /// Get system collection name (must starts with $)
         /// </summary>
-        public string Name => _name;
+        public string Name { get; }
 
         /// <summary>
         /// Get input data source factory
@@ -37,7 +36,7 @@ namespace LiteDB.Engine
         /// <summary>
         /// Get output data source factory (must implement in inherit class)
         /// </summary>
-        public virtual int Output(IEnumerable<BsonDocument> source, BsonValue options) => throw new LiteException(0, $"{_name} do not support as output collection");
+        public virtual int Output(IEnumerable<BsonDocument> source, BsonValue options) => throw new LiteException(0, $"{Name} do not support as output collection");
 
         /// <summary>
         /// Static helper to read options arg as plain value or as document fields
@@ -52,7 +51,7 @@ namespace LiteDB.Engine
         /// </summary>
         protected static BsonValue GetOption(BsonValue options, string key, BsonValue defaultValue)
         {
-            if (options != null && options.IsDocument)
+            if (options?.IsDocument == true)
             {
                 if (options.AsDocument.TryGetValue(key, out var value))
                 {

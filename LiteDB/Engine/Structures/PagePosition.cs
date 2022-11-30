@@ -34,8 +34,8 @@
             unchecked
             {
                 int hash = 17;
-                hash = hash * 23 + (int)PageID;
-                hash = hash * 23 + (int)Position;
+                hash = (hash * 23) + (int)PageID;
+                hash = (hash * 23) + (int)Position;
                 return hash;
             }
         }

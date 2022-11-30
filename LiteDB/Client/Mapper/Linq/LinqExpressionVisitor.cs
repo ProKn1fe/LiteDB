@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+
 using static LiteDB.Constants;
 
 namespace LiteDB
@@ -35,11 +36,11 @@ namespace LiteDB
 
         private readonly BsonMapper _mapper;
         private readonly Expression _expr;
-        private readonly ParameterExpression _rootParameter = null;
+        private readonly ParameterExpression _rootParameter;
 
         private readonly BsonDocument _parameters = new BsonDocument();
-        private int _paramIndex = 0;
-        private Type _dbRefType = null;
+        private int _paramIndex;
+        private Type _dbRefType;
 
         private readonly StringBuilder _builder = new StringBuilder();
         private readonly Stack<Expression> _nodes = new Stack<Expression>();
@@ -172,7 +173,6 @@ namespace LiteDB
                 _nodes.Pop();
             }
 
-
             return node;
         }
 
@@ -233,11 +233,10 @@ namespace LiteDB
         /// </summary>
         protected override Expression VisitConstant(ConstantExpression node)
         {
-            MemberExpression prevNode;
             var value = node.Value;
 
             // https://stackoverflow.com/a/29708655/3286260
-            while (_nodes.Count > 0 && (prevNode = _nodes.Peek() as MemberExpression) != null)
+            while (_nodes.Count > 0 && _nodes.Peek() is MemberExpression prevNode)
             {
                 if (prevNode.Member is FieldInfo fieldInfo)
                 {
@@ -253,7 +252,7 @@ namespace LiteDB
 
             ENSURE(_nodes.Count == 0, "counter stack must be zero to eval all properties/field over object");
 
-            var parameter = "p" + (_paramIndex++);
+            var parameter = "p" + _paramIndex++;
 
             _builder.AppendFormat("@" + parameter);
 
@@ -301,12 +300,12 @@ namespace LiteDB
                 if ((fromType == typeof(double) || fromType == typeof(decimal)) &&
                     (toType == typeof(int) || toType == typeof(long)))
                 {
-                    var methodName = "To" + toType.Name.ToString();
+                    var methodName = "To" + toType.Name;
 
-                    var convert = typeof(Convert).GetMethods()
-                        .Where(x => x.Name == methodName)
-                        .Where(x => x.GetParameters().Length == 1 && x.GetParameters().Any(z => z.ParameterType == fromType))
-                        .FirstOrDefault();
+                    var convert = Array.Find(typeof(Convert).GetMethods(), x =>
+                        x.Name == methodName &&
+                        x.GetParameters().Length == 1 &&
+                        x.GetParameters().Any(z => z.ParameterType == fromType));
 
                     if (convert == null) throw new NotSupportedException($"Cast from {fromType.Name} are not supported when convert to BsonExpression");
 
@@ -569,7 +568,7 @@ namespace LiteDB
                 // otherwise I have resolver for this method
                 var pattern = type.ResolveMethod(met.Method);
 
-                if (pattern == null || !pattern.StartsWith("#")) throw new NotSupportedException($"Method {met.Method.Name} not available to convert to BsonExpression inside Any/All call.");
+                if (pattern?.StartsWith("#") != true) throw new NotSupportedException($"Method {met.Method.Name} not available to convert to BsonExpression inside Any/All call.");
 
                 // call resolve pattern removing first `#`
                 ResolvePattern(pattern.Substring(1), met.Object, met.Arguments);
@@ -578,7 +577,6 @@ namespace LiteDB
             {
                 throw new LiteException(0, "When using Any/All method test do only simple predicate variable. Eg: `x => x.Phones.Select(p => p.Number).Any(n => n > 5)`");
             }
-
         }
 
         /// <summary>
@@ -621,7 +619,7 @@ namespace LiteDB
             var entity = _mapper.GetEntityMapper(member.DeclaringType);
 
             // get mapped field from entity
-            var field = entity.Members.FirstOrDefault(x => x.MemberName == name);
+            var field = entity.Members.Find(x => x.MemberName == name);
 
             if (field == null) throw new NotSupportedException($"Member {name} not found on BsonMapper for type {member.DeclaringType}.");
 
@@ -714,7 +712,7 @@ namespace LiteDB
                 throw new NotSupportedException($"Expression {expr} can't return null value");
             }
 
-            if (validTypes.Length > 0 && validTypes.Any(x => x == value.GetType()) == false)
+            if (validTypes.Length > 0 && !validTypes.Any(x => x == value.GetType()))
             {
                 throw new NotSupportedException($"Expression {expr} must return on of this types: {string.Join(", ", validTypes.Select(x => $"`{x.Name}`"))}");
             }

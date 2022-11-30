@@ -36,7 +36,7 @@ namespace LiteDB.Internals
                 // test starts here!!!
                 var p0 = new HeaderPage(r.NewPage(), 0);
 
-                disk.WriteAsync(new PageBuffer[] {p0.UpdateBuffer()});
+                disk.WriteAsync(new PageBuffer[] { p0.UpdateBuffer() });
 
                 // (1 ->) jump to thread B
                 serialize(wa, wb);

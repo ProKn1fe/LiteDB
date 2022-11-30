@@ -9,7 +9,7 @@ namespace LiteDB.Engine
         {
             foreach (var transaction in _monitor.Transactions)
             {
-                foreach(var cursor in transaction.OpenCursors)
+                foreach (var cursor in transaction.OpenCursors)
                 {
                     yield return new BsonDocument
                     {

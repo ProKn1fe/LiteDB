@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -31,13 +32,13 @@ namespace LiteDB.Engine
                     transaction.Safepoint();
 
                     // first try update document (if exists _id), if not found, do insert
-                    if (doc["_id"] == BsonValue.Null || UpdateDocument(snapshot, collectionPage, doc, indexer, data) == false)
+                    if (doc["_id"] == BsonValue.Null || !UpdateDocument(snapshot, collectionPage, doc, indexer, data))
                     {
                         InsertDocument(snapshot, doc, autoId, indexer, data);
                         count++;
                     }
                 }
-                
+
                 // returns how many document was inserted
                 return count;
             });

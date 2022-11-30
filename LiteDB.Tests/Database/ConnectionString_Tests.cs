@@ -10,9 +10,9 @@ namespace LiteDB.Tests.Database
         public void ConnectionString_Parser()
         {
             // only filename
-            var onlyfile = new ConnectionString(@"demo.db");
+            var onlyfile = new ConnectionString("demo.db");
 
-            onlyfile.Filename.Should().Be(@"demo.db");
+            onlyfile.Filename.Should().Be("demo.db");
 
             // file with spaces without "
             var normal = new ConnectionString(@"filename=c:\only file\demo.db");
@@ -32,7 +32,6 @@ namespace LiteDB.Tests.Database
             full.Password.Should().Be("john-doe ");
             full.ReadOnly.Should().BeTrue();
             full.InitialSize.Should().Be(10 * 1024 * 1024);
-
         }
 
         [Fact]
@@ -42,7 +41,6 @@ namespace LiteDB.Tests.Database
 
             cn.Filename.Length.Should().Be(49);
             cn.Password.Length.Should().Be(512);
-
         }
     }
 }

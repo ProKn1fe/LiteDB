@@ -7,11 +7,11 @@
         /// <summary>
         /// Rebuild database with a new password
         /// </summary>
-        public string Password { get; set; } = null;
+        public string Password { get; set; }
 
         /// <summary>
         /// Define a new collation when rebuild
         /// </summary>
-        public Collation Collation { get; set; } = null;
+        public Collation Collation { get; set; }
     }
 }

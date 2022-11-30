@@ -18,7 +18,7 @@ namespace LiteDB.Internals
             var p0 = m.NewPage();
 
             // new pages are writables
-            (p0.ShareCounter).Should().Be(-1);
+            p0.ShareCounter.Should().Be(-1);
 
             // simulate write operation on page
             p0.Position = 0;
@@ -127,7 +127,7 @@ namespace LiteDB.Internals
             // discard all pages
             PageBuffer pw;
 
-            while ((pw = pages.FirstOrDefault(x => x.ShareCounter == -1)) != null)
+            while ((pw = pages.Find(x => x.ShareCounter == -1)) != null)
             {
                 m.DiscardPage(pw);
             }

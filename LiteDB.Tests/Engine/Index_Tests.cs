@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+
 using FluentAssertions;
+
 using Xunit;
 
 namespace LiteDB.Tests.Engine
@@ -152,7 +154,7 @@ namespace LiteDB.Tests.Engine
                 ["Name"] = "John Doe",
                 ["Phones"] = new BsonArray
                 (
-                    new BsonDocument 
+                    new BsonDocument
                     {
                         ["Type"] = "Mobile",
                         ["Number"] = "9876-5432"
@@ -181,15 +183,14 @@ namespace LiteDB.Tests.Engine
             col.Insert(doc1);
             col.Insert(doc2);
 
-            var query1 = "select $ from customers where $.Phones[*].Type any = 'Mobile'";
-            var query2 = "select $ from customers where $.Phones[*].Type any = 'Fixed'";
+            const string query1 = "select $ from customers where $.Phones[*].Type any = 'Mobile'";
+            const string query2 = "select $ from customers where $.Phones[*].Type any = 'Fixed'";
 
             var explain1 = db.Execute("explain " + query1).First();
             Assert.True(!explain1["index"]["mode"].AsString.Contains("_id"));
 
             var explain2 = db.Execute("explain " + query2).First();
             Assert.True(!explain2["index"]["mode"].AsString.Contains("_id"));
-
 
             var result1 = db.Execute(query1).ToArray();
             Assert.True(result1.Length == 1);

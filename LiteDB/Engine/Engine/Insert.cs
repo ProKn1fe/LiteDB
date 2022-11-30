@@ -44,7 +44,6 @@ namespace LiteDB.Engine
         /// </summary>
         private void InsertDocument(Snapshot snapshot, BsonDocument doc, BsonAutoId autoId, IndexService indexer, DataService data)
         {
-
             // if no _id, use AutoId
             if (!doc.TryGetValue("_id", out var id))
             {
@@ -53,7 +52,7 @@ namespace LiteDB.Engine
                     autoId == BsonAutoId.Guid ? new BsonValue(Guid.NewGuid()) :
                     GetSequence(snapshot, autoId);
             }
-            else if(id.IsNumber)
+            else if (id.IsNumber)
             {
                 // update memory sequence of numeric _id
                 SetSequence(snapshot, id);
@@ -78,7 +77,7 @@ namespace LiteDB.Engine
                 var keys = index.BsonExpr.GetIndexKeys(doc, _header.Pragmas.Collation);
 
                 // do a loop with all keys (multi-key supported)
-                foreach(var key in keys)
+                foreach (var key in keys)
                 {
                     // insert node
                     var node = indexer.AddNode(index, key, dataBlock, last);
@@ -86,7 +85,6 @@ namespace LiteDB.Engine
                     last = node;
                 }
             }
-
         }
     }
 }

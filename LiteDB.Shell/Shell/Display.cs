@@ -52,7 +52,7 @@ namespace LiteDB.Shell
 
             foreach (var item in result.ToEnumerable())
             {
-                if (env.Running == false) return;
+                if (!env.Running) return;
 
                 Write(ConsoleColor.Cyan, string.Format("[{0}]: ", ++index));
 
