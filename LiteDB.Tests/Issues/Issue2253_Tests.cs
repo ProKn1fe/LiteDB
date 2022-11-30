@@ -38,6 +38,7 @@ namespace LiteDB.Tests.Issues
             var collection = litedb.GetCollection<UserScope>("test");
             collection.Insert(scope);
 
+            litedb.Dispose();
             ms.Position = 0;
             litedb = new LiteDatabase(ms);
             collection = litedb.GetCollection<UserScope>("test");
