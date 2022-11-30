@@ -49,8 +49,8 @@ namespace LiteDB.Engine
             unchecked
             {
                 int hash = 17;
-                hash = hash * 23 + (int)PageID;
-                hash = hash * 23 + Index;
+                hash = (hash * 23) + (int)PageID;
+                hash = (hash * 23) + Index;
                 return hash;
             }
         }

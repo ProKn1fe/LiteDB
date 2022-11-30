@@ -30,7 +30,7 @@ namespace LiteDB.Engine
 
             yield return node;
 
-            if (index.Unique == false)
+            if (!index.Unique)
             {
                 // navigate in both sides to return all nodes found
                 var first = node;
@@ -44,7 +44,7 @@ namespace LiteDB.Engine
                 }
 
                 node = first;
-                
+
                 // and than, go backward
                 while (!node.Prev[0].IsEmpty && ((node = indexer.GetNode(node.Prev[0])).Key.CompareTo(_value, indexer.Collation) == 0))
                 {

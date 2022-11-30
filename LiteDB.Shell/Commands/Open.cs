@@ -20,7 +20,7 @@ namespace LiteDB.Shell.Commands
 
         public void Execute(StringScanner s, Env env)
         {
-            var text = Regex.Replace(s.Scan(@".+").TrimToNull(), @";\s*$", "").Trim();
+            var text = Regex.Replace(s.Scan(".+").TrimToNull(), @";\s*$", "").Trim();
             var connectionString = new ConnectionString(text);
 
             if (env.Database != null)

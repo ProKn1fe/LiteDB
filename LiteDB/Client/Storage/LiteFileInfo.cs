@@ -20,7 +20,7 @@ namespace LiteDB
         public long Length { get; internal set; } = 0;
 
         [BsonField("chunks")]
-        public int Chunks { get; internal set; } = 0;
+        public int Chunks { get; internal set; }
 
         [BsonField("uploadDate")]
         public DateTime UploadDate { get; internal set; } = DateTime.Now;

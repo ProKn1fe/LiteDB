@@ -41,7 +41,6 @@ namespace LiteDB.Tests.Database
                     p.Count().Should().Be(4);
                 }
             }
-
         }
     }
 }

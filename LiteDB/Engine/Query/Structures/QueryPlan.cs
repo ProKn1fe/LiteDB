@@ -17,17 +17,17 @@ namespace LiteDB.Engine
         /// <summary>
         /// Get collection name (required)
         /// </summary>
-        public string Collection { get; set; } = null;
+        public string Collection { get; set; }
 
         /// <summary>
         /// Index used on query (required)
         /// </summary>
-        public Index Index { get; set; } = null;
+        public Index Index { get; set; }
 
         /// <summary>
         /// Index expression that will be used in index (source only)
         /// </summary>
-        public string IndexExpression { get; set; } = null;
+        public string IndexExpression { get; set; }
 
         /// <summary>
         /// Get index cost (lower is best)
@@ -37,7 +37,7 @@ namespace LiteDB.Engine
         /// <summary>
         /// If true, gereate document result only with IndexNode.Key (avoid load all document)
         /// </summary>
-        public bool IsIndexKeyOnly { get; set; } = false;
+        public bool IsIndexKeyOnly { get; set; }
 
         /// <summary>
         /// List of filters of documents
@@ -57,12 +57,12 @@ namespace LiteDB.Engine
         /// <summary>
         /// Expression to order by resultset
         /// </summary>
-        public OrderBy OrderBy { get; set; } = null;
+        public OrderBy OrderBy { get; set; }
 
         /// <summary>
         /// Expression to group by document results
         /// </summary>
-        public GroupBy GroupBy { get; set; } = null;
+        public GroupBy GroupBy { get; set; }
 
         /// <summary>
         /// Transaformation data before return - if null there is no transform (return document)
@@ -87,7 +87,7 @@ namespace LiteDB.Engine
         /// <summary>
         /// Indicate this query is for update (lock mode = Write)
         /// </summary>
-        public bool ForUpdate { get; set; } = false;
+        public bool ForUpdate { get; set; }
 
         #region Get Query Pipeline and document lookup implementation
 

@@ -1,6 +1,9 @@
 ﻿using System.Linq;
+
 using FluentAssertions;
+
 using LiteDB.Engine;
+
 using Xunit;
 
 namespace LiteDB.Internals
@@ -25,7 +28,7 @@ namespace LiteDB.Internals
                 var t = e.GetMonitor().GetTransaction(false, false, out var isNew);
                 var s = t.CreateSnapshot(LockMode.Write, "col1", true);
 
-                e.Insert("col1", new BsonDocument[] {new BsonDocument {["n"] = new byte[200]}}, BsonAutoId.Int32);
+                e.Insert("col1", new BsonDocument[] { new BsonDocument { ["n"] = new byte[200] } }, BsonAutoId.Int32);
 
                 // get pages
                 var colPage = s.CollectionPage;
@@ -39,7 +42,7 @@ namespace LiteDB.Internals
                 colPage.FreeDataPageList.Should().Equal(dataPage.PageID, uint.MaxValue, uint.MaxValue, uint.MaxValue, uint.MaxValue);
 
                 // adding 1 more document into same page
-                e.Insert("col1", new BsonDocument[] {new BsonDocument {["n"] = new byte[600]}}, BsonAutoId.Int32);
+                e.Insert("col1", new BsonDocument[] { new BsonDocument { ["n"] = new byte[600] } }, BsonAutoId.Int32);
 
                 dataPage.FreeBytes.Should().Be(7296);
 
@@ -47,7 +50,7 @@ namespace LiteDB.Internals
                 colPage.FreeDataPageList.Should().Equal(uint.MaxValue, dataPage.PageID, uint.MaxValue, uint.MaxValue, uint.MaxValue);
 
                 // adding 1 big document to move this page into last page
-                e.Insert("col1", new BsonDocument[] {new BsonDocument {["n"] = new byte[6000]}}, BsonAutoId.Int32);
+                e.Insert("col1", new BsonDocument[] { new BsonDocument { ["n"] = new byte[6000] } }, BsonAutoId.Int32);
 
                 dataPage.FreeBytes.Should().Be(1264);
 
@@ -55,7 +58,7 @@ namespace LiteDB.Internals
                 colPage.FreeDataPageList.Should().Equal(uint.MaxValue, uint.MaxValue, uint.MaxValue, uint.MaxValue, dataPage.PageID);
 
                 // adding a very small document to test adding new page
-                e.Insert("col1", new BsonDocument[] {new BsonDocument {["n"] = new byte[10]}}, BsonAutoId.Int32);
+                e.Insert("col1", new BsonDocument[] { new BsonDocument { ["n"] = new byte[10] } }, BsonAutoId.Int32);
 
                 // no changes in dataPage... but new page as created
                 dataPage.FreeBytes.Should().Be(1264);
@@ -68,7 +71,7 @@ namespace LiteDB.Internals
                 colPage.FreeDataPageList.Should().Equal(dataPage2.PageID, uint.MaxValue, uint.MaxValue, uint.MaxValue, dataPage.PageID);
 
                 // add another big document into dataPage2 do put both pages in same free Slot (#4)
-                e.Insert("col1", new BsonDocument[] {new BsonDocument {["n"] = new byte[7000]}}, BsonAutoId.Int32);
+                e.Insert("col1", new BsonDocument[] { new BsonDocument { ["n"] = new byte[7000] } }, BsonAutoId.Int32);
 
                 // now, both pages are linked in same slot #4 (starts with new dataPage2)
                 colPage.FreeDataPageList.Should().Equal(uint.MaxValue, uint.MaxValue, uint.MaxValue, uint.MaxValue, dataPage2.PageID);
@@ -100,14 +103,14 @@ namespace LiteDB.Internals
                 var s = t.CreateSnapshot(LockMode.Write, "col1", true);
 
                 // first page
-                e.Insert("col1", new BsonDocument[] {new BsonDocument {["_id"] = 1, ["n"] = new byte[2000]}}, BsonAutoId.Int32);
-                e.Insert("col1", new BsonDocument[] {new BsonDocument {["_id"] = 2, ["n"] = new byte[2000]}}, BsonAutoId.Int32);
-                e.Insert("col1", new BsonDocument[] {new BsonDocument {["_id"] = 3, ["n"] = new byte[2000]}}, BsonAutoId.Int32);
+                e.Insert("col1", new BsonDocument[] { new BsonDocument { ["_id"] = 1, ["n"] = new byte[2000] } }, BsonAutoId.Int32);
+                e.Insert("col1", new BsonDocument[] { new BsonDocument { ["_id"] = 2, ["n"] = new byte[2000] } }, BsonAutoId.Int32);
+                e.Insert("col1", new BsonDocument[] { new BsonDocument { ["_id"] = 3, ["n"] = new byte[2000] } }, BsonAutoId.Int32);
 
                 // second page
-                e.Insert("col1", new BsonDocument[] {new BsonDocument {["_id"] = 4, ["n"] = new byte[2000]}}, BsonAutoId.Int32);
-                e.Insert("col1", new BsonDocument[] {new BsonDocument {["_id"] = 5, ["n"] = new byte[2000]}}, BsonAutoId.Int32);
-                e.Insert("col1", new BsonDocument[] {new BsonDocument {["_id"] = 6, ["n"] = new byte[2000]}}, BsonAutoId.Int32);
+                e.Insert("col1", new BsonDocument[] { new BsonDocument { ["_id"] = 4, ["n"] = new byte[2000] } }, BsonAutoId.Int32);
+                e.Insert("col1", new BsonDocument[] { new BsonDocument { ["_id"] = 5, ["n"] = new byte[2000] } }, BsonAutoId.Int32);
+                e.Insert("col1", new BsonDocument[] { new BsonDocument { ["_id"] = 6, ["n"] = new byte[2000] } }, BsonAutoId.Int32);
 
                 // get pages
                 var colPage = s.CollectionPage;
@@ -122,7 +125,7 @@ namespace LiteDB.Internals
                 colPage.FreeDataPageList.Should().Equal(uint.MaxValue, uint.MaxValue, uint.MaxValue, uint.MaxValue, dataPage2.PageID);
 
                 // delete some data
-                e.Delete("col1", new BsonValue[] {2});
+                e.Delete("col1", new BsonValue[] { 2 });
 
                 // test again dataPage
                 dataPage1.FreeBytes.Should().Be(4092);
@@ -130,7 +133,7 @@ namespace LiteDB.Internals
                 colPage.FreeDataPageList.Should().Equal(uint.MaxValue, uint.MaxValue, uint.MaxValue, dataPage1.PageID, dataPage2.PageID);
 
                 // clear first page
-                e.Delete("col1", new BsonValue[] {1, 3});
+                e.Delete("col1", new BsonValue[] { 1, 3 });
 
                 // page1 must be now a clean page
                 var emptyPage = s.LocalPages.FirstOrDefault(x => x.PageID == dataPage1.PageID);

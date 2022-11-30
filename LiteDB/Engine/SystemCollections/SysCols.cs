@@ -23,7 +23,6 @@ namespace LiteDB.Engine
                     ["type"] = "system"
                 };
             }
-
         }
     }
 }

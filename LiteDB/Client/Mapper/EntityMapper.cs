@@ -40,7 +40,7 @@ namespace LiteDB
         /// </summary>
         public MemberMapper GetMember(Expression expr)
         {
-            return Members.FirstOrDefault(x => x.MemberName == expr.GetPath());
+            return Members.Find(x => x.MemberName == expr.GetPath());
         }
     }
 }

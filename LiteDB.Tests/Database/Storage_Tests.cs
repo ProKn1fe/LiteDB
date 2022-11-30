@@ -2,7 +2,9 @@
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+
 using FluentAssertions;
+
 using Xunit;
 
 namespace LiteDB.Tests.Database
@@ -32,15 +34,15 @@ namespace LiteDB.Tests.Database
         {
             using (var f = new TempFile())
             using (var db = new LiteDatabase(f.Filename))
-                //using (var db = new LiteDatabase(@"c:\temp\file.db"))
+            //using (var db = new LiteDatabase(@"c:\temp\file.db"))
             {
                 var fs = db.GetStorage<int>("_files", "_chunks");
 
                 var small = fs.Upload(10, "photo_small.png", new MemoryStream(_smallFile));
                 var big = fs.Upload(100, "photo_big.png", new MemoryStream(_bigFile));
 
-                _smallFile.Length.Should().Be((int) small.Length);
-                _bigFile.Length.Should().Be((int) big.Length);
+                _smallFile.Length.Should().Be((int)small.Length);
+                _bigFile.Length.Should().Be((int)big.Length);
 
                 var f0 = fs.Find(x => x.Filename == "photo_small.png").First();
                 var f1 = fs.Find(x => x.Filename == "photo_big.png").First();
@@ -58,7 +60,7 @@ namespace LiteDB.Tests.Database
                 nrepl.Chunks.Should().Be(repl.Chunks);
 
                 // update metadata
-                fs.SetMetadata(100, new BsonDocument {["x"] = 100, ["y"] = 99});
+                fs.SetMetadata(100, new BsonDocument { ["x"] = 100, ["y"] = 99 });
 
                 // find using metadata
                 var md = fs.Find(x => x.Metadata["x"] == 100).FirstOrDefault();

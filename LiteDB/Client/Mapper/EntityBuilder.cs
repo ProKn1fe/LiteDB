@@ -25,10 +25,7 @@ namespace LiteDB
         /// </summary>
         public EntityBuilder<T> Ignore<K>(Expression<Func<T, K>> member)
         {
-            return GetMember(member, (p) =>
-            {
-                _entity.Members.Remove(p);
-            });
+            return GetMember(member, (p) => _entity.Members.Remove(p));
         }
 
         /// <summary>
@@ -38,10 +35,7 @@ namespace LiteDB
         {
             if (field.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(field));
 
-            return GetMember(member, (p) =>
-            {
-                p.FieldName = field;
-            });
+            return GetMember(member, (p) => p.FieldName = field);
         }
 
         /// <summary>
@@ -52,7 +46,7 @@ namespace LiteDB
             return GetMember(member, (p) =>
             {
                 // if contains another _id, remove-it
-                var oldId = _entity.Members.FirstOrDefault(x => x.FieldName == "_id");
+                var oldId = _entity.Members.Find(x => x.FieldName == "_id");
 
                 if (oldId != null)
                 {
@@ -80,10 +74,7 @@ namespace LiteDB
         /// </summary>
         public EntityBuilder<T> DbRef<K>(Expression<Func<T, K>> member, string collection = null)
         {
-            return GetMember(member, (p) =>
-            {
-                BsonMapper.RegisterDbRef(_mapper, p, _typeNameBinder, collection ?? _mapper.ResolveCollectionName(typeof(K)));
-            });
+            return GetMember(member, (p) => BsonMapper.RegisterDbRef(_mapper, p, _typeNameBinder, collection ?? _mapper.ResolveCollectionName(typeof(K))));
         }
 
         /// <summary>

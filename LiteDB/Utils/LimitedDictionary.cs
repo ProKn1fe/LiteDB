@@ -11,11 +11,10 @@ namespace LiteDB.Utils
     [DebuggerDisplay("Count = {Count}")]
     internal class LimitedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
-
         private readonly OrderedDictionary dict;
         private readonly object lockObj;
 
-        public int Capacity { get; private set; }
+        public int Capacity { get; }
 
         public LimitedDictionary(int maxCapaxity)
         {
@@ -35,7 +34,6 @@ namespace LiteDB.Utils
                         throw new KeyNotFoundException(string.Format("The given key '{0}' was not present in the dictionary.", key));
                     return (TValue)value;
                 }
-
             }
             set
             {
@@ -172,7 +170,6 @@ namespace LiteDB.Utils
             private IEnumerator ordDictEnumerator;
             private readonly LimitedDictionary<TKey, TValue> dict;
 
-
             internal Enumerator(LimitedDictionary<TKey, TValue> dict)
             {
                 this.dict = dict;
@@ -206,10 +203,7 @@ namespace LiteDB.Utils
 
         public IDictionaryDebugView(IDictionary<K, V> dictionary)
         {
-            if (dictionary == null)
-                throw new ArgumentNullException(nameof(dictionary));
-
-            _dictionary = dictionary;
+            _dictionary = dictionary ?? throw new ArgumentNullException(nameof(dictionary));
         }
 
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace LiteDB
 {
-    internal class BsonExpressionFunctions
+    internal static class BsonExpressionFunctions
     {
         public static IEnumerable<BsonValue> MAP(BsonDocument root, Collation collation, BsonDocument parameters, IEnumerable<BsonValue> input, BsonExpression mapExpr)
         {
@@ -27,7 +27,7 @@ namespace LiteDB
                 // execute for each child value and except a first bool value (returns if true)
                 var c = filterExpr.ExecuteScalar(new BsonDocument[] { root }, root, item, collation);
 
-                if (c.IsBoolean && c.AsBoolean == true)
+                if (c.IsBoolean && c.AsBoolean)
                 {
                     yield return item;
                 }

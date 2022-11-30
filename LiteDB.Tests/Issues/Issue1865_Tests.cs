@@ -5,7 +5,6 @@ using Xunit;
 
 namespace LiteDB.Tests.Issues
 {
-
     public class Issue1865_Tests
     {
         public class Project : BaseEntity
@@ -43,14 +42,13 @@ namespace LiteDB.Tests.Issues
             var project = new Project() { Name = "Project" };
             var point1 = new Point { Parent = project, Project = project, Name = "Point 1", Start = DateTime.Now, End = DateTime.Now.AddDays(2) };
             var point2 = new Point { Parent = point1, Project = project, Name = "Point 2", Start = DateTime.Now, End = DateTime.Now.AddDays(2) };
-            
+
             project.Points.Add(point1);
             project.Points.Add(point2);
 
             pointsCol.Insert(point1);
             pointsCol.Insert(point2);
             projectsCol.Insert(project);
-
 
             var p1 = pointsCol
                 .FindById(point1.Id);

@@ -38,7 +38,6 @@ namespace LiteDB.Shell
                     env.Running = true;
 
                     display.WriteResult(env.Database.Execute(cmd), env);
-
                 }
                 catch (Exception ex)
                 {

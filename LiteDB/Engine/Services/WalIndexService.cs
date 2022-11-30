@@ -20,12 +20,12 @@ namespace LiteDB.Engine
 
         private readonly HashSet<uint> _confirmTransactions = new HashSet<uint>();
 
-        private int _currentReadVersion = 0;
+        private int _currentReadVersion;
 
         /// <summary>
         /// Store last used transaction ID
         /// </summary>
-        private int _lastTransactionID = 0;
+        private int _lastTransactionID;
 
         public WalIndexService(DiskService disk, LockService locker)
         {
@@ -151,7 +151,7 @@ namespace LiteDB.Engine
                 // update wal-index
                 foreach (var pos in pagePositions)
                 {
-                    if (_index.TryGetValue(pos.PageID, out var slot) == false)
+                    if (!_index.TryGetValue(pos.PageID, out var slot))
                     {
                         slot = new List<KeyValuePair<int, long>>();
 
@@ -240,13 +240,13 @@ namespace LiteDB.Engine
         /// </summary>
         public int Checkpoint(bool soft, bool crop)
         {
-            LOG($"checkpoint", "WAL");
+            LOG("checkpoint", "WAL");
 
             bool lockWasTaken;
-            
+
             if (soft)
             {
-                if (_locker.TryEnterExclusive(out lockWasTaken) == false) return 0;
+                if (!_locker.TryEnterExclusive(out lockWasTaken)) return 0;
             }
             else
             {
@@ -301,11 +301,11 @@ namespace LiteDB.Engine
                     }
 
                     // if not crop data file, fill with 0 all confirmed pages after data area
-                    if (crop == false)
+                    if (!crop)
                     {
                         var buffer = new PageBuffer(new byte[PAGE_SIZE], 0, 0);
 
-                        foreach(var position in confirmedPages)
+                        foreach (var position in confirmedPages)
                         {
                             buffer.Position = position;
 

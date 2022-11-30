@@ -29,7 +29,7 @@ namespace LiteDB
         {
             if (expression == null) throw new ArgumentNullException(nameof(expression));
 
-            var name = Regex.Replace(expression.Source, @"[^a-z0-9]", "", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            var name = Regex.Replace(expression.Source, "[^a-z0-9]", "", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
             return EnsureIndex(name, expression, unique);
         }
@@ -66,7 +66,7 @@ namespace LiteDB
         {
             var expression = _mapper.GetExpression(keySelector);
 
-            if (typeof(K).IsEnumerable() && expression.IsScalar == true)
+            if (typeof(K).IsEnumerable() && expression.IsScalar)
             {
                 if (expression.Type == BsonExpressionType.Path)
                 {

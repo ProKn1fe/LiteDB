@@ -16,7 +16,7 @@ namespace LiteDB.Stress
         private readonly TestFile _file;
         private LiteDatabase _db;
         private bool _running = true;
-        private long _maxRam = 0;
+        private long _maxRam;
         private readonly ConcurrentDictionary<int, ThreadInfo> _threads = new ConcurrentDictionary<int, ThreadInfo>();
 
         public TestExecution(string filename, TimeSpan duration)
@@ -36,7 +36,7 @@ namespace LiteDB.Stress
             _db = new LiteDatabase(_file.Filename);
             _db.Pragma("TIMEOUT", (int)_file.Timeout.TotalSeconds);
 
-            foreach(var setup in _file.Setup)
+            foreach (var setup in _file.Setup)
             {
                 _db.Execute(setup);
             }
@@ -118,7 +118,7 @@ namespace LiteDB.Stress
 
             var output = new StringBuilder();
 
-            while(Timer.Elapsed < Duration && _running)
+            while (Timer.Elapsed < Duration && _running)
             {
                 Thread.Sleep(Math.Min(1000, (int)Duration.Subtract(Timer.Elapsed).TotalMilliseconds));
 
@@ -186,7 +186,7 @@ namespace LiteDB.Stress
             output.AppendLine("Summary Report");
             output.AppendLine();
 
-            foreach(var task in _file.Tasks)
+            foreach (var task in _file.Tasks)
             {
                 var name = task.Name.PadRight(15, ' ');
                 var count = _threads.Values.Where(x => x.Task == task).Sum(x => (long)x.Counter).ToString().PadLeft(5, ' ');

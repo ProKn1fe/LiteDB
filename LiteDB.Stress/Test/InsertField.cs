@@ -215,7 +215,7 @@ namespace LiteDB.Stress
 
         public BsonValue GetValue()
         {
-            switch(Type)
+            switch (Type)
             {
                 case InsertFieldType.Name: return _firstNames[_rnd.Next(0, _firstNames.Length - 1)] + " " + _lastNames[_rnd.Next(0, _lastNames.Length - 1)];
                 case InsertFieldType.Int: return _rnd.Next(StartIntRange, EndIntRange);

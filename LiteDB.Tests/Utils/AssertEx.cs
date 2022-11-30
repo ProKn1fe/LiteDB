@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+
 using FluentAssertions;
 
 namespace LiteDB.Tests
@@ -24,7 +25,7 @@ namespace LiteDB.Tests
 
             var index = 0;
 
-            foreach (var zip in first.Zip(second, (First, Second) => new {First, Second}))
+            foreach (var zip in first.Zip(second, (First, Second) => new { First, Second }))
             {
                 var r = zip.First.Equals(zip.First, zip.Second);
 
@@ -55,7 +56,7 @@ namespace LiteDB.Tests
         //[DebuggerHidden]
         public static void ExpectJson(this BsonValue value, string expectJson)
         {
-            value.Should().Be((JsonSerializer.Deserialize(expectJson)));
+            value.Should().Be(JsonSerializer.Deserialize(expectJson));
         }
 
         //[DebuggerHidden]

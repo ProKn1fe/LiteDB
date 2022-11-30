@@ -5,7 +5,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
+
 using FluentAssertions;
+
 using Xunit;
 
 namespace LiteDB.Tests.Mapper
@@ -366,7 +368,7 @@ namespace LiteDB.Tests.Mapper
 
             // using regex
             TestExpr<User>(x => Regex.Split(x.Name, @"\s"), "SPLIT(Name, @p0, true)", @"\s");
-            TestExpr<User>(x => Regex.IsMatch(x.Name, @"^K"), "IS_MATCH(Name, @p0)", @"^K");
+            TestExpr<User>(x => Regex.IsMatch(x.Name, "^K"), "IS_MATCH(Name, @p0)", "^K");
 
         }
 
@@ -439,7 +441,7 @@ namespace LiteDB.Tests.Mapper
             TestExpr<User>(x => new
             {
                 CityName = x.Address.City.CityName,
-                Count = x.Phones.Where(p => p.Type == PhoneType.Landline).Count(),
+                Count = x.Phones.Count(p => p.Type == PhoneType.Landline),
                 List = x.Phones.Where(p => p.Number > x.Salary).Select(p => p.Number).ToArray()
             },
                 @"
@@ -495,7 +497,7 @@ namespace LiteDB.Tests.Mapper
             // the result are correct, but can be optimize (in QueryOptimzier) to `$._id IN @p0` (index will be used)
             TestExpr<User>(x => ids.Contains(x.Id), "@p0 ANY = $._id", new BsonArray { 1, 2, 3 });
 
-            TestExpr<User>(x => ids.Where(q => q == x.Id).Count() > 0, "(COUNT(FILTER(@p0 => (@=$._id))) > @p1)", new BsonArray { 1, 2, 3 }, 0);
+            TestExpr<User>(x => ids.Count(q => q == x.Id) > 0, "(COUNT(FILTER(@p0 => (@=$._id))) > @p1)", new BsonArray { 1, 2, 3 }, 0);
         }
 
         [Fact]
@@ -516,8 +518,8 @@ namespace LiteDB.Tests.Mapper
             Expression<Func<User, bool>> exprMerged = Expression.Lambda<Func<User, bool>>
                   (Expression.AndAlso(exprLeft.Body, invokedExprRight), exprLeft.Parameters);
 
-            Test<User, bool>(expr, "(($._id>=@p0) AND ($._id<=@p1))", 1, 10);
-            Test<User, bool>(exprMerged, "(($._id>=@p0) AND (((@._id<=@p1))=true))", 1, 10);
+            Test(expr, "(($._id>=@p0) AND ($._id<=@p1))", 1, 10);
+            Test(exprMerged, "(($._id>=@p0) AND (((@._id<=@p1))=true))", 1, 10);
             //the right expr of exprMerged uses @ (instead of $) because the rootParameter is different for exprLeft and exprRight
         }
 
@@ -539,7 +541,7 @@ namespace LiteDB.Tests.Mapper
 
             foreach (var par in args)
             {
-                var pval = expression.Parameters["p" + (index++).ToString()];
+                var pval = expression.Parameters["p" + index++.ToString()];
 
                 pval.Should().Be(par, $"Expression: {expect.Source}");
             }
@@ -550,19 +552,19 @@ namespace LiteDB.Tests.Mapper
         [DebuggerHidden]
         private BsonExpression TestExpr(Expression<Func<object, object>> expr, BsonExpression expect, params BsonValue[] args)
         {
-            return Test<object, object>(expr, expect, args);
+            return Test(expr, expect, args);
         }
 
         [DebuggerHidden]
         private BsonExpression TestExpr<T>(Expression<Func<T, object>> expr, BsonExpression expect, params BsonValue[] args)
         {
-            return Test<T, object>(expr, expect, args);
+            return Test(expr, expect, args);
         }
 
         [DebuggerHidden]
         private BsonExpression TestPredicate<T>(Expression<Func<T, bool>> expr, BsonExpression expect, params BsonValue[] args)
         {
-            return Test<T, bool>(expr, expect, args);
+            return Test(expr, expect, args);
         }
 
         /// <summary>
@@ -574,7 +576,7 @@ namespace LiteDB.Tests.Mapper
         {
             var test = fn();
 
-            this.Invoking(x => TestExpr<T>(test, "$")).Should().Throw<TException>();
+            this.Invoking(x => TestExpr(test, "$")).Should().Throw<TException>();
         }
 
         #endregion

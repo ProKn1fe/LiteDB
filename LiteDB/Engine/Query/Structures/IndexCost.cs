@@ -5,7 +5,7 @@ using static LiteDB.Constants;
 namespace LiteDB.Engine
 {
     /// <summary>
-    /// Calculate index cost based on expression/collection index. 
+    /// Calculate index cost based on expression/collection index.
     /// Lower cost is better - lowest will be selected
     /// </summary>
     internal class IndexCost
@@ -35,7 +35,7 @@ namespace LiteDB.Engine
             var exprType = expr.Type;
 
             // if the expression constant is in the left, invert expression type to "normalize" it
-            if(expr.Left.IsValue)
+            if (expr.Left.IsValue)
             {
                 switch (expr.Type)
                 {
@@ -79,7 +79,7 @@ namespace LiteDB.Engine
         /// </summary>
         private Index CreateIndex(BsonExpressionType type, string name, BsonValue value)
         {
-            switch(type)
+            switch (type)
             {
                 case BsonExpressionType.Equal: return new IndexEquals(name, value);
                 case BsonExpressionType.Between: return new IndexRange(name, value.AsArray[0], value.AsArray[1], true, true, Query.Ascending);
@@ -89,7 +89,8 @@ namespace LiteDB.Engine
                 case BsonExpressionType.LessThan: return new IndexRange(name, BsonValue.MinValue, value, true, false, Query.Ascending);
                 case BsonExpressionType.LessThanOrEqual: return new IndexRange(name, BsonValue.MinValue, value, true, true, Query.Ascending);
                 case BsonExpressionType.NotEqual: return new IndexScan(name, x => x.CompareTo(value) != 0, Query.Ascending);
-                case BsonExpressionType.In: return value.IsArray ?
+                case BsonExpressionType.In:
+                    return value.IsArray ?
                         new IndexIn(name, value.AsArray, Query.Ascending) :
                         new IndexEquals(name, value);
                 default: return null;

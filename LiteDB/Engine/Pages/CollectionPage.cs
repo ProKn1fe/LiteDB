@@ -27,7 +27,7 @@ namespace LiteDB.Engine
         public CollectionPage(PageBuffer buffer, uint pageID)
             : base(buffer, pageID, PageType.Collection)
         {
-            for(var i = 0; i < PAGE_FREE_LIST_SLOTS; i++)
+            for (var i = 0; i < PAGE_FREE_LIST_SLOTS; i++)
             {
                 FreeDataPageList[i] = uint.MaxValue;
             }
@@ -46,7 +46,7 @@ namespace LiteDB.Engine
             using (var r = new BufferReader(new[] { area }, false))
             {
                 // read position for FreeDataPage and FreeIndexPage
-                for(var i = 0; i < PAGE_FREE_LIST_SLOTS; i++)
+                for (var i = 0; i < PAGE_FREE_LIST_SLOTS; i++)
                 {
                     FreeDataPageList[i] = r.ReadUInt32();
                 }
@@ -57,7 +57,7 @@ namespace LiteDB.Engine
                 // read indexes count (max 255 indexes per collection)
                 var count = r.ReadByte(); // 1 byte
 
-                for(var i = 0; i < count; i++)
+                for (var i = 0; i < count; i++)
                 {
                     var index = new CollectionIndex(r);
 
@@ -146,12 +146,12 @@ namespace LiteDB.Engine
                 CollectionIndex.GetLength(name, expr);
 
             // check if has space avaiable
-            if (_indexes.Count == 255 || totalLength >= P_INDEXES_COUNT) throw new LiteException(0, $"This collection has no more space for new indexes");
+            if (_indexes.Count == 255 || totalLength >= P_INDEXES_COUNT) throw new LiteException(0, "This collection has no more space for new indexes");
 
             var slot = (byte)(_indexes.Count == 0 ? 0 : (_indexes.Max(x => x.Value.Slot) + 1));
 
             var index = new CollectionIndex(slot, 0, name, expr, unique);
-            
+
             _indexes[name] = index;
 
             IsDirty = true;
@@ -178,6 +178,5 @@ namespace LiteDB.Engine
 
             IsDirty = true;
         }
-
     }
 }

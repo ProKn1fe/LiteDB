@@ -34,7 +34,7 @@ namespace LiteDB.Engine
         {
             var rawId = 0u;
 
-            foreach(var doc in _source)
+            foreach (var doc in _source)
             {
                 rawId++;
 

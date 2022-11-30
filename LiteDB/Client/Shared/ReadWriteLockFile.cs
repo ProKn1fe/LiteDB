@@ -20,7 +20,7 @@ namespace LiteDB
         private const int P_BIT_MODE = 2;
         private const int FILE_SIZE = 1 + 1 + 255;
 
-        private bool _disposedValue = false; // To detect redundant calls
+        private bool _disposedValue; // To detect redundant calls
         private readonly TimeSpan _timeout;
         private readonly string _lockFilename;
         private readonly FileStream _stream;
@@ -95,7 +95,7 @@ namespace LiteDB
             var sw = Stopwatch.StartNew();
 
             // main loop (waiting for queue)
-            while(sw.Elapsed < _timeout)
+            while (sw.Elapsed < _timeout)
             {
                 Task.Delay(250).Wait();
 
@@ -154,7 +154,7 @@ namespace LiteDB
 
             try
             {
-                if (TryTakeControl(mode, action) == false)
+                if (!TryTakeControl(mode, action))
                 {
                     throw LiteException.LockTimeout("shared", _timeout);
                 }
@@ -215,7 +215,7 @@ namespace LiteDB
             var current = _buffer[P_POSITION];
 
             // remove all first items that are empty (==0)
-            while(_buffer[current + P_OFFSET] == 0)
+            while (_buffer[current + P_OFFSET] == 0)
             {
                 current = (byte)((current + 1) % 255);
 
@@ -252,7 +252,7 @@ namespace LiteDB
             {
                 var lindex = GetPrevIndex(slot);
 
-                while(lindex != byte.MaxValue)
+                while (lindex != byte.MaxValue)
                 {
                     // looking for last valid slot
                     var last = _buffer[lindex + P_OFFSET];
@@ -297,7 +297,7 @@ namespace LiteDB
         private byte GetFreeSlot()
         {
             var length = _buffer[P_LENGTH] + 1;
-            
+
             if (length >= 255) throw new LiteException(0, "There is more than 255 concurrent connection in datafile at shared mode");
 
             var next = (byte)((_buffer[P_POSITION] + length - 1) % 255);
@@ -384,7 +384,7 @@ namespace LiteDB
                 var inside = false;
                 var length = -1;
 
-                for(var i = 0; i < 255; i++)
+                for (var i = 0; i < 255; i++)
                 {
                     var p = _buffer[i + P_OFFSET];
 
@@ -416,7 +416,6 @@ namespace LiteDB
                     }
 
                     sb.Append(c);
-
                 }
 
                 return sb.ToString();

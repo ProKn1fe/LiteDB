@@ -70,7 +70,6 @@ namespace LiteDB.Engine
                     {
                         yield return page;
                     }
-
                 }
             }
         }

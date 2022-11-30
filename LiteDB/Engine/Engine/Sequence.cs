@@ -63,7 +63,6 @@ namespace LiteDB.Engine
                     // use newId
                     return newId.AsInt64;
                 }
-
             }, (s, value) =>
             {
                 // return max value between current sequence value vs new inserted value

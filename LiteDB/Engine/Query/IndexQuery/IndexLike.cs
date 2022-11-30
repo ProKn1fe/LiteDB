@@ -30,8 +30,8 @@ namespace LiteDB.Engine
         {
             // if contains startsWith string, search using index Find
             // otherwise, use index full scan and test results
-            return _startsWith.Length > 0 ? 
-                ExecuteStartsWith(indexer, index) : 
+            return _startsWith.Length > 0 ?
+                ExecuteStartsWith(indexer, index) :
                 ExecuteLike(indexer, index);
         }
 
@@ -50,8 +50,8 @@ namespace LiteDB.Engine
                 // if current node are edges exit while
                 if (node.Key.IsMinValue || node.Key.IsMaxValue) break;
 
-                var valueString = 
-                    node.Key.IsString ? node.Key.AsString : 
+                var valueString =
+                    node.Key.IsString ? node.Key.AsString :
                     node.Key.IsNull ? "" :
                     node.Key.ToString();
 
@@ -60,8 +60,8 @@ namespace LiteDB.Engine
                     valueString.StartsWith(_startsWith, StringComparison.OrdinalIgnoreCase))
                 {
                     // must still testing SqlLike method for rest of pattern - only if exists more to test (avoid slow SqlLike test)
-                    if ((_testSqlLike == false) ||
-                        (_testSqlLike == true && valueString.SqlLike(_pattern, indexer.Collation) == true))
+                    if ((!_testSqlLike) ||
+                        (_testSqlLike && valueString.SqlLike(_pattern, indexer.Collation)))
                     {
                         yield return node;
                     }
@@ -92,9 +92,9 @@ namespace LiteDB.Engine
                     valueString.StartsWith(_startsWith, StringComparison.OrdinalIgnoreCase))
                 {
                     // must still testing SqlLike method for rest of pattern - only if exists more to test (avoid slow SqlLike test)
-                    if (node.DataBlock.IsEmpty == false &&
-                        ((_testSqlLike == false) ||
-                        (_testSqlLike == true && valueString.SqlLike(_pattern, indexer.Collation) == true)))
+                    if (!node.DataBlock.IsEmpty &&
+                        ((!_testSqlLike) ||
+                        (_testSqlLike && valueString.SqlLike(_pattern, indexer.Collation))))
                     {
                         yield return node;
                     }

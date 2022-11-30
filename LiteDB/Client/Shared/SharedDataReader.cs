@@ -7,7 +7,7 @@ namespace LiteDB
         private readonly IBsonDataReader _reader;
         private readonly Action _dispose;
 
-        private bool _disposed = false;
+        private bool _disposed;
 
         public SharedDataReader(IBsonDataReader reader, Action dispose)
         {

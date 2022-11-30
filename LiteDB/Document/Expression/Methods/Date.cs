@@ -34,7 +34,6 @@ namespace LiteDB
             if (value.IsDateTime) return value.AsDateTime.Day;
 
             return BsonValue.Null;
-
         }
 
         /// <summary>
@@ -55,7 +54,6 @@ namespace LiteDB
             if (value.IsDateTime) return value.AsDateTime.Minute;
 
             return BsonValue.Null;
-
         }
 
         /// <summary>
@@ -102,7 +100,7 @@ namespace LiteDB
         public static BsonValue DATEDIFF(BsonValue dateInterval, BsonValue starts, BsonValue ends)
         {
             if (dateInterval.IsString && starts.IsDateTime && ends.IsDateTime)
-            { 
+            {
                 var datePart = dateInterval.AsString;
                 var start = starts.AsDateTime;
                 var end = ends.AsDateTime;

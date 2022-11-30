@@ -41,7 +41,7 @@ namespace LiteDB
         {
             if (connectionString == null) throw new ArgumentNullException(nameof(connectionString));
 
-            if (connectionString.Upgrade == true)
+            if (connectionString.Upgrade)
             {
                 // try upgrade if need
                 LiteEngine.Upgrade(connectionString.Filename, connectionString.Password, connectionString.Collation);
@@ -146,7 +146,7 @@ namespace LiteDB
 
         #region FileStorage
 
-        private ILiteStorage<string> _fs = null;
+        private ILiteStorage<string> _fs;
 
         /// <summary>
         /// Returns a special collection for storage files/stream inside datafile. Use _files and _chunks collection names. FileId is implemented as string. Use "GetStorage" for custom options

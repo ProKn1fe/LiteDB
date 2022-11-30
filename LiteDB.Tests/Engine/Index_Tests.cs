@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+
 using FluentAssertions;
+
 using Xunit;
 
 namespace LiteDB.Tests.Engine
@@ -152,7 +154,7 @@ namespace LiteDB.Tests.Engine
                 ["Name"] = "John Doe",
                 ["Phones"] = new BsonArray
                 (
-                    new BsonDocument 
+                    new BsonDocument
                     {
                         ["Type"] = "Mobile",
                         ["Number"] = "9876-5432"
@@ -189,7 +191,6 @@ namespace LiteDB.Tests.Engine
 
             var explain2 = db.Execute("explain " + query2).First();
             Assert.True(!explain2["index"]["mode"].AsString.Contains("_id"));
-
 
             var result1 = db.Execute(query1).ToArray();
             Assert.True(result1.Length == 1);

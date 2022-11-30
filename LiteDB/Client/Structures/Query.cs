@@ -80,7 +80,6 @@ namespace LiteDB
             if (field.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(field));
 
             return BsonExpression.Create($"{field} > {value ?? BsonValue.Null}");
-
         }
 
         /// <summary>
@@ -111,7 +110,7 @@ namespace LiteDB
             if (field.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(field));
             if (value.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(value));
 
-            return BsonExpression.Create($"{field} LIKE {(new BsonValue(value + "%"))}");
+            return BsonExpression.Create($"{field} LIKE {new BsonValue(value + "%")}");
         }
 
         /// <summary>
@@ -122,7 +121,7 @@ namespace LiteDB
             if (field.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(field));
             if (value.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(value));
 
-            return BsonExpression.Create($"{field} LIKE {(new BsonValue("%" + value + "%"))}");
+            return BsonExpression.Create($"{field} LIKE {new BsonValue("%" + value + "%")}");
         }
 
         /// <summary>

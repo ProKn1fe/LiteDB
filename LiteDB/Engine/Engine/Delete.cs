@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -59,10 +60,9 @@ namespace LiteDB.Engine
             if (collection.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(collection));
 
             // do optimization for when using "_id = value" key
-            if (predicate != null &&
-                predicate.Type == BsonExpressionType.Equal && 
-                predicate.Left.Type == BsonExpressionType.Path && 
-                predicate.Left.Source == "$._id" && 
+            if (predicate?.Type == BsonExpressionType.Equal &&
+                predicate.Left.Type == BsonExpressionType.Path &&
+                predicate.Left.Source == "$._id" &&
                 predicate.Right.IsValue)
             {
                 var id = predicate.Right.Execute(_header.Pragmas.Collation).First();
@@ -78,7 +78,7 @@ namespace LiteDB.Engine
                     // create inner document to ensure _id will be a document
                     var query = new Query { Select = "{ i: _id }", ForUpdate = true };
 
-                    if(predicate != null)
+                    if (predicate != null)
                     {
                         query.Where.Add(predicate);
                     }

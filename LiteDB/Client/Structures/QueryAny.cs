@@ -42,7 +42,6 @@ namespace LiteDB
             if (arrayField.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(arrayField));
 
             return BsonExpression.Create($"{arrayField} ANY > {value ?? BsonValue.Null}");
-
         }
 
         /// <summary>
@@ -73,7 +72,7 @@ namespace LiteDB
             if (arrayField.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(arrayField));
             if (value.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(value));
 
-            return BsonExpression.Create($"{arrayField} ANY LIKE {(new BsonValue(value + "%"))}");
+            return BsonExpression.Create($"{arrayField} ANY LIKE {new BsonValue(value + "%")}");
         }
 
         /// <summary>

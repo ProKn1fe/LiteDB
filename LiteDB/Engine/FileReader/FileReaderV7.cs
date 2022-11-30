@@ -27,7 +27,7 @@ namespace LiteDB.Engine
             // only userVersion was avaiable in old file format versions
             _header = ReadPage(0);
 
-            if (password == null && _header["salt"].AsBinary.IsFullZero() == false)
+            if (password == null && !_header["salt"].AsBinary.IsFullZero())
             {
                 throw new LiteException(0, "Current data file requires password");
             }
@@ -40,7 +40,7 @@ namespace LiteDB.Engine
 
                 var hash = AesEncryption.HashSHA1(password);
 
-                if (hash.SequenceEqual(_header["password"].AsBinary) == false)
+                if (!hash.SequenceEqual(_header["password"].AsBinary))
                 {
                     throw new LiteException(0, "Invalid password");
                 }
@@ -67,12 +67,12 @@ namespace LiteDB.Engine
             var pageID = (uint)_header["collections"].AsDocument[collection].AsInt32;
             var page = ReadPage(pageID);
 
-            foreach(var index in page["indexes"].AsArray)
+            foreach (var index in page["indexes"].AsArray)
             {
                 yield return new IndexInfo
                 {
                     Collection = collection,
-                    Name = Regex.Replace(index["name"].AsString, @"[^a-z0-9]", "", RegexOptions.IgnoreCase | RegexOptions.Compiled),
+                    Name = Regex.Replace(index["name"].AsString, "[^a-z0-9]", "", RegexOptions.IgnoreCase | RegexOptions.Compiled),
                     Expression = index["expression"].AsString,
                     Unique = index["unique"].AsBoolean
                 };
@@ -90,11 +90,11 @@ namespace LiteDB.Engine
 
             var indexPages = VisitIndexPages(headPageID);
 
-            foreach(var indexPageID in indexPages)
+            foreach (var indexPageID in indexPages)
             {
                 var indexPage = ReadPage(indexPageID);
 
-                foreach(var node in indexPage["nodes"].AsArray)
+                foreach (var node in indexPage["nodes"].AsArray)
                 {
                     var dataBlock = node["dataBlock"];
 
@@ -214,7 +214,7 @@ namespace LiteDB.Engine
                 page["indexes"] = new BsonArray();
                 reader.ReadBytes(12);
 
-                for(var i = 0; i < 16; i++)
+                for (var i = 0; i < 16; i++)
                 {
                     var index = new BsonDocument();
 
@@ -253,7 +253,7 @@ namespace LiteDB.Engine
             {
                 page["nodes"] = new BsonArray();
 
-                for(var i = 0; i < page["itemCount"].AsInt32; i++)
+                for (var i = 0; i < page["itemCount"].AsInt32; i++)
                 {
                     var node = new BsonDocument
                     {
@@ -345,7 +345,7 @@ namespace LiteDB.Engine
             // read all extended pages and build byte array
             using (var buffer = new MemoryStream())
             {
-                while(extendPageID != uint.MaxValue)
+                while (extendPageID != uint.MaxValue)
                 {
                     var page = ReadPage(extendPageID);
 
@@ -368,7 +368,7 @@ namespace LiteDB.Engine
             var toVisit = new HashSet<uint>(new uint[] { startPageID });
             var visited = new HashSet<uint>();
 
-            while(toVisit.Count > 0)
+            while (toVisit.Count > 0)
             {
                 var indexPageID = toVisit.First();
 
@@ -380,7 +380,7 @@ namespace LiteDB.Engine
 
                 visited.Add(indexPageID);
 
-                foreach(var node in indexPage["nodes"].AsArray)
+                foreach (var node in indexPage["nodes"].AsArray)
                 {
                     var prev = (uint)node["prev"]["pageID"].AsInt32;
                     var next = (uint)node["next"]["pageID"].AsInt32;

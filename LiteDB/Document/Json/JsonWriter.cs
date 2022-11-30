@@ -21,7 +21,7 @@ namespace LiteDB
         /// <summary>
         /// Get/Set if writer must print pretty (with new line/indent)
         /// </summary>
-        public bool Pretty { get; set; } = false;
+        public bool Pretty { get; set; }
 
         public JsonWriter(TextWriter writer)
         {

@@ -20,27 +20,22 @@ namespace LiteDB.Engine
         // instances from transaction
         private readonly uint _transactionID;
         private readonly TransactionPages _transPages;
-
-        // snapshot controls
-        private readonly int _readVersion;
-        private readonly LockMode _mode;
-        private readonly string _collectionName;
         private readonly CollectionPage _collectionPage;
 
         // local page cache - contains only pages about this collection (but do not contains CollectionPage - use this.CollectionPage)
         private readonly Dictionary<uint, BasePage> _localPages = new Dictionary<uint, BasePage>();
 
         // expose
-        public LockMode Mode => _mode;
-        public string CollectionName => _collectionName;
+        public LockMode Mode { get; }
+        public string CollectionName { get; }
         public CollectionPage CollectionPage => _collectionPage;
         public ICollection<BasePage> LocalPages => _localPages.Values;
-        public int ReadVersion => _readVersion;
+        public int ReadVersion { get; }
 
         public Snapshot(LockMode mode, string collectionName, HeaderPage header, uint transactionID, TransactionPages transPages, LockService locker, WalIndexService walIndex, DiskReader reader, bool addIfNotExists)
         {
-            _mode = mode;
-            _collectionName = collectionName;
+            Mode = mode;
+            CollectionName = collectionName;
             _header = header;
             _transactionID = transactionID;
             _transPages = transPages;
@@ -51,16 +46,16 @@ namespace LiteDB.Engine
             // enter in lock mode according initial mode
             if (mode == LockMode.Write)
             {
-                _locker.EnterLock(_collectionName);
+                _locker.EnterLock(CollectionName);
             }
 
             // get lastest read version from wal-index
-            _readVersion = _walIndex.CurrentReadVersion;
+            ReadVersion = _walIndex.CurrentReadVersion;
 
             var srv = new CollectionService(_header, this, _transPages);
 
             // read collection (create if new - load virtual too)
-            srv.Get(_collectionName, addIfNotExists, ref _collectionPage);
+            srv.Get(CollectionName, addIfNotExists, ref _collectionPage);
 
             // clear local pages (will clear _collectionPage link reference)
             if (_collectionPage != null)
@@ -76,9 +71,9 @@ namespace LiteDB.Engine
         public IEnumerable<BasePage> GetWritablePages(bool dirty, bool includeCollectionPage)
         {
             // if snapshot is read only, just exit
-            if (_mode == LockMode.Read) yield break;
+            if (Mode == LockMode.Read) yield break;
 
-            foreach(var page in _localPages.Values.Where(x => x.IsDirty == dirty))
+            foreach (var page in _localPages.Values.Where(x => x.IsDirty == dirty))
             {
                 ENSURE(page.PageType != PageType.Header && page.PageType != PageType.Collection, "local cache cann't contains this page type");
 
@@ -97,7 +92,7 @@ namespace LiteDB.Engine
         public void Clear()
         {
             // release pages only if snapshot are read only
-            if (_mode == LockMode.Read)
+            if (Mode == LockMode.Read)
             {
                 // release all read pages (except collection page)
                 foreach (var page in _localPages.Values)
@@ -118,14 +113,14 @@ namespace LiteDB.Engine
             Clear();
 
             // release collection page (in read mode)
-            if (_mode == LockMode.Read && _collectionPage != null)
+            if (Mode == LockMode.Read && _collectionPage != null)
             {
                 _collectionPage.Buffer.Release();
             }
 
-            if(_mode == LockMode.Write)
+            if (Mode == LockMode.Write)
             {
-                _locker.ExitLock(_collectionName);
+                _locker.ExitLock(CollectionName);
             }
         }
 
@@ -167,7 +162,7 @@ namespace LiteDB.Engine
             if (_transPages.DirtyPages.TryGetValue(pageID, out var walPosition))
             {
                 // read page from log file
-                var buffer = _reader.ReadPage(walPosition.Position, _mode == LockMode.Write);
+                var buffer = _reader.ReadPage(walPosition.Position, Mode == LockMode.Write);
                 var dirty = BasePage.ReadPage<T>(buffer);
 
                 ENSURE(dirty.TransactionID == _transactionID, "this page must came from same transaction");
@@ -176,12 +171,12 @@ namespace LiteDB.Engine
             }
 
             // now, look inside wal-index
-            var pos = _walIndex.GetPageIndex(pageID, _readVersion, out _);
+            var pos = _walIndex.GetPageIndex(pageID, ReadVersion, out _);
 
             if (pos != long.MaxValue)
             {
                 // read page from log file
-                var buffer = _reader.ReadPage(pos, _mode == LockMode.Write);
+                var buffer = _reader.ReadPage(pos, Mode == LockMode.Write);
                 var logPage = BasePage.ReadPage<T>(buffer);
 
                 // clear some data inside this page (will be override when write on log file)
@@ -196,10 +191,10 @@ namespace LiteDB.Engine
                 var pagePosition = BasePage.GetPagePosition(pageID);
 
                 // read page from data file
-                var buffer = _reader.ReadPage(pagePosition, _mode == LockMode.Write);
+                var buffer = _reader.ReadPage(pagePosition, Mode == LockMode.Write);
                 var diskpage = BasePage.ReadPage<T>(buffer);
 
-                ENSURE(diskpage.IsConfirmed == false || diskpage.TransactionID != 0, "page are not header-clear in data file");
+                ENSURE(!diskpage.IsConfirmed || diskpage.TransactionID != 0, "page are not header-clear in data file");
 
                 return diskpage;
             }
@@ -533,7 +528,7 @@ namespace LiteDB.Engine
             var indexPages = new HashSet<uint>();
 
             // getting all indexes pages from all indexes
-            foreach(var index in _collectionPage.GetCollectionIndexes())
+            foreach (var index in _collectionPage.GetCollectionIndexes())
             {
                 // add head/tail (same page) to be deleted
                 indexPages.Add(index.Head.PageID);
@@ -567,7 +562,7 @@ namespace LiteDB.Engine
             {
                 var next = startPageID;
 
-                while(next != uint.MaxValue)
+                while (next != uint.MaxValue)
                 {
                     var page = GetPage<DataPage>(next);
 
@@ -586,14 +581,14 @@ namespace LiteDB.Engine
             }
 
             // remove collection name (in header) at commit time
-            _transPages.Commit += (h) => h.DeleteCollection(_collectionName);
+            _transPages.Commit += (h) => h.DeleteCollection(CollectionName);
         }
 
         #endregion
 
         public override string ToString()
         {
-            return $"{_collectionName} (pages: {_localPages.Count})";
+            return $"{CollectionName} (pages: {_localPages.Count})";
         }
     }
 }

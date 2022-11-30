@@ -10,9 +10,9 @@ namespace LiteDB
         /// </summary>
         public bool Delete(BsonValue id)
         {
-            if (id == null || id.IsNull) throw new ArgumentNullException(nameof(id));
+            if (id?.IsNull == true) throw new ArgumentNullException(nameof(id));
 
-            return _engine.Delete(_collection, new [] { id }) == 1;
+            return _engine.Delete(_collection, new[] { id }) == 1;
         }
 
         /// <summary>

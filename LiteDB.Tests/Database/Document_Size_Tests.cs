@@ -22,9 +22,9 @@ namespace LiteDB.Tests.Database
                 // insert 10 mb document
 
                 col.Insert(new BsonDocument
-                { 
-                    ["_id"] = 1, 
-                    ["name"] = "John", 
+                {
+                    ["_id"] = 1,
+                    ["name"] = "John",
                     ["data"] = new byte[ARRAY_SIZE]
                 });
 

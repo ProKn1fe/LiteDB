@@ -13,7 +13,7 @@ namespace LiteDB.Engine
             {
                 var snapshot = transaction.CreateSnapshot(LockMode.Read, collection.Key, false);
 
-                foreach(var index in snapshot.CollectionPage.GetCollectionIndexes())
+                foreach (var index in snapshot.CollectionPage.GetCollectionIndexes())
                 {
                     yield return new BsonDocument
                     {

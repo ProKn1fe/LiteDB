@@ -8,7 +8,7 @@ namespace LiteDB.Engine
         {
             var values = _sequences.ToArray();
 
-            foreach(var value in values)
+            foreach (var value in values)
             {
                 yield return new BsonDocument
                 {

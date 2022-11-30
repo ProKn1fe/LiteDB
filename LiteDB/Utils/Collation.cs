@@ -16,8 +16,8 @@ namespace LiteDB
         {
             var parts = collation.Split('/');
             var culture = parts[0];
-            var sortOptions = parts.Length > 1 ? 
-                (CompareOptions)Enum.Parse(typeof(CompareOptions), parts[1]) : 
+            var sortOptions = parts.Length > 1 ?
+                (CompareOptions)Enum.Parse(typeof(CompareOptions), parts[1]) :
                 CompareOptions.None;
 
             SortOptions = sortOptions;

@@ -23,8 +23,6 @@ namespace LiteDB.Engine
         private const int P_NEXT_NODE = 7; // 07-11 [PageAddress]
         private const int P_PREV_NEXT = 12; // 12-(_level * 5 [PageAddress] * 2 [prev-next])
         private int P_KEY => P_PREV_NEXT + (Level * PageAddress.SIZE * 2); // just after NEXT
-
-        private readonly IndexPage _page;
         private readonly BufferSlice _segment;
 
         /// <summary>
@@ -60,17 +58,17 @@ namespace LiteDB.Engine
         /// <summary>
         /// Link to prev value (used in skip lists - Prev.Length = Next.Length) [5 bytes]
         /// </summary>
-        public PageAddress[] Prev { get; private set; }
+        public PageAddress[] Prev { get; }
 
         /// <summary>
         /// Link to next value (used in skip lists - Prev.Length = Next.Length)
         /// </summary>
-        public PageAddress[] Next { get; private set; }
+        public PageAddress[] Next { get; }
 
         /// <summary>
         /// Get index page reference
         /// </summary>
-        public IndexPage Page => _page;
+        public IndexPage Page { get; }
 
         /// <summary>
         /// Calculate how many bytes this node will need on page segment
@@ -102,7 +100,7 @@ namespace LiteDB.Engine
         /// </summary>
         public IndexNode(IndexPage page, byte index, BufferSlice segment)
         {
-            _page = page;
+            Page = page;
             _segment = segment;
 
             Position = new PageAddress(page.PageID, index);
@@ -128,7 +126,7 @@ namespace LiteDB.Engine
         /// </summary>
         public IndexNode(IndexPage page, byte index, BufferSlice segment, byte slot, byte level, BsonValue key, PageAddress dataBlock)
         {
-            _page = page;
+            Page = page;
             _segment = segment;
 
             Position = new PageAddress(page.PageID, index);
@@ -162,7 +160,7 @@ namespace LiteDB.Engine
         /// </summary>
         public IndexNode(BsonDocument doc)
         {
-            _page = null;
+            Page = null;
             _segment = new BufferSlice(Array.Empty<byte>(), 0, 0);
 
             Position = new PageAddress(0, 0);
@@ -186,7 +184,7 @@ namespace LiteDB.Engine
 
             _segment.Write(value, P_NEXT_NODE);
 
-            _page.IsDirty = true;
+            Page.IsDirty = true;
         }
 
         /// <summary>
@@ -200,7 +198,7 @@ namespace LiteDB.Engine
 
             _segment.Write(value, P_PREV_NEXT + (level * PageAddress.SIZE * 2));
 
-            _page.IsDirty = true;
+            Page.IsDirty = true;
         }
 
         /// <summary>
@@ -214,7 +212,7 @@ namespace LiteDB.Engine
 
             _segment.Write(value, P_PREV_NEXT + (level * PageAddress.SIZE * 2) + PageAddress.SIZE);
 
-            _page.IsDirty = true;
+            Page.IsDirty = true;
         }
 
         /// <summary>

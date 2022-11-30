@@ -42,7 +42,7 @@ namespace LiteDB.Engine
 
         private string GetFormat(BsonValue options)
         {
-            var filename = GetOption(options, "filename")?.AsString ?? throw new LiteException(0, $"Collection $file requires string as 'filename' or a document field 'filename'");
+            var filename = GetOption(options, "filename")?.AsString ?? throw new LiteException(0, "Collection $file requires string as 'filename' or a document field 'filename'");
             var format = GetOption(options, "format", Path.GetExtension(filename)).AsString;
 
             return format.StartsWith(".") ? format.Substring(1) : format;

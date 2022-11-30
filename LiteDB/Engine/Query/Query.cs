@@ -14,15 +14,15 @@ namespace LiteDB
         public List<BsonExpression> Includes { get; } = new List<BsonExpression>();
         public List<BsonExpression> Where { get; } = new List<BsonExpression>();
 
-        public BsonExpression OrderBy { get; set; } = null;
+        public BsonExpression OrderBy { get; set; }
         public int Order { get; set; } = Ascending;
 
-        public BsonExpression GroupBy { get; set; } = null;
-        public BsonExpression Having { get; set; } = null;
+        public BsonExpression GroupBy { get; set; }
+        public BsonExpression Having { get; set; }
 
-        public int Offset { get; set; } = 0;
+        public int Offset { get; set; }
         public int Limit { get; set; } = int.MaxValue;
-        public bool ForUpdate { get; set; } = false;
+        public bool ForUpdate { get; set; }
 
         public string Into { get; set; }
         public BsonAutoId IntoAutoId { get; set; } = BsonAutoId.ObjectId;
@@ -98,7 +98,7 @@ namespace LiteDB
 
             if (ForUpdate)
             {
-                sb.AppendLine($"FOR UPDATE");
+                sb.AppendLine("FOR UPDATE");
             }
 
             return sb.ToString().Trim();

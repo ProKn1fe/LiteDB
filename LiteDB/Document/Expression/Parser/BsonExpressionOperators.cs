@@ -6,7 +6,7 @@ using static LiteDB.Constants;
 
 namespace LiteDB
 {
-    internal class BsonExpressionOperators
+    internal static class BsonExpressionOperators
     {
         #region Arithmetic
 
@@ -126,7 +126,6 @@ namespace LiteDB
         public static BsonValue GTE(BsonValue left, BsonValue right) => left >= right;
         public static BsonValue GTE_ANY(Collation collation, IEnumerable<BsonValue> left, BsonValue right) => left.Any(x => collation.Compare(x, right) >= 0);
         public static BsonValue GTE_ALL(Collation collation, IEnumerable<BsonValue> left, BsonValue right) => left.All(x => collation.Compare(x, right) >= 0);
-
 
         /// <summary>
         /// Test if left is less than right value. Returns true or false
@@ -318,7 +317,7 @@ namespace LiteDB
                     // execute for each child value and except a first bool value (returns if true)
                     var c = filterExpr.ExecuteScalar(new BsonDocument[] { root }, root, item, collation);
 
-                    if (c.IsBoolean && c.AsBoolean == true)
+                    if (c.IsBoolean && c.AsBoolean)
                     {
                         yield return item;
                     }

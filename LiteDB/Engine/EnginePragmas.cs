@@ -26,7 +26,7 @@ namespace LiteDB.Engine
         /// <summary>
         /// Internal user version control to detect database changes
         /// </summary>
-        public int UserVersion { get; private set; } = 0;
+        public int UserVersion { get; private set; }
 
         /// <summary>
         /// Define collation for this database. Value will be persisted on disk at first write database. After this, there is no change of collation
@@ -46,7 +46,7 @@ namespace LiteDB.Engine
         /// <summary>
         /// Returns date in UTC timezone from BSON deserialization (default: false == LocalTime)
         /// </summary>
-        public bool UtcDate { get; private set; } = false;
+        public bool UtcDate { get; private set; }
 
         /// <summary>
         /// When LOG file gets larger than checkpoint size (in pages), do a soft checkpoint (and also do a checkpoint at shutdown)
@@ -55,7 +55,7 @@ namespace LiteDB.Engine
         public int Checkpoint { get; private set; } = 1000;
 
         private readonly Dictionary<string, Pragma> _pragmas;
-        private bool _isDirty = false;
+        private bool _isDirty;
         private readonly HeaderPage _headerPage;
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace LiteDB.Engine
                     Get = () => Collation.ToString(),
                     Set = (v) => Collation = new Collation(v.AsString),
                     Read = (b) => Collation = new Collation(b.ReadInt32(P_COLLATION_LCID), (CompareOptions)b.ReadInt32(P_COLLATION_SORT)),
-                    Validate = (v, h) => { throw new LiteException(0, "Pragma COLLATION is read only. Use Rebuild options."); },
+                    Validate = (v, h) => throw new LiteException(0, "Pragma COLLATION is read only. Use Rebuild options."),
                     Write = (b) =>
                     {
                         b.Write(Collation.Culture.LCID, P_COLLATION_LCID);
@@ -143,7 +143,7 @@ namespace LiteDB.Engine
         public EnginePragmas(BufferSlice buffer, HeaderPage headerPage)
             : this(headerPage)
         {
-            foreach(var pragma in _pragmas.Values)
+            foreach (var pragma in _pragmas.Values)
             {
                 pragma.Read(buffer);
             }
@@ -153,9 +153,9 @@ namespace LiteDB.Engine
 
         public void UpdateBuffer(BufferSlice buffer)
         {
-            if (_isDirty == false) return;
+            if (!_isDirty) return;
 
-            foreach(var pragma in _pragmas)
+            foreach (var pragma in _pragmas)
             {
                 pragma.Value.Write(buffer);
             }

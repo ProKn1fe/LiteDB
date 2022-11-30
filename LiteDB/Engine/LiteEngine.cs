@@ -12,7 +12,7 @@ namespace LiteDB.Engine
     /// </summary>
     public partial class LiteEngine : ILiteEngine
     {
-        public static int PAGES = 0;
+        public static int PAGES;
 
         #region Services instances
 
@@ -31,7 +31,7 @@ namespace LiteDB.Engine
         // immutable settings
         private readonly EngineSettings _settings;
 
-        private bool _disposed = false;
+        private bool _disposed;
 
         #endregion
 
@@ -49,7 +49,7 @@ namespace LiteDB.Engine
         /// Initialize LiteEngine using connection string using key=value; parser
         /// </summary>
         public LiteEngine(string filename)
-            : this (new EngineSettings { Filename = filename })
+            : this(new EngineSettings { Filename = filename })
         {
         }
 
@@ -69,7 +69,7 @@ namespace LiteDB.Engine
 
                 // get header page from disk service
                 _header = _disk.Header;
-                
+
                 // test for same collation
                 if (settings.Collation != null && settings.Collation.ToString() != _header.Pragmas.Collation.ToString())
                 {
@@ -149,7 +149,7 @@ namespace LiteDB.Engine
                 _monitor?.Dispose();
 
                 // do a soft checkpoint (only if exclusive lock is possible)
-                if (_header?.Pragmas.Checkpoint > 0 && _settings.ReadOnly == false) _walIndex?.Checkpoint(true, true);
+                if (_header?.Pragmas.Checkpoint > 0 && !_settings.ReadOnly) _walIndex?.Checkpoint(true, true);
 
                 // close all disk streams (and delete log if empty)
                 _disk?.Dispose();
@@ -165,6 +165,5 @@ namespace LiteDB.Engine
 
             _disposed = true;
         }
-
     }
 }

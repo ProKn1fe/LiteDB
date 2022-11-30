@@ -87,14 +87,14 @@ namespace LiteDB.Engine
             DataBlock lastBlock = null;
             var updateAddress = blockAddress;
 
-            IEnumerable <BufferSlice> source()
+            IEnumerable<BufferSlice> source()
             {
                 var bytesToCopy = 0;
 
                 while (bytesLeft > 0)
                 {
                     // if last block contains new block sequence, continue updating
-                    if (updateAddress.IsEmpty == false)
+                    if (!updateAddress.IsEmpty)
                     {
                         var dataPage = _snapshot.GetPage<DataPage>(updateAddress.PageID);
                         var currentBlock = dataPage.GetBlock(updateAddress.Index);
@@ -132,7 +132,7 @@ namespace LiteDB.Engine
                 }
 
                 // old document was bigger than current, must delete extend blocks
-                if (lastBlock.NextBlock.IsEmpty == false)
+                if (!lastBlock.NextBlock.IsEmpty)
                 {
                     var nextBlockAddress = lastBlock.NextBlock;
 
@@ -175,7 +175,7 @@ namespace LiteDB.Engine
         public void Delete(PageAddress blockAddress)
         {
             // delete all document blocks
-            while(blockAddress != PageAddress.Empty)
+            while (blockAddress != PageAddress.Empty)
             {
                 var page = _snapshot.GetPage<DataPage>(blockAddress.PageID);
                 var block = page.GetBlock(blockAddress.Index);

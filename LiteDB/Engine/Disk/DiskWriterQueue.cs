@@ -44,7 +44,7 @@ namespace LiteDB.Engine
         /// </summary>
         public void Run()
         {
-            if (!_queue.IsEmpty && (_task == null || _task.IsCompleted))
+            if (!_queue.IsEmpty && (_task?.IsCompleted != false))
             {
                 // https://blog.stephencleary.com/2013/08/startnew-is-dangerous.html
                 _task = Task.Run(ExecuteQueue);

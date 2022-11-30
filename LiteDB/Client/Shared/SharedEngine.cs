@@ -11,7 +11,7 @@ namespace LiteDB
         private readonly EngineSettings _settings;
         private readonly ReadWriteLockFile _locker;
         private LiteEngine _engine;
-        private int _stack = 0;
+        private int _stack;
 
         public SharedEngine(EngineSettings settings)
         {
@@ -24,7 +24,7 @@ namespace LiteDB
             _locker = new ReadWriteLockFile(lockfile, TimeSpan.FromSeconds(60));
 
             // create empty database if not exists
-            if (File.Exists(settings.Filename) == false)
+            if (!File.Exists(settings.Filename))
             {
                 try
                 {
@@ -54,7 +54,7 @@ namespace LiteDB
                     open();
                 }
                 // change from read-only to read-write
-                else if (_settings.ReadOnly == true && readOnly == false && _engine != null)
+                else if (_settings.ReadOnly && !readOnly && _engine != null)
                 {
                     _engine.Dispose();
                     open();
@@ -90,7 +90,7 @@ namespace LiteDB
         /// </summary>
         private void CloseDatabase()
         {
-            lock(_locker)
+            lock (_locker)
             {
                 _stack--;
 
@@ -114,7 +114,7 @@ namespace LiteDB
             {
                 var result = _engine.BeginTrans();
 
-                if (result == false)
+                if (!result)
                 {
                     _stack--;
                 }

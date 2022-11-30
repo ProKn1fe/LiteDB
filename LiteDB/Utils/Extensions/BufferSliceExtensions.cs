@@ -100,7 +100,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Read any BsonValue. Use 1 byte for data type, 1 byte for length (optional), 0-255 bytes to value. 
+        /// Read any BsonValue. Use 1 byte for data type, 1 byte for length (optional), 0-255 bytes to value.
         /// For document or array, use BufferReader
         /// </summary>
         public static BsonValue ReadIndexKey(this BufferSlice buffer, int offset)
@@ -234,7 +234,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Wrtie any BsonValue. Use 1 byte for data type, 1 byte for length (optional), 0-255 bytes to value. 
+        /// Wrtie any BsonValue. Use 1 byte for data type, 1 byte for length (optional), 0-255 bytes to value.
         /// For document or array, use BufferWriter
         /// </summary>
         public static void WriteIndexKey(this BufferSlice buffer, BsonValue value, int offset)
@@ -252,7 +252,7 @@ namespace LiteDB
                 buffer[offset++] = lengthByte;
                 buffer.Write(str, offset);
             }
-            else if(value.IsBinary)
+            else if (value.IsBinary)
             {
                 var arr = value.AsBinary;
 
@@ -296,7 +296,7 @@ namespace LiteDB
                     case BsonType.ObjectId: buffer.Write(value.AsObjectId, offset); break;
                     case BsonType.Guid: buffer.Write(value.AsGuid, offset); break;
 
-                    case BsonType.Boolean: buffer[offset] = (value.AsBoolean) ? (byte)1 : (byte)0; break;
+                    case BsonType.Boolean: buffer[offset] = value.AsBoolean ? (byte)1 : (byte)0; break;
                     case BsonType.DateTime: buffer.Write(value.AsDateTime, offset); break;
 
                     default: throw new NotImplementedException();

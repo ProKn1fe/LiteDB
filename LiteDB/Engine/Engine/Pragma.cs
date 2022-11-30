@@ -22,10 +22,7 @@
             // do a inside transaction to edit pragma on commit event	
             return AutoTransaction(transaction =>
             {
-                transaction.Pages.Commit += (h) =>
-                {
-                    h.Pragmas.Set(name, value, true);
-                };
+                transaction.Pages.Commit += (h) => h.Pragmas.Set(name, value, true);
 
                 return true;
             });

@@ -58,7 +58,7 @@ namespace LiteDB.Tests.Database
 
             foreach (var item in collection.FindAll())
             {
-                var itemFromList = TestModels.FirstOrDefault(a => a.Name == item.Name);
+                var itemFromList = TestModels.Find(a => a.Name == item.Name);
                 Assert.True(itemFromList != null);
             }
 

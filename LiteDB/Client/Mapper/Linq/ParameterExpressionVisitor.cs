@@ -7,7 +7,7 @@ namespace LiteDB
     /// </summary>
     internal class ParameterExpressionVisitor : ExpressionVisitor
     {
-        public bool IsParameter { get; private set; } = false;
+        public bool IsParameter { get; private set; }
 
         protected override Expression VisitParameter(ParameterExpression node)
         {

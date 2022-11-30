@@ -5,7 +5,7 @@ namespace LiteDB.Tests
 {
     public class TempFile : IDisposable
     {
-        public string Filename { get; private set; }
+        public string Filename { get; }
 
         public TempFile()
         {

@@ -34,13 +34,13 @@ namespace LiteDB
         public void Insert(BsonValue id, T entity)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
-            if (id == null || id.IsNull) throw new ArgumentNullException(nameof(id));
+            if (id?.IsNull == true) throw new ArgumentNullException(nameof(id));
 
             var doc = _mapper.ToDocument(entity);
 
             doc["_id"] = id;
 
-            _engine.Insert(_collection, new [] { doc }, _autoId);
+            _engine.Insert(_collection, new[] { doc }, _autoId);
         }
 
         /// <summary>
@@ -88,10 +88,10 @@ namespace LiteDB
         /// </summary>
         private bool RemoveDocId(BsonDocument doc)
         {
-            if (_id != null && doc.TryGetValue("_id", out var id)) 
+            if (_id != null && doc.TryGetValue("_id", out var id))
             {
                 // check if exists _autoId and current id is "empty"
-                if ((_autoId == BsonAutoId.Int32 && (id.IsInt32 && id.AsInt32 == 0)) ||
+                if ((_autoId == BsonAutoId.Int32 && id.IsInt32 && id.AsInt32 == 0) ||
                     (_autoId == BsonAutoId.ObjectId && (id.IsNull || (id.IsObjectId && id.AsObjectId == ObjectId.Empty))) ||
                     (_autoId == BsonAutoId.Guid && id.IsGuid && id.AsGuid == Guid.Empty) ||
                     (_autoId == BsonAutoId.Int64 && id.IsInt64 && id.AsInt64 == 0))
@@ -102,7 +102,7 @@ namespace LiteDB
                 }
             }
 
-            return false;   
+            return false;
         }
     }
 }

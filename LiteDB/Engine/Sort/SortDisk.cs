@@ -16,18 +16,17 @@ namespace LiteDB.Engine
         private readonly IStreamFactory _factory;
         private readonly Lazy<StreamPool> _pool;
         private readonly ConcurrentBag<long> _freePositions = new ConcurrentBag<long>();
-        private long _lastContainerPosition = 0;
-        private readonly int _containerSize;
+        private long _lastContainerPosition;
         private readonly EnginePragmas _pragmas;
 
-        public int ContainerSize => _containerSize;
+        public int ContainerSize { get; }
 
         public SortDisk(IStreamFactory factory, int containerSize, EnginePragmas pragmas)
         {
             ENSURE(containerSize % PAGE_SIZE == 0, "size must be PAGE_SIZE multiple");
 
             _factory = factory;
-            _containerSize = containerSize;
+            ContainerSize = containerSize;
             _pragmas = pragmas;
 
             _lastContainerPosition = -containerSize;
@@ -70,7 +69,7 @@ namespace LiteDB.Engine
                 return position;
             }
 
-            position = Interlocked.Add(ref _lastContainerPosition, _containerSize);
+            position = Interlocked.Add(ref _lastContainerPosition, ContainerSize);
 
             return position;
         }
@@ -83,10 +82,10 @@ namespace LiteDB.Engine
             var writer = _pool.Value.Writer;
 
             // there is only a single writer instance, must be lock to ensure only 1 single thread are writing
-            lock(writer)
+            lock (writer)
             {
                 writer.Position = position;
-                writer.Write(buffer.Array, buffer.Offset, _containerSize);
+                writer.Write(buffer.Array, buffer.Offset, ContainerSize);
             }
         }
 

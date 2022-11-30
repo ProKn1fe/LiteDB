@@ -100,6 +100,5 @@ namespace LiteDB.Tests.Issues
                 Assert.NotNull(player);
             }
         }
-
     }
 }

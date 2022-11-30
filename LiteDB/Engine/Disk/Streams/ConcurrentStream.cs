@@ -11,8 +11,6 @@ namespace LiteDB.Engine
     {
         private readonly Stream _stream;
 
-        private long _position = 0;
-
         public ConcurrentStream(Stream stream)
         {
             _stream = stream;
@@ -26,7 +24,7 @@ namespace LiteDB.Engine
 
         public override long Length => _stream.Length;
 
-        public override long Position { get => _position; set => _position = value; }
+        public override long Position { get; set; }
 
         public override void Flush() => _stream.Flush();
 
@@ -40,12 +38,12 @@ namespace LiteDB.Engine
             {
                 var position =
                     origin == SeekOrigin.Begin ? offset :
-                    origin == SeekOrigin.Current ? _position + offset :
-                    _position - offset;
+                    origin == SeekOrigin.Current ? Position + offset :
+                    Position - offset;
 
-                _position = position;
+                Position = position;
 
-                return _position;
+                return Position;
             }
         }
 
@@ -54,23 +52,23 @@ namespace LiteDB.Engine
             // lock internal stream and set position before read
             lock (_stream)
             {
-                _stream.Position = _position;
+                _stream.Position = Position;
                 var read = _stream.Read(buffer, offset, count);
-                _position = _stream.Position;
+                Position = _stream.Position;
                 return read;
             }
         }
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-            if (CanWrite == false) throw new NotSupportedException("Current stream are readonly");
+            if (!CanWrite) throw new NotSupportedException("Current stream are readonly");
 
             // lock internal stream and set position before write
             lock (_stream)
             {
-                _stream.Position = _position;
+                _stream.Position = Position;
                 _stream.Write(buffer, offset, count);
-                _position = _stream.Position;
+                Position = _stream.Position;
             }
         }
     }

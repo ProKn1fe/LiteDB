@@ -14,11 +14,10 @@ namespace LiteDB.Engine
     /// </summary>
     public class AesStream : Stream
     {
-        private readonly Stream _baseStream;
 
         private readonly Stream _aesStream;
 
-        public Stream BaseStream => _baseStream;
+        public Stream BaseStream { get; }
 
         public AesStream(string password, Stream stream, bool initialize = false)
         {
@@ -26,8 +25,8 @@ namespace LiteDB.Engine
             var encryption = EncryptionType.AesXts;
             var salt = new byte[ENCRYPTION_SALT_SIZE];
 
-            _baseStream = stream;
-            _baseStream.Position = 0;
+            BaseStream = stream;
+            BaseStream.Position = 0;
 
             try
             {
@@ -37,21 +36,21 @@ namespace LiteDB.Engine
                     SharedStuff.RandomNumberGenerator.GetBytes(salt);
 
                     // store encryption type + salt
-                    _baseStream.WriteByte((byte)encryption);
-                    _baseStream.Write(salt, 0, ENCRYPTION_SALT_SIZE);
+                    BaseStream.WriteByte((byte)encryption);
+                    BaseStream.Write(salt, 0, ENCRYPTION_SALT_SIZE);
 
                     // fill all page with 0
                     var left = PAGE_SIZE - ENCRYPTION_SALT_SIZE - 1;
 
-                    _baseStream.Write(new byte[left], 0, left);
+                    BaseStream.Write(new byte[left], 0, left);
                 }
                 else
                 {
                     // read EncryptionMode byte
-                    encryption = (EncryptionType)_baseStream.ReadByte();
+                    encryption = (EncryptionType)BaseStream.ReadByte();
 
                     // read salt
-                    _baseStream.Read(salt, 0, ENCRYPTION_SALT_SIZE);
+                    BaseStream.Read(salt, 0, ENCRYPTION_SALT_SIZE);
                 }
 
                 // initialize encryption stream (xts/ecb)
@@ -60,10 +59,10 @@ namespace LiteDB.Engine
                     case EncryptionType.None:
                         throw new LiteException(0, "File is not encrypted.");
                     case EncryptionType.AesEcb:
-                        _aesStream = new AesEcbStream(password, _baseStream, salt);
+                        _aesStream = new AesEcbStream(password, BaseStream, salt);
                         break;
                     case EncryptionType.AesXts:
-                        _aesStream = CreateXtsStream(password, _baseStream, salt);
+                        _aesStream = CreateXtsStream(password, BaseStream, salt);
                         break;
                     default:
                         throw new LiteException(0, "Unsupported encryption mode.");
@@ -72,7 +71,7 @@ namespace LiteDB.Engine
             catch
             {
                 _aesStream?.Dispose();
-                _baseStream.Dispose();
+                BaseStream.Dispose();
 
                 throw;
             }
@@ -88,10 +87,10 @@ namespace LiteDB.Engine
 
         public override long Length => _aesStream.Length - PAGE_SIZE;
 
-        public override long Position 
-        { 
-            get => _aesStream.Position - PAGE_SIZE; 
-            set => Seek(value, SeekOrigin.Begin); 
+        public override long Position
+        {
+            get => _aesStream.Position - PAGE_SIZE;
+            set => Seek(value, SeekOrigin.Begin);
         }
 
         public override void Flush() => _aesStream.Flush();
@@ -122,7 +121,7 @@ namespace LiteDB.Engine
         {
             base.Dispose(disposing);
             _aesStream.Dispose();
-            _baseStream.Dispose();
+            BaseStream.Dispose();
         }
     }
 }

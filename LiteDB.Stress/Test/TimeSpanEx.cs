@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace LiteDB.Stress
 {
-    public class TimeSpanEx
+    public static class TimeSpanEx
     {
         public static TimeSpan Parse(string duration)
         {
@@ -17,9 +17,9 @@ namespace LiteDB.Stress
                 var num = double.Parse(match.Groups["num"].Value, CultureInfo.InvariantCulture.NumberFormat);
                 var unit = match.Groups["unit"].Value.ToLower();
 
-                switch(unit)
+                switch (unit)
                 {
-                    case "": 
+                    case "":
                     case "ms": return TimeSpan.FromMilliseconds(num);
                     case "s": return TimeSpan.FromSeconds(num);
                     case "m": return TimeSpan.FromMinutes(num);

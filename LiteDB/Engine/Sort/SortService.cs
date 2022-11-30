@@ -51,7 +51,7 @@ namespace LiteDB.Engine
         public void Dispose()
         {
             // release all container positions
-            foreach(var container in _containers)
+            foreach (var container in _containers)
             {
                 container.Dispose();
 
@@ -88,7 +88,7 @@ namespace LiteDB.Engine
                 _containers.Add(container);
 
                 // initialize container readers: if single container, do not use Stream file... only buffer memory
-                if (_done.Running == false && _containers.Count == 1)
+                if (!_done.Running && _containers.Count == 1)
                 {
                     container.InitializeReader(null, _buffer, _pragmas.UtcDate);
                 }
@@ -146,10 +146,10 @@ namespace LiteDB.Engine
 
                     var lastKey = current.Current.Key;
 
-                    if (current.MoveNext() == false)
+                    if (!current.MoveNext())
                     {
                         // now, current container must any new container that still have values
-                        current = _containers.FirstOrDefault(x => !x.IsEOF);
+                        current = _containers.Find(x => !x.IsEOF);
                     }
 
                     // after run MoveNext(), if container contains same lastKey, can return now
@@ -157,9 +157,9 @@ namespace LiteDB.Engine
                     {
                         yield return current.Current;
 
-                        if (current.MoveNext() == false)
+                        if (!current.MoveNext())
                         {
-                            current = _containers.FirstOrDefault(x => !x.IsEOF);
+                            current = _containers.Find(x => !x.IsEOF);
                         }
                     }
                 }

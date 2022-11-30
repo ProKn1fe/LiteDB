@@ -35,7 +35,7 @@ namespace XTSSharp
 	public class XtsAes256 : Xts
 	{
 		private const int KEY_LENGTH = 256;
-		private const int KEY_BYTE_LENGTH = KEY_LENGTH/8;
+		private const int KEY_BYTE_LENGTH = KEY_LENGTH / 8;
 
 		/// <summary>
 		/// Creates a new instance
@@ -68,7 +68,7 @@ namespace XTSSharp
 		/// <remarks>Keys need to be 512 bits long (i.e. 64 bytes)</remarks>
 		public static Xts Create(byte[] key)
 		{
-			VerifyKey(KEY_LENGTH*2, key);
+			VerifyKey(KEY_LENGTH * 2, key);
 
 			var key1 = new byte[KEY_BYTE_LENGTH];
 			var key2 = new byte[KEY_BYTE_LENGTH];

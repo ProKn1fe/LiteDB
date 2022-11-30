@@ -25,7 +25,7 @@ namespace LiteDB
         /// <summary>
         /// "password": Database password used to encrypt/decypted data pages
         /// </summary>
-        public string Password { get; set; } = null;
+        public string Password { get; set; }
 
         /// <summary>
         /// "initial size": If database is new, initialize with allocated space - support KB, MB, GB (default: 0)
@@ -35,12 +35,12 @@ namespace LiteDB
         /// <summary>
         /// "readonly": Open datafile in readonly mode (default: false)
         /// </summary>
-        public bool ReadOnly { get; set; } = false;
+        public bool ReadOnly { get; set; }
 
         /// <summary>
         /// "upgrade": Check if data file is an old version and convert before open (default: false)
         /// </summary>
-        public bool Upgrade { get; set; } = false;
+        public bool Upgrade { get; set; }
 
         /// <summary>
         /// "collation": Set default collaction when database creation (default: "[CurrentCulture]/IgnoreCase")
@@ -79,12 +79,12 @@ namespace LiteDB
 
             Password = _values.GetValue("password", Password);
 
-            if(Password == string.Empty)
+            if (Password == string.Empty)
             {
                 Password = null;
             }
 
-            InitialSize = _values.GetFileSize(@"initial size", InitialSize);
+            InitialSize = _values.GetFileSize("initial size", InitialSize);
             ReadOnly = _values.GetValue("readonly", ReadOnly);
 
             Collation = _values.ContainsKey("collation") ? new Collation(_values.GetValue<string>("collation")) : Collation;

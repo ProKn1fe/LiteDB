@@ -59,7 +59,6 @@ namespace LiteDB.Internals
             }
         }
 
-
         [Fact]
         public void Buffer_Write_String()
         {
@@ -86,7 +85,7 @@ namespace LiteDB.Internals
 
             source.ReadInt32(0).Should().Be(7);
             source.ReadString(4, 6).Should().Be("abc123");
-            ((char) source.ReadByte(10)).Should().Be('\0');
+            ((char)source.ReadByte(10)).Should().Be('\0');
         }
 
         [Fact]
@@ -258,8 +257,8 @@ namespace LiteDB.Internals
                 ["double"] = double.MaxValue,
                 ["decimal"] = decimal.MaxValue,
                 ["string"] = "String",
-                ["document"] = new BsonDocument {["_id"] = 1},
-                ["array"] = new BsonArray {1, 2, 3},
+                ["document"] = new BsonDocument { ["_id"] = 1 },
+                ["array"] = new BsonArray { 1, 2, 3 },
                 ["binary"] = new byte[50].Fill(255, 0, 49),
                 ["objectId"] = ObjectId.NewObjectId(),
                 ["guid"] = Guid.NewGuid(),

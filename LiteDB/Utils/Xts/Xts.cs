@@ -59,8 +59,8 @@ namespace XTSSharp
 				throw new ArgumentException("Key lengths don't match");
 
 			//set the key sizes
-			_key1.KeySize = key1.Length*8;
-			_key2.KeySize = key2.Length*8;
+			_key1.KeySize = key1.Length * 8;
+			_key2.KeySize = key2.Length * 8;
 
 			//set the keys
 			_key1.Key = key1;
@@ -75,8 +75,8 @@ namespace XTSSharp
 			_key2.Padding = PaddingMode.None;
 
 			//fixed block size of 128 bits.
-			_key1.BlockSize = 16*8;
-			_key2.BlockSize = 16*8;
+			_key1.BlockSize = 16 * 8;
+			_key2.BlockSize = 16 * 8;
 		}
 
 		/// <summary>
@@ -108,8 +108,8 @@ namespace XTSSharp
 			if (key == null)
 				throw new ArgumentNullException("key");
 
-			if (key.Length*8 != expectedSize)
-				throw new ArgumentException(string.Format("Expected key length of {0} bits, got {1}", expectedSize, key.Length*8));
+			if (key.Length * 8 != expectedSize)
+				throw new ArgumentException(string.Format("Expected key length of {0} bits, got {1}", expectedSize, key.Length * 8));
 
 			return key;
 		}

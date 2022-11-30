@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Globalization;
+
 using FluentAssertions;
+
 using Xunit;
 
 namespace LiteDB.Tests.Document
@@ -29,7 +31,6 @@ namespace LiteDB.Tests.Document
             doc["Items"].AsArray.Add(null);
             doc["Items"].AsArray.Add(true);
             doc["Items"].AsArray.Add(DateTime.Now);
-
 
             return doc;
         }

@@ -28,10 +28,10 @@ using System.IO;
 
 namespace XTSSharp
 {
-    /// <summary>
-    /// Xts sector-based
-    /// </summary>
-    public class XtsSectorStream : SectorStream
+	/// <summary>
+	/// Xts sector-based
+	/// </summary>
+	public class XtsSectorStream : SectorStream
 	{
 		/// <summary>
 		/// The default sector size

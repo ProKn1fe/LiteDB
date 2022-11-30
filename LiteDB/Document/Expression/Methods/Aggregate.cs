@@ -20,7 +20,7 @@ namespace LiteDB
         {
             var min = BsonValue.MaxValue;
 
-            foreach(var value in values)
+            foreach (var value in values)
             {
                 if (value.CompareTo(min) <= 0)
                 {
@@ -110,7 +110,7 @@ namespace LiteDB
         /// </summary>
         public static BsonValue ANY(IEnumerable<BsonValue> values)
         {
-            return values.Any(); 
+            return values.Any();
         }
     }
 }

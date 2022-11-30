@@ -3,7 +3,7 @@
     /// <summary>
     /// Implement similar as ArrayPool for byte array
     /// </summary>
-    internal class BufferPool<T>
+    internal static class BufferPool<T>
     {
 #if NETFRAMEWORK || NETSTANDARD2_0
 
@@ -15,7 +15,7 @@
             _lock = new object();
             _bytePool = new ArrayPool<T>();
         }
-        
+
         public static T[] Rent(int count)
         {
             lock (_lock)

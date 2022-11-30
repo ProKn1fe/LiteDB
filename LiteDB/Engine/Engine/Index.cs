@@ -14,12 +14,12 @@ namespace LiteDB.Engine
             if (collection.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(collection));
             if (name.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(name));
             if (expression == null) throw new ArgumentNullException(nameof(expression));
-            if (expression.IsIndexable == false) throw new ArgumentException("Index expressions must contains at least one document field. Used methods must be immutable. Parameters are not supported.", nameof(expression));
+            if (!expression.IsIndexable) throw new ArgumentException("Index expressions must contains at least one document field. Used methods must be immutable. Parameters are not supported.", nameof(expression));
 
             if (name.Length > INDEX_NAME_MAX_LENGTH) throw LiteException.InvalidIndexName(name, collection, "MaxLength = " + INDEX_NAME_MAX_LENGTH);
             if (!name.IsWord()) throw LiteException.InvalidIndexName(name, collection, "Use only [a-Z$_]");
             if (name.StartsWith("$")) throw LiteException.InvalidIndexName(name, collection, "Index name can't starts with `$`");
-            if (expression.IsScalar == false && unique) throw new LiteException(0, "Multikey index expression do not support unique option");
+            if (!expression.IsScalar && unique) throw new LiteException(0, "Multikey index expression do not support unique option");
 
             if (expression.Source == "$._id") return false; // always exists
 
@@ -105,13 +105,13 @@ namespace LiteDB.Engine
                 var snapshot = transaction.CreateSnapshot(LockMode.Write, collection, false);
                 var col = snapshot.CollectionPage;
                 var indexer = new IndexService(snapshot, _header.Pragmas.Collation);
-            
+
                 // no collection, no index
                 if (col == null) return false;
-            
+
                 // search for index reference
                 var index = col.GetCollectionIndex(name);
-            
+
                 // no index, no drop
                 if (index == null) return false;
 
@@ -120,7 +120,7 @@ namespace LiteDB.Engine
 
                 // remove index entry in collection page
                 snapshot.CollectionPage.DeleteCollectionIndex(name);
-            
+
                 return true;
             });
         }

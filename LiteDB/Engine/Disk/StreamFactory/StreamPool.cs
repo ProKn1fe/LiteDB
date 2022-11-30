@@ -5,7 +5,7 @@ using System.IO;
 namespace LiteDB.Engine
 {
     /// <summary>
-    /// Manage multiple open readonly Stream instances from same source (file). 
+    /// Manage multiple open readonly Stream instances from same source (file).
     /// Support single writer instance
     /// Close all Stream on dispose
     /// [ThreadSafe]
@@ -13,20 +13,19 @@ namespace LiteDB.Engine
     internal class StreamPool : IDisposable
     {
         private readonly ConcurrentBag<Stream> _pool = new ConcurrentBag<Stream>();
-        private readonly Stream _writer;
         private readonly IStreamFactory _factory;
 
         public StreamPool(IStreamFactory factory, bool readOnly)
         {
             _factory = factory;
 
-            _writer = readOnly ? null : _factory.GetStream(false);
+            Writer = readOnly ? null : _factory.GetStream(false);
         }
 
         /// <summary>
         /// Get single Stream writer instance
         /// </summary>
-        public Stream Writer => _writer;
+        public Stream Writer { get; }
 
         /// <summary>
         /// Rent a Stream reader instance
@@ -55,7 +54,7 @@ namespace LiteDB.Engine
         public void Dispose()
         {
             // dipose stream only implement on factory
-            if (_factory.CloseOnDispose == false) return;
+            if (!_factory.CloseOnDispose) return;
 
             // dispose all reader stream
             foreach (var stream in _pool.ToArray())
@@ -64,7 +63,7 @@ namespace LiteDB.Engine
             }
 
             // do writer dispose (wait async writer thread)
-            _writer?.Dispose();
+            Writer?.Dispose();
         }
     }
 }

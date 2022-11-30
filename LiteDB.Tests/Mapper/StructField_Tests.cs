@@ -33,7 +33,6 @@ namespace LiteDB.Tests.Mapper
                 var allX = col2.Query().Select(p => p.X).ToArray();
                 var allStruct = col2.Query().ToArray();
                 var allNewStruct = col2.Query().Select(p => new { NewX = p.X, NewY = p.Y }).ToArray();
-
             }
         }
     }

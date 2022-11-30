@@ -70,7 +70,7 @@ namespace LiteDB
                 // read first INCLUDE (before)
                 _tokenizer.ReadToken();
 
-                foreach(var path in ParseListOfExpressions())
+                foreach (var path in ParseListOfExpressions())
                 {
                     query.Includes.Add(path);
                 }

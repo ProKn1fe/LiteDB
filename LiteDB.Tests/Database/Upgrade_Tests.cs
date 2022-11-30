@@ -15,13 +15,12 @@ namespace LiteDB.Tests.Database
 
             var original = "../../../Utils/Legacy/v4.db";
             var copy = original.Replace(".db", "-copy.db");
-                
+
             File.Copy(original, copy, true);
 
             try
             {
-
-                using(var db = new LiteDatabase($"filename={copy};upgrade=true"))
+                using (var db = new LiteDatabase($"filename={copy};upgrade=true"))
                 {
                     // convert and open database
                     var col1 = db.GetCollection("col1");
@@ -40,8 +39,8 @@ namespace LiteDB.Tests.Database
             finally
             {
                 File.Delete(copy);
-                
-                foreach(var backups in Directory.GetFiles(Path.GetDirectoryName(copy), "*-backup*.db"))
+
+                foreach (var backups in Directory.GetFiles(Path.GetDirectoryName(copy), "*-backup*.db"))
                 {
                     File.Delete(backups);
                 }
@@ -60,7 +59,6 @@ namespace LiteDB.Tests.Database
 
             try
             {
-
                 using (var db = new LiteDatabase($"filename={copy};upgrade=true"))
                 {
                     // convert and open database

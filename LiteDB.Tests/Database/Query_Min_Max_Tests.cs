@@ -45,7 +45,6 @@ namespace LiteDB.Tests.Database
                 c.Max(x => x.IntValue).Should().Be(443500);
                 c.Max(x => x.LongValue).Should().Be(443500);
                 c.Max(x => x.UintValue).Should().Be(443500);
-
             }
         }
     }

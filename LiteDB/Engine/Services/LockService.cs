@@ -41,7 +41,7 @@ namespace LiteDB.Engine
             // if current thread already in exclusive mode, just exit
             if (_transaction.IsWriteLockHeld) return;
 
-            if (_transaction.TryEnterReadLock(_pragmas.Timeout) == false) throw LiteException.LockTimeout("transaction", _pragmas.Timeout);
+            if (!_transaction.TryEnterReadLock(_pragmas.Timeout)) throw LiteException.LockTimeout("transaction", _pragmas.Timeout);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace LiteDB.Engine
             // get collection object lock from dictionary (or create new if doesnt exists)
             var collection = _collections.GetOrAdd(collectionName, (s) => new object());
 
-            if (Monitor.TryEnter(collection, _pragmas.Timeout) == false) throw LiteException.LockTimeout("write", collectionName, _pragmas.Timeout);
+            if (!Monitor.TryEnter(collection, _pragmas.Timeout)) throw LiteException.LockTimeout("write", collectionName, _pragmas.Timeout);
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace LiteDB.Engine
         /// </summary>
         public void ExitLock(string collectionName)
         {
-            if (_collections.TryGetValue(collectionName, out var collection) == false) throw LiteException.CollectionLockerNotFound(collectionName);
+            if (!_collections.TryGetValue(collectionName, out var collection)) throw LiteException.CollectionLockerNotFound(collectionName);
 
             Monitor.Exit(collection);
         }
@@ -88,7 +88,7 @@ namespace LiteDB.Engine
             if (_transaction.IsWriteLockHeld) return false;
 
             // wait finish all transactions before enter in reserved mode
-            if (_transaction.TryEnterWriteLock(_pragmas.Timeout) == false) throw LiteException.LockTimeout("exclusive", _pragmas.Timeout);
+            if (!_transaction.TryEnterWriteLock(_pragmas.Timeout)) throw LiteException.LockTimeout("exclusive", _pragmas.Timeout);
 
             return true;
         }
@@ -114,7 +114,7 @@ namespace LiteDB.Engine
             }
 
             // try enter in exclusive mode - but if not possible, just exit with false
-            if (_transaction.TryEnterWriteLock(10) == false)
+            if (!_transaction.TryEnterWriteLock(10))
             {
                 lockWasTaken = false;
                 return false;
@@ -126,7 +126,6 @@ namespace LiteDB.Engine
             lockWasTaken = true;
             return true;
         }
-
 
         /// <summary>
         /// Exit exclusive lock

@@ -28,7 +28,7 @@ namespace LiteDB.Tests.Engine
             var sortByLinq = names.OrderBy(x => x, collation).ToArray();
             var findByLinq = names.Where(x => collation.Compare(x, "ANA") == 0).ToArray();
 
-            using(var e = new LiteEngine(s))
+            using (var e = new LiteEngine(s))
             {
                 //e.Rebuild(new RebuildOptions { Collation = collation });
 
@@ -92,7 +92,7 @@ namespace LiteDB.Tests.Engine
         [Fact]
         public void Change_Thread_Culture()
         {
-            using(var f = new TempFile())
+            using (var f = new TempFile())
             {
                 var current = CultureInfo.CurrentCulture;
 
@@ -109,7 +109,7 @@ namespace LiteDB.Tests.Engine
 
                 using (var e = new LiteEngine(f.Filename))
                 {
-                    foreach(var id in data)
+                    foreach (var id in data)
                     {
                         var doc = e.Find("col1", BsonExpression.Create("_id = @0", id)).Single();
 

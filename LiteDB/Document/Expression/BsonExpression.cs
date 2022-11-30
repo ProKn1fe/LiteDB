@@ -94,7 +94,7 @@ namespace LiteDB
         /// </summary>
         internal bool IsIndexable =>
             Fields.Count > 0 &&
-            IsImmutable == true &&
+            IsImmutable &&
             Parameters.Count == 0;
 
         /// <summary>
@@ -211,7 +211,7 @@ namespace LiteDB
         }
 
         /// <summary>
-        /// Execute expression over document to get all index keys. 
+        /// Execute expression over document to get all index keys.
         /// Return distinct value (no duplicate key to same document)
         /// </summary>
         internal IEnumerable<BsonValue> GetIndexKeys(BsonDocument doc, Collation collation)
@@ -293,7 +293,7 @@ namespace LiteDB
         {
             var parameters = new BsonDocument();
 
-            for(var i = 0; i < args.Length; i++)
+            for (var i = 0; i < args.Length; i++)
             {
                 parameters[i.ToString()] = args[i];
             }
@@ -410,7 +410,7 @@ namespace LiteDB
         /// </summary>
         private static readonly Dictionary<string, MethodInfo> _methods =
             typeof(BsonExpressionMethods).GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .ToDictionary(m => m.Name.ToUpper() + "~" + m.GetParameters().Where(p => p.ParameterType != typeof(Collation)).Count());
+            .ToDictionary(m => m.Name.ToUpper() + "~" + m.GetParameters().Count(p => p.ParameterType != typeof(Collation)));
 
         /// <summary>
         /// Get expression method with same name and same parameter - return null if not found

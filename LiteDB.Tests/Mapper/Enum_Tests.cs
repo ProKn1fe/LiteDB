@@ -59,7 +59,6 @@ namespace LiteDB.Tests.Mapper
             var expr2 = mapper.GetExpression<Customer, bool>(x => x.NullableType.Value == CustomerType.Loyal);
 
             expr2.Parameters["p0"].AsInt32.Should().Be(2);
-
         }
 
         [Fact]

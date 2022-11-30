@@ -49,7 +49,7 @@ namespace LiteDB
                 _entity = mapper.GetEntityMapper(typeof(T));
                 _id = _entity.Id;
 
-                if (_id != null && _id.AutoId)
+                if (_id?.AutoId == true)
                 {
                     _autoId =
                         _id.DataType == typeof(int) || _id.DataType == typeof(int?) ? BsonAutoId.Int32 :

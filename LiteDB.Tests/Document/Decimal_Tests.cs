@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+
 using Xunit;
 
 namespace LiteDB.Tests.Document
@@ -18,10 +19,10 @@ namespace LiteDB.Tests.Document
             JsonSerializer.Serialize(dmin).Should().Be("{\"$numberDecimal\":\"-79228162514264337593543950335\"}");
             JsonSerializer.Serialize(dmax).Should().Be("{\"$numberDecimal\":\"79228162514264337593543950335\"}");
 
-            var b0 = BsonSerializer.Serialize(new BsonDocument {{"A", d0}});
-            var b1 = BsonSerializer.Serialize(new BsonDocument {{"A", d1}});
-            var bmin = BsonSerializer.Serialize(new BsonDocument {{"A", dmin}});
-            var bmax = BsonSerializer.Serialize(new BsonDocument {{"A", dmax}});
+            var b0 = BsonSerializer.Serialize(new BsonDocument { { "A", d0 } });
+            var b1 = BsonSerializer.Serialize(new BsonDocument { { "A", d1 } });
+            var bmin = BsonSerializer.Serialize(new BsonDocument { { "A", dmin } });
+            var bmax = BsonSerializer.Serialize(new BsonDocument { { "A", dmax } });
 
             var x0 = BsonSerializer.Deserialize(b0);
             var x1 = BsonSerializer.Deserialize(b1);

@@ -55,7 +55,7 @@ namespace LiteDB
         {
             T last = null;
 
-            foreach(var item in source)
+            foreach (var item in source)
             {
                 if (last != default(T))
                 {

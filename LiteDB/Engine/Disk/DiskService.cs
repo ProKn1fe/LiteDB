@@ -13,21 +13,17 @@ namespace LiteDB.Engine
     /// </summary>
     internal class DiskService : IDisposable
     {
-        private readonly MemoryCache _cache;
-        private readonly DiskWriterQueue _queue;
 
         private IStreamFactory _streamFactory;
 
         private StreamPool _streamPool;
-
-        private readonly HeaderPage _header;
 
         private long _logStartPosition;
         private long _logEndPosition;
 
         public DiskService(EngineSettings settings, int[] memorySegmentSizes)
         {
-            _cache = new MemoryCache(memorySegmentSizes);
+            Cache = new MemoryCache(memorySegmentSizes);
 
             // get new stream factory based on settings
             _streamFactory = settings.CreateDataFactory();
@@ -36,17 +32,17 @@ namespace LiteDB.Engine
             _streamPool = new StreamPool(_streamFactory, settings.ReadOnly);
 
             // create async writer queue for log file
-            _queue = new DiskWriterQueue(_streamPool.Writer);
+            Queue = new DiskWriterQueue(_streamPool.Writer);
 
             // checks if is a new file
-            var isNew = settings.ReadOnly == false && _streamPool.Writer.Length == 0;
+            var isNew = !settings.ReadOnly && _streamPool.Writer.Length == 0;
 
             // create new database if not exist yet
             if (isNew)
             {
                 LOG($"creating new database: '{Path.GetFileName(_streamFactory.Name)}'", "DISK");
 
-                _header = Initialize(_streamPool.Writer, settings.Collation, settings.InitialSize);
+                Header = Initialize(_streamPool.Writer, settings.Collation, settings.InitialSize);
             }
             else
             {
@@ -62,7 +58,7 @@ namespace LiteDB.Engine
                     // if first byte are 1 this datafile are encrypted but has do defined password to open
                     if (buffer[0] == 1) throw new LiteException(0, "This data file is encrypted and needs a password to open");
 
-                    _header = new HeaderPage(buffer);
+                    Header = new HeaderPage(buffer);
 
                     _streamPool.Return(stream);
                 }
@@ -78,19 +74,19 @@ namespace LiteDB.Engine
             }
 
             // define start/end position for log content
-            _logStartPosition = (_header.LastPageID + 1) * PAGE_SIZE;
+            _logStartPosition = (Header.LastPageID + 1) * PAGE_SIZE;
             _logEndPosition = _logStartPosition; // will be updated by RestoreIndex
         }
 
         /// <summary>
         /// Get async queue writer
         /// </summary>
-        public DiskWriterQueue Queue => _queue;
+        public DiskWriterQueue Queue { get; }
 
         /// <summary>
         /// Get memory cache instance
         /// </summary>
-        public MemoryCache Cache => _cache;
+        public MemoryCache Cache { get; }
 
         /// <summary>
         /// Get writer Stream single instance
@@ -105,7 +101,7 @@ namespace LiteDB.Engine
         /// <summary>
         /// Get header page single database instance
         /// </summary>
-        public HeaderPage Header => _header;
+        public HeaderPage Header { get; }
 
         /// <summary>
         /// Get log length
@@ -169,7 +165,7 @@ namespace LiteDB.Engine
         /// </summary>
         public DiskReader GetReader()
         {
-            return new DiskReader(_cache, _streamPool);
+            return new DiskReader(Cache, _streamPool);
         }
 
         /// <summary>
@@ -189,19 +185,19 @@ namespace LiteDB.Engine
                 {
                     // adding this page into file AS new page (at end of file)
                     // must add into cache to be sure that new readers can see this page
-                    page.Position = (Interlocked.Add(ref _logEndPosition, PAGE_SIZE)) - PAGE_SIZE;
+                    page.Position = Interlocked.Add(ref _logEndPosition, PAGE_SIZE) - PAGE_SIZE;
                 }
                 while (dataPosition > page.Position);
 
                 // mark this page as readable and get cached paged to enqueue
-                var readable = _cache.MoveToReadable(page);
+                var readable = Cache.MoveToReadable(page);
 
-                _queue.EnqueuePage(readable);
+                Queue.EnqueuePage(readable);
 
                 count++;
             }
 
-            _queue.Run();
+            Queue.Run();
 
             return count;
         }
@@ -209,13 +205,13 @@ namespace LiteDB.Engine
         #region Sync Read/Write operations
 
         /// <summary>
-        /// Read all log from current log position to end of file. 
+        /// Read all log from current log position to end of file.
         /// This operation are sync and should not be run with any page on queue
         /// Use fullLogArea to read file to end
         /// </summary>
         public IEnumerable<PageBuffer> ReadLog(bool fullLogArea)
         {
-            ENSURE(_queue.Length == 0, "no pages on queue before read sync log");
+            ENSURE(Queue.Length == 0, "no pages on queue before read sync log");
 
             // do not use MemoryCache factory - reuse same buffer array (one page per time)
             var buffer = new byte[PAGE_SIZE];
@@ -306,7 +302,7 @@ namespace LiteDB.Engine
         /// </summary>
         public void ResetLogPosition(bool crop)
         {
-            _logStartPosition = _logEndPosition = (_header.LastPageID + 1) * PAGE_SIZE;
+            _logStartPosition = _logEndPosition = (Header.LastPageID + 1) * PAGE_SIZE;
 
             if (crop)
             {
@@ -408,13 +404,13 @@ namespace LiteDB.Engine
         public void Dispose()
         {
             // dispose queue (wait finish)
-            _queue?.Dispose();
+            Queue?.Dispose();
 
             // dispose Stream pools
             _streamPool?.Dispose();
 
             // other disposes
-            _cache?.Dispose();
+            Cache?.Dispose();
         }
     }
 }

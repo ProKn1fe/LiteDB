@@ -2,7 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
 using FluentAssertions;
+
 using Xunit;
 
 namespace LiteDB.Tests.Mapper

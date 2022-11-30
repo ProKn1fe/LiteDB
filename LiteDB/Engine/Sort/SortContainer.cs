@@ -12,13 +12,13 @@ namespace LiteDB.Engine
         private readonly Collation _collation;
         private readonly int _size;
 
-        private int _remaining = 0;
-        private int _count = 0;
-        private bool _isEOF = false;
+        private int _remaining;
+        private int _count;
+        private bool _isEOF;
 
-        private int _readPosition = 0;
+        private int _readPosition;
 
-        private BufferReader _reader = null;
+        private BufferReader _reader;
 
         /// <summary>
         /// Returns if current container has no more items to read
@@ -53,7 +53,7 @@ namespace LiteDB.Engine
 
             var offset = 0;
 
-            foreach(var item in query)
+            foreach (var item in query)
             {
                 buffer.WriteIndexKey(item.Key, offset);
 

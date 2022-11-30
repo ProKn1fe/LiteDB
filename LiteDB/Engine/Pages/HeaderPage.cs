@@ -64,7 +64,7 @@ namespace LiteDB.Engine
         /// <summary>
         /// Check if collections was changed
         /// </summary>
-        private bool _isCollectionsChanged = false;
+        private bool _isCollectionsChanged;
 
         /// <summary>
         /// Create new Header Page
@@ -198,7 +198,7 @@ namespace LiteDB.Engine
         /// </summary>
         public IEnumerable<KeyValuePair<string, uint>> GetCollections()
         {
-            foreach(var el in _collections.GetElements())
+            foreach (var el in _collections.GetElements())
             {
                 yield return new KeyValuePair<string, uint>(el.Key, (uint)el.Value.AsInt32);
             }

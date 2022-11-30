@@ -107,9 +107,9 @@ namespace LiteDB
             Type = tokenType;
         }
 
-        public TokenType Type { get; private set; }
-        public string Value { get; private set; }
-        public long Position { get; private set; }
+        public TokenType Type { get; }
+        public string Value { get; }
+        public long Position { get; }
 
         /// <summary>
         /// Expect if token is type (if not, throw UnexpectedToken)
@@ -162,7 +162,7 @@ namespace LiteDB
 
         public bool Is(string value, bool ignoreCase = true)
         {
-            return 
+            return
                 Type == TokenType.Word &&
                 value.Equals(Value, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
         }
@@ -208,9 +208,9 @@ namespace LiteDB
     internal class Tokenizer
     {
         private readonly TextReader _reader;
-        private char _char = '\0';
-        private Token _ahead = null;
-        private bool _eof = false;
+        private char _char;
+        private Token _ahead;
+        private bool _eof;
 
         public bool EOF => _eof && _ahead == null;
         public long Position { get; private set; }
@@ -519,7 +519,7 @@ namespace LiteDB
                 case '\r':
                 case '\t':
                     var sb = new StringBuilder();
-                    while(char.IsWhiteSpace(_char) && !_eof)
+                    while (char.IsWhiteSpace(_char) && !_eof)
                     {
                         sb.Append(_char);
                         ReadChar();
@@ -592,20 +592,20 @@ namespace LiteDB
             {
                 if (_char == '.')
                 {
-                    if (canDot == false) break;
+                    if (!canDot) break;
                     dbl = true;
                     canDot = false;
                 }
                 else if (_char == 'e' || _char == 'E')
                 {
-                    if (canE == false) break;
+                    if (!canE) break;
                     canE = false;
                     canSign = true;
                     dbl = true;
                 }
                 else if (_char == '-' || _char == '+')
                 {
-                    if (canSign == false) break;
+                    if (!canSign) break;
                     canSign = false;
                 }
 
@@ -615,7 +615,7 @@ namespace LiteDB
 
             return sb.ToString();
         }
-        
+
         /// <summary>
         /// Read a string removing open and close " or '
         /// </summary>
@@ -689,9 +689,9 @@ namespace LiteDB
             if (c1 >= '0' && c1 <= '9')
                 p1 = (uint)(c1 - '0') * multiplier;
             else if (c1 >= 'A' && c1 <= 'F')
-                p1 = (uint)((c1 - 'A') + 10) * multiplier;
+                p1 = (uint)(c1 - 'A' + 10) * multiplier;
             else if (c1 >= 'a' && c1 <= 'f')
-                p1 = (uint)((c1 - 'a') + 10) * multiplier;
+                p1 = (uint)(c1 - 'a' + 10) * multiplier;
             return p1;
         }
 

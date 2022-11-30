@@ -10,14 +10,13 @@ namespace LiteDB
     /// </summary>
     public class LiteRepository : ILiteRepository
     {
-        #region Properties
 
-        private readonly ILiteDatabase _db = null;
+        #region Properties
 
         /// <summary>
         /// Get database instance
         /// </summary>
-        public ILiteDatabase Database => _db;
+        public ILiteDatabase Database { get; }
 
         #endregion
 
@@ -28,7 +27,7 @@ namespace LiteDB
         /// </summary>
         public LiteRepository(ILiteDatabase database)
         {
-            _db = database;
+            Database = database;
         }
 
         /// <summary>
@@ -36,7 +35,7 @@ namespace LiteDB
         /// </summary>
         public LiteRepository(string connectionString, BsonMapper mapper = null)
         {
-            _db = new LiteDatabase(connectionString, mapper);
+            Database = new LiteDatabase(connectionString, mapper);
         }
 
         /// <summary>
@@ -44,7 +43,7 @@ namespace LiteDB
         /// </summary>
         public LiteRepository(ConnectionString connectionString, BsonMapper mapper = null)
         {
-            _db = new LiteDatabase(connectionString, mapper);
+            Database = new LiteDatabase(connectionString, mapper);
         }
 
         /// <summary>
@@ -52,7 +51,7 @@ namespace LiteDB
         /// </summary>
         public LiteRepository(Stream stream, BsonMapper mapper = null, Stream logStream = null)
         {
-            _db = new LiteDatabase(stream, mapper, logStream);
+            Database = new LiteDatabase(stream, mapper, logStream);
         }
 
         #endregion
@@ -64,7 +63,7 @@ namespace LiteDB
         /// </summary>
         public void Insert<T>(T entity, string collectionName = null)
         {
-            _db.GetCollection<T>(collectionName).Insert(entity);
+            Database.GetCollection<T>(collectionName).Insert(entity);
         }
 
         /// <summary>
@@ -72,7 +71,7 @@ namespace LiteDB
         /// </summary>
         public int Insert<T>(IEnumerable<T> entities, string collectionName = null)
         {
-            return _db.GetCollection<T>(collectionName).Insert(entities);
+            return Database.GetCollection<T>(collectionName).Insert(entities);
         }
 
         #endregion
@@ -84,7 +83,7 @@ namespace LiteDB
         /// </summary>
         public bool Update<T>(T entity, string collectionName = null)
         {
-            return _db.GetCollection<T>(collectionName).Update(entity);
+            return Database.GetCollection<T>(collectionName).Update(entity);
         }
 
         /// <summary>
@@ -92,7 +91,7 @@ namespace LiteDB
         /// </summary>
         public int Update<T>(IEnumerable<T> entities, string collectionName = null)
         {
-            return _db.GetCollection<T>(collectionName).Update(entities);
+            return Database.GetCollection<T>(collectionName).Update(entities);
         }
 
         #endregion
@@ -104,7 +103,7 @@ namespace LiteDB
         /// </summary>
         public bool Upsert<T>(T entity, string collectionName = null)
         {
-            return _db.GetCollection<T>(collectionName).Upsert(entity);
+            return Database.GetCollection<T>(collectionName).Upsert(entity);
         }
 
         /// <summary>
@@ -112,7 +111,7 @@ namespace LiteDB
         /// </summary>
         public int Upsert<T>(IEnumerable<T> entities, string collectionName = null)
         {
-            return _db.GetCollection<T>(collectionName).Upsert(entities);
+            return Database.GetCollection<T>(collectionName).Upsert(entities);
         }
 
         #endregion
@@ -124,7 +123,7 @@ namespace LiteDB
         /// </summary>
         public bool Delete<T>(BsonValue id, string collectionName = null)
         {
-            return _db.GetCollection<T>(collectionName).Delete(id);
+            return Database.GetCollection<T>(collectionName).Delete(id);
         }
 
         /// <summary>
@@ -132,7 +131,7 @@ namespace LiteDB
         /// </summary>
         public int DeleteMany<T>(BsonExpression predicate, string collectionName = null)
         {
-            return _db.GetCollection<T>(collectionName).DeleteMany(predicate);
+            return Database.GetCollection<T>(collectionName).DeleteMany(predicate);
         }
 
         /// <summary>
@@ -140,7 +139,7 @@ namespace LiteDB
         /// </summary>
         public int DeleteMany<T>(Expression<Func<T, bool>> predicate, string collectionName = null)
         {
-            return _db.GetCollection<T>(collectionName).DeleteMany(predicate);
+            return Database.GetCollection<T>(collectionName).DeleteMany(predicate);
         }
 
         #endregion
@@ -152,7 +151,7 @@ namespace LiteDB
         /// </summary>
         public ILiteQueryable<T> Query<T>(string collectionName = null)
         {
-            return _db.GetCollection<T>(collectionName).Query();
+            return Database.GetCollection<T>(collectionName).Query();
         }
 
         #endregion
@@ -168,7 +167,7 @@ namespace LiteDB
         /// <param name="collectionName">Collection Name</param>
         public bool EnsureIndex<T>(string name, BsonExpression expression, bool unique = false, string collectionName = null)
         {
-            return _db.GetCollection<T>(collectionName).EnsureIndex(name, expression, unique);
+            return Database.GetCollection<T>(collectionName).EnsureIndex(name, expression, unique);
         }
 
         /// <summary>
@@ -179,7 +178,7 @@ namespace LiteDB
         /// <param name="collectionName">Collection Name</param>
         public bool EnsureIndex<T>(BsonExpression expression, bool unique = false, string collectionName = null)
         {
-            return _db.GetCollection<T>(collectionName).EnsureIndex(expression, unique);
+            return Database.GetCollection<T>(collectionName).EnsureIndex(expression, unique);
         }
 
         /// <summary>
@@ -190,7 +189,7 @@ namespace LiteDB
         /// <param name="collectionName">Collection Name</param>
         public bool EnsureIndex<T, K>(Expression<Func<T, K>> keySelector, bool unique = false, string collectionName = null)
         {
-            return _db.GetCollection<T>(collectionName).EnsureIndex(keySelector, unique);
+            return Database.GetCollection<T>(collectionName).EnsureIndex(keySelector, unique);
         }
 
         /// <summary>
@@ -202,7 +201,7 @@ namespace LiteDB
         /// <param name="collectionName">Collection Name</param>
         public bool EnsureIndex<T, K>(string name, Expression<Func<T, K>> keySelector, bool unique = false, string collectionName = null)
         {
-            return _db.GetCollection<T>(collectionName).EnsureIndex(name, keySelector, unique);
+            return Database.GetCollection<T>(collectionName).EnsureIndex(name, keySelector, unique);
         }
 
         #endregion
@@ -214,7 +213,7 @@ namespace LiteDB
         /// </summary>
         public T SingleById<T>(BsonValue id, string collectionName = null)
         {
-            return _db.GetCollection<T>(collectionName).Query()
+            return Database.GetCollection<T>(collectionName).Query()
                 .Where("_id = @0", id)
                 .Single();
         }
@@ -336,7 +335,7 @@ namespace LiteDB
         {
             if (disposing)
             {
-                _db.Dispose();
+                Database.Dispose();
             }
         }
     }

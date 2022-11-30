@@ -74,7 +74,6 @@ namespace LiteDB.Tests.Database
                 users.DeleteMany(x => ids.Contains(x.Id));
 
                 users.Count().Should().Be(0);
-
             }
         }
     }

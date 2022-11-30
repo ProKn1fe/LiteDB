@@ -19,7 +19,7 @@ namespace LiteDB
 
         public static T GetOrAdd<K, T>(this IDictionary<K, T> dict, K key, Func<K, T> valueFactoy)
         {
-            if (dict.TryGetValue(key, out var value) == false)
+            if (!dict.TryGetValue(key, out var value))
             {
                 value = valueFactoy(key);
 
@@ -33,7 +33,7 @@ namespace LiteDB
         {
             var position = 0;
 
-            while(position < connectionString.Length)
+            while (position < connectionString.Length)
             {
                 EatWhitespace();
                 var key = ReadKey();
@@ -115,7 +115,7 @@ namespace LiteDB
             {
                 while (position < connectionString.Length)
                 {
-                    if(connectionString[position] == ' ' ||
+                    if (connectionString[position] == ' ' ||
                         connectionString[position] == '\t' ||
                         connectionString[position] == '\f')
                     {
@@ -134,7 +134,7 @@ namespace LiteDB
         {
             try
             {
-                if (dict.TryGetValue(key, out var value) == false) return defaultValue;
+                if (!dict.TryGetValue(key, out var value)) return defaultValue;
 
                 if (typeof(T) == typeof(TimeSpan))
                 {

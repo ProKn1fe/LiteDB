@@ -100,10 +100,10 @@ namespace LiteDB.Engine
         /// Get how many bytes are used in footer page at this moment
         /// ((HighestIndex + 1) * 4 bytes per slot: [2 for position, 2 for length])
         /// </summary>
-        public int FooterSize => 
-            (HighestIndex == byte.MaxValue ? 
+        public int FooterSize =>
+            HighestIndex == byte.MaxValue ?
             0 :  // no items in page
-            ((HighestIndex + 1) * SLOT_SIZE)); // 4 bytes PER item (2 to position + 2 to length) - need consider HighestIndex used
+            ((HighestIndex + 1) * SLOT_SIZE); // 4 bytes PER item (2 to position + 2 to length) - need consider HighestIndex used
 
         /// <summary>
         /// Set in all datafile pages the page id about data/index collection. Useful if want re-build database without any index [4 bytes]
@@ -310,7 +310,7 @@ namespace LiteDB.Engine
             ENSURE(ItemsCount < byte.MaxValue, "page full");
             ENSURE(FreeBytes >= FragmentedBytes, "fragmented bytes must be at most free bytes");
 
-            if(!(FreeBytes >= bytesLength + (isNewInsert ? SLOT_SIZE : 0)))
+            if (!(FreeBytes >= bytesLength + (isNewInsert ? SLOT_SIZE : 0)))
             {
                 throw LiteException.InvalidFreeSpacePage(PageID, FreeBytes, bytesLength + (isNewInsert ? SLOT_SIZE : 0));
             }
@@ -363,7 +363,7 @@ namespace LiteDB.Engine
 
             IsDirty = true;
 
-            ENSURE(position + bytesLength <= (PAGE_SIZE - (HighestIndex + 1) * SLOT_SIZE), "new buffer slice could not override footer area");
+            ENSURE(position + bytesLength <= (PAGE_SIZE - ((HighestIndex + 1) * SLOT_SIZE)), "new buffer slice could not override footer area");
 
             // create page segment based new inserted segment
             return _buffer.Slice(position, bytesLength);
@@ -398,7 +398,7 @@ namespace LiteDB.Engine
             _buffer.Array.Fill(0, _buffer.Offset + position, length);
 
             // check if deleted segment are at end of page
-            var isLastSegment = (position + length == NextFreePosition);
+            var isLastSegment = position + length == NextFreePosition;
 
             if (isLastSegment)
             {
@@ -406,7 +406,7 @@ namespace LiteDB.Engine
                 NextFreePosition = position;
             }
             else
-            { 
+            {
                 // if segment is in middle of the page, add this blocks as fragment block
                 FragmentedBytes += length;
             }
@@ -456,7 +456,7 @@ namespace LiteDB.Engine
             ENSURE(IsValidLen(length), "invalid segment length");
 
             // check if deleted segment are at end of page
-            var isLastSegment = (position + length == NextFreePosition);
+            var isLastSegment = position + length == NextFreePosition;
 
             // mark page as dirty before return buffer slice
             IsDirty = true;
@@ -597,12 +597,12 @@ namespace LiteDB.Engine
             // clear fragment blocks (page are in a continuous segment)
             FragmentedBytes = 0;
             NextFreePosition = next;
-         }
+        }
 
         /// <summary>
         /// Store start index used in GetFreeIndex to avoid always run full loop over all indexes
         /// </summary>
-        private byte _startIndex = 0;
+        private byte _startIndex;
 
         /// <summary>
         /// Get a free index slot in this page

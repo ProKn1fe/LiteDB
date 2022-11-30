@@ -16,10 +16,10 @@ namespace LiteDB.Engine
         private readonly IEnumerator<BufferSlice> _source;
 
         private BufferSlice _current;
-        private int _currentPosition = 0; // position in _current
-        private int _position = 0; // global position
+        private int _currentPosition; // position in _current
+        private int _position; // global position
 
-        private bool _isEOF = false;
+        private bool _isEOF;
 
         /// <summary>
         /// Current global cursor position
@@ -70,7 +70,7 @@ namespace LiteDB.Engine
             // request new source array if _current all consumed
             if (_currentPosition == _current.Count)
             {
-                if (_source == null || _source.MoveNext() == false)
+                if (_source?.MoveNext() != true)
                 {
                     _isEOF = true;
                 }
@@ -225,7 +225,7 @@ namespace LiteDB.Engine
         }
 
         /// <summary>
-        /// Write string into output buffer. 
+        /// Write string into output buffer.
         /// Support direct string (with no length information) or BSON specs: with (legnth + 1) [4 bytes] before and '\0' at end = 5 extra bytes
         /// </summary>
         public void WriteString(string value, bool specs)

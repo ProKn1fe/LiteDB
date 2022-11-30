@@ -1,5 +1,7 @@
 ﻿using System.Linq;
+
 using FluentAssertions;
+
 using Xunit;
 
 namespace LiteDB.Tests.QueryTest
@@ -13,12 +15,12 @@ namespace LiteDB.Tests.QueryTest
 
             var r0 = local
                 .OrderBy(x => x.Name)
-                .Select(x => new {x.Name})
+                .Select(x => new { x.Name })
                 .ToArray();
 
             var r1 = collection.Query()
                 .OrderBy(x => x.Name)
-                .Select(x => new {x.Name})
+                .Select(x => new { x.Name })
                 .ToArray();
 
             r0.Should().Equal(r1);
@@ -31,12 +33,12 @@ namespace LiteDB.Tests.QueryTest
 
             var r0 = local
                 .OrderByDescending(x => x.Name)
-                .Select(x => new {x.Name})
+                .Select(x => new { x.Name })
                 .ToArray();
 
             var r1 = collection.Query()
                 .OrderByDescending(x => x.Name)
-                .Select(x => new {x.Name})
+                .Select(x => new { x.Name })
                 .ToArray();
 
             r0.Should().Equal(r1);
@@ -49,12 +51,12 @@ namespace LiteDB.Tests.QueryTest
 
             var r0 = local
                 .OrderBy(x => x.Date.Day)
-                .Select(x => new {d = x.Date.Day})
+                .Select(x => new { d = x.Date.Day })
                 .ToArray();
 
             var r1 = collection.Query()
                 .OrderBy(x => x.Date.Day)
-                .Select(x => new {d = x.Date.Day})
+                .Select(x => new { d = x.Date.Day })
                 .ToArray();
 
             r0.Should().Equal(r1);
@@ -90,7 +92,6 @@ namespace LiteDB.Tests.QueryTest
 
             asc[0].Id.Should().Be(1);
             desc[0].Id.Should().Be(1000);
-
         }
     }
 }

@@ -30,8 +30,8 @@ namespace LiteDB.Internals
             this.Invoking(x => header.Pragmas.Set(Pragmas.TIMEOUT, 1, true)).Should().NotThrow();
 
             this.Invoking(x => header.Pragmas.Set(Pragmas.LIMIT_SIZE, 1000, true)).Should().Throw<Exception>();
-            this.Invoking(x => header.Pragmas.Set(Pragmas.LIMIT_SIZE, (Convert.ToInt32(header.LastPageID)) * Constants.PAGE_SIZE - 1, true)).Should().Throw<Exception>();
-            this.Invoking(x => header.Pragmas.Set(Pragmas.LIMIT_SIZE, 1024L*1024L*1024L*1024L, true)).Should().NotThrow();
+            this.Invoking(x => header.Pragmas.Set(Pragmas.LIMIT_SIZE, (Convert.ToInt32(header.LastPageID) * Constants.PAGE_SIZE) - 1, true)).Should().Throw<Exception>();
+            this.Invoking(x => header.Pragmas.Set(Pragmas.LIMIT_SIZE, 1024L * 1024L * 1024L * 1024L, true)).Should().NotThrow();
 
             this.Invoking(x => header.Pragmas.Set(Pragmas.UTC_DATE, true, true)).Should().NotThrow();
 

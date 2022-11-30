@@ -35,7 +35,7 @@ namespace LiteDB.Engine
         /// <summary>
         /// Get how many extends was made in this store
         /// </summary>
-        private int _extends = 0;
+        private int _extends;
 
         /// <summary>
         /// Get memory segment sizes
@@ -199,7 +199,7 @@ namespace LiteDB.Engine
             });
 
             // if page was not added into readable list move page to free list
-            if (added == false)
+            if (!added)
             {
                 DiscardPage(page);
             }
@@ -233,7 +233,7 @@ namespace LiteDB.Engine
             foreach (var page in pages)
             {
                 // if page was not modified, try move to readable list
-                if (TryMoveToReadable(page) == false)
+                if (!TryMoveToReadable(page))
                 {
                     // if already in readable list, just discard
                     DiscardPage(page);
@@ -280,7 +280,7 @@ namespace LiteDB.Engine
             else
             {
                 // ensure only 1 single thread call extend method
-                lock(_free)
+                lock (_free)
                 {
                     if (!_free.IsEmpty) return GetFreePage();
 
@@ -366,7 +366,7 @@ namespace LiteDB.Engine
         /// <summary>
         /// Return how many pages are in use when call this method (ShareCounter != 0).
         /// </summary>
-        public int PagesInUse => _readable.Values.Where(x => x.ShareCounter != 0).Count();
+        public int PagesInUse => _readable.Values.Count(x => x.ShareCounter != 0);
 
         /// <summary>
         /// Return how many pages are available completed free

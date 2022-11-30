@@ -18,7 +18,7 @@ namespace LiteDB.Engine
 
         public BsonDocument Load(IndexNode node)
         {
-            ENSURE(node.DataBlock.IsEmpty == false, "Never should be empty rawid");
+            ENSURE(!node.DataBlock.IsEmpty, "Never should be empty rawid");
 
             var doc = new BsonDocument
             {

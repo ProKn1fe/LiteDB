@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using FluentAssertions;
+
 using Xunit;
 
 namespace LiteDB.Tests.Mapper
@@ -21,12 +23,12 @@ namespace LiteDB.Tests.Mapper
             var guid = Guid.NewGuid();
             var today = DateTime.Today;
 
-            var u0 = new User<int, string> {Id = 1, Name = "John"};
-            var u1 = new User<double, Guid> {Id = 99.9, Name = guid};
-            var u2 = new User<DateTime, string> {Id = today, Name = "Carlos"};
+            var u0 = new User<int, string> { Id = 1, Name = "John" };
+            var u1 = new User<double, Guid> { Id = 99.9, Name = guid };
+            var u2 = new User<DateTime, string> { Id = today, Name = "Carlos" };
             var u3 = new User<Dictionary<string, object>, string>
             {
-                Id = new Dictionary<string, object> {["f"] = "user1", ["n"] = 4},
+                Id = new Dictionary<string, object> { ["f"] = "user1", ["n"] = 4 },
                 Name = "Complex User"
             };
             var u4 = new User<ISet<object>, string>

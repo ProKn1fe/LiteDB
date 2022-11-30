@@ -57,7 +57,7 @@ namespace LiteDB
 
         #region Ctor
 
-        public int ErrorCode { get; private set; }
+        public int ErrorCode { get; }
         public long Position { get; private set; }
 
         public LiteException(int code, string message)
@@ -72,10 +72,22 @@ namespace LiteDB
             ErrorCode = code;
         }
 
-        internal LiteException (int code, Exception inner, string message, params object[] args)
-        : base (string.Format (message, args), inner)
+        internal LiteException(int code, Exception inner, string message, params object[] args)
+        : base(string.Format(message, args), inner)
         {
             ErrorCode = code;
+        }
+
+        public LiteException()
+        {
+        }
+
+        public LiteException(string message) : base(message)
+        {
+        }
+
+        public LiteException(string message, Exception innerException) : base(message, innerException)
+        {
         }
 
         #endregion

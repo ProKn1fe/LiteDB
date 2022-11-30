@@ -8,7 +8,7 @@ namespace LiteDB
     /// <summary>
     /// Static class for serialize/deserialize BsonDocuments into json extended format
     /// </summary>
-    public class JsonSerializer
+    public static class JsonSerializer
     {
         #region Serialize
 

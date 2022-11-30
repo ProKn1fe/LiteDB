@@ -1,17 +1,18 @@
 ﻿using System;
 using System.IO;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
 {
     /// <summary>
     /// Implement a temporary stream that uses MemoryStream until get LIMIT bytes, then copy all to tempoary disk file and delete on dispose
-    /// Can be pass 
+    /// Can be pass
     /// </summary>
     public class TempStream : Stream
     {
         private Stream _stream = new MemoryStream();
-        private string _filename = null;
+        private string _filename;
         private readonly long _maxMemoryUsage;
 
         public TempStream(string filename = null, long maxMemoryUsage = 10485760 /* 10MB */)

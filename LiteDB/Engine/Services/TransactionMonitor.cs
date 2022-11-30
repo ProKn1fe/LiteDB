@@ -23,12 +23,11 @@ namespace LiteDB.Engine
         private readonly WalIndexService _walIndex;
 
         private int _freePages;
-        private readonly int _initialSize;
 
         // expose open transactions
         public ICollection<TransactionService> Transactions => _transactions.Values;
         public int FreePages => _freePages;
-        public int InitialSize => _initialSize;
+        public int InitialSize { get; }
 
         public TransactionMonitor(HeaderPage header, EngineSettings settings, LockService locker, DiskService disk, WalIndexService walIndex)
         {
@@ -42,7 +41,7 @@ namespace LiteDB.Engine
             _freePages = MAX_TRANSACTION_SIZE;
 
             // initial size 
-            _initialSize = MAX_TRANSACTION_SIZE / MAX_OPEN_TRANSACTIONS;
+            InitialSize = MAX_TRANSACTION_SIZE / MAX_OPEN_TRANSACTIONS;
         }
 
         public TransactionService GetTransaction(bool create, bool queryOnly, out bool isNew)
@@ -72,13 +71,13 @@ namespace LiteDB.Engine
                 }
 
                 // enter in lock transaction after release _transaction lock
-                if (alreadyLock == false)
+                if (!alreadyLock)
                 {
                     _locker.EnterTransaction();
                 }
 
                 // do not store in thread query-only transaction
-                if (queryOnly == false)
+                if (!queryOnly)
                 {
                     _slot.Value = transaction;
                 }
@@ -114,13 +113,13 @@ namespace LiteDB.Engine
             }
 
             // unlock thread-transaction only if there is no more transactions
-            if (keepLocked == false)
+            if (!keepLocked)
             {
                 _locker.ExitTransaction();
             }
 
             // remove transaction from thread if are no queryOnly transaction
-            if (transaction.QueryOnly == false)
+            if (!transaction.QueryOnly)
             {
                 ENSURE(_slot.Value == transaction, "current thread must contains transaction parameter");
 
@@ -137,7 +136,7 @@ namespace LiteDB.Engine
         {
             lock (_transactions)
             {
-                return 
+                return
                     _slot.Value ??
                     _transactions.Values.FirstOrDefault(x => x.ThreadID == Environment.CurrentManagedThreadId);
             }
@@ -148,11 +147,11 @@ namespace LiteDB.Engine
         /// </summary>
         private int GetInitialSize()
         {
-            if (_freePages >= _initialSize)
+            if (_freePages >= InitialSize)
             {
-                _freePages -= _initialSize;
+                _freePages -= InitialSize;
 
-                return _initialSize;
+                return InitialSize;
             }
             else
             {
@@ -162,7 +161,7 @@ namespace LiteDB.Engine
                 foreach (var trans in _transactions.Values)
                 {
                     //TODO: revisar estas contas, o reduce tem que fechar 1000
-                    var reduce = (trans.MaxTransactionSize / _initialSize);
+                    var reduce = trans.MaxTransactionSize / InitialSize;
 
                     trans.MaxTransactionSize -= reduce;
 
@@ -178,13 +177,13 @@ namespace LiteDB.Engine
         /// </summary>
         private bool TryExtend(TransactionService trans)
         {
-            lock(_transactions)
+            lock (_transactions)
             {
-                if (_freePages >= _initialSize)
+                if (_freePages >= InitialSize)
                 {
-                    trans.MaxTransactionSize += _initialSize;
+                    trans.MaxTransactionSize += InitialSize;
 
-                    _freePages -= _initialSize;
+                    _freePages -= InitialSize;
 
                     return true;
                 }
@@ -198,9 +197,9 @@ namespace LiteDB.Engine
         /// </summary>
         public bool CheckSafepoint(TransactionService trans)
         {
-            return 
+            return
                 trans.Pages.TransactionSize >= trans.MaxTransactionSize &&
-                TryExtend(trans) == false;
+                !TryExtend(trans);
         }
 
         /// <summary>

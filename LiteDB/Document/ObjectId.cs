@@ -97,24 +97,24 @@ namespace LiteDB
         {
             if (bytes == null) throw new ArgumentNullException(nameof(bytes));
 
-            Timestamp = 
-                (bytes[startIndex + 0] << 24) + 
-                (bytes[startIndex + 1] << 16) + 
-                (bytes[startIndex + 2] << 8) + 
+            Timestamp =
+                (bytes[startIndex + 0] << 24) +
+                (bytes[startIndex + 1] << 16) +
+                (bytes[startIndex + 2] << 8) +
                 bytes[startIndex + 3];
 
-            Machine = 
-                (bytes[startIndex + 4] << 16) + 
-                (bytes[startIndex + 5] << 8) + 
+            Machine =
+                (bytes[startIndex + 4] << 16) +
+                (bytes[startIndex + 5] << 8) +
                 bytes[startIndex + 6];
 
             Pid = (short)
-                ((bytes[startIndex + 7] << 8) + 
+                ((bytes[startIndex + 7] << 8) +
                 bytes[startIndex + 8]);
 
-            Increment = 
-                (bytes[startIndex + 9] << 16) + 
-                (bytes[startIndex + 10] << 8) + 
+            Increment =
+                (bytes[startIndex + 9] << 16) +
+                (bytes[startIndex + 10] << 8) +
                 bytes[startIndex + 11];
         }
 
@@ -172,12 +172,12 @@ namespace LiteDB
 
         /// <summary>
         /// Checks if this ObjectId is equal to the given object. Returns true
-        /// if the given object is equal to the value of this instance. 
+        /// if the given object is equal to the value of this instance.
         /// Returns false otherwise.
         /// </summary>
         public bool Equals(ObjectId other)
         {
-            return other != null && 
+            return other != null &&
                 Timestamp == other.Timestamp &&
                 Machine == other.Machine &&
                 Pid == other.Pid &&
@@ -198,10 +198,10 @@ namespace LiteDB
         public override int GetHashCode()
         {
             int hash = 17;
-            hash = 37 * hash + Timestamp.GetHashCode();
-            hash = 37 * hash + Machine.GetHashCode();
-            hash = 37 * hash + Pid.GetHashCode();
-            hash = 37 * hash + Increment.GetHashCode();
+            hash = (37 * hash) + Timestamp.GetHashCode();
+            hash = (37 * hash) + Machine.GetHashCode();
+            hash = (37 * hash) + Pid.GetHashCode();
+            hash = (37 * hash) + Increment.GetHashCode();
             return hash;
         }
 
@@ -230,15 +230,15 @@ namespace LiteDB
             bytes[startIndex + 0] = (byte)(Timestamp >> 24);
             bytes[startIndex + 1] = (byte)(Timestamp >> 16);
             bytes[startIndex + 2] = (byte)(Timestamp >> 8);
-            bytes[startIndex + 3] = (byte)(Timestamp);
+            bytes[startIndex + 3] = (byte)Timestamp;
             bytes[startIndex + 4] = (byte)(Machine >> 16);
             bytes[startIndex + 5] = (byte)(Machine >> 8);
-            bytes[startIndex + 6] = (byte)(Machine);
+            bytes[startIndex + 6] = (byte)Machine;
             bytes[startIndex + 7] = (byte)(Pid >> 8);
-            bytes[startIndex + 8] = (byte)(Pid);
+            bytes[startIndex + 8] = (byte)Pid;
             bytes[startIndex + 9] = (byte)(Increment >> 16);
             bytes[startIndex + 10] = (byte)(Increment >> 8);
-            bytes[startIndex + 11] = (byte)(Increment);
+            bytes[startIndex + 11] = (byte)Increment;
         }
 
         public byte[] ToByteArray()
@@ -256,15 +256,15 @@ namespace LiteDB
             bytes[1] = (byte)(Timestamp >> 16);
             bytes[0] = (byte)(Timestamp >> 24);
             bytes[2] = (byte)(Timestamp >> 8);
-            bytes[3] = (byte)(Timestamp);
+            bytes[3] = (byte)Timestamp;
             bytes[4] = (byte)(Machine >> 16);
             bytes[5] = (byte)(Machine >> 8);
-            bytes[6] = (byte)(Machine);
+            bytes[6] = (byte)Machine;
             bytes[7] = (byte)(Pid >> 8);
-            bytes[8] = (byte)(Pid);
+            bytes[8] = (byte)Pid;
             bytes[9] = (byte)(Increment >> 16);
             bytes[10] = (byte)(Increment >> 8);
-            bytes[11] = (byte)(Increment);
+            bytes[11] = (byte)Increment;
         }
 #endif
 

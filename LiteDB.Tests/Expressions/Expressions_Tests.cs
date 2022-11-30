@@ -14,17 +14,17 @@ namespace LiteDB.Tests.Expressions
                 return BsonExpression.Create(s).ExecuteScalar();
             }
 
-            K(@"123").ExpectValue(123);
-            K(@"null").ExpectValue(BsonValue.Null);
-            K(@"15.9").ExpectValue(15.9);
-            K(@"true").ExpectValue(true);
-            K(@"false").ExpectValue(false);
-            K(@"'my string'").ExpectValue("my string");
+            K("123").ExpectValue(123);
+            K("null").ExpectValue(BsonValue.Null);
+            K("15.9").ExpectValue(15.9);
+            K("true").ExpectValue(true);
+            K("false").ExpectValue(false);
+            K("'my string'").ExpectValue("my string");
             K(@"""my string""").ExpectValue("my string");
-            K(@"[1,2]").ExpectArray(1, 2);
-            K(@"[]").ExpectJson("[]");
-            K(@"{a:1}").ExpectJson("{a:1}");
-            K(@"{a:true,i:0}").ExpectJson("{a:true,i:0}");
+            K("[1,2]").ExpectArray(1, 2);
+            K("[]").ExpectJson("[]");
+            K("{a:1}").ExpectJson("{a:1}");
+            K("{a:true,i:0}").ExpectJson("{a:true,i:0}");
         }
 
         [Fact]
@@ -213,7 +213,6 @@ namespace LiteDB.Tests.Expressions
             F("5.0 % 3").ExpectValue("5.0%3");
             F("5.00 % 3").ExpectValue("5.0%3");
             F("5.001 % 3").ExpectValue("5.001%3");
-
         }
 
         [Fact]

@@ -110,14 +110,13 @@ namespace LiteDB
         // getting `bsonDocument.Item[string]` property access
         public static readonly PropertyInfo DocumentItemProperty =
             typeof(BsonDocument).GetProperties()
-            .Where(x => x.Name == "Item" && x.GetGetMethod().GetParameters().First().ParameterType == typeof(string))
-            .First();
+            .First(x => x.Name == "Item" && x.GetGetMethod().GetParameters().First().ParameterType == typeof(string));
 
         public static bool IsNullable(Type type)
         {
             if (!type.IsGenericType) return false;
             var g = type.GetGenericTypeDefinition();
-            return (g.Equals(typeof(Nullable<>)));
+            return g.Equals(typeof(Nullable<>));
         }
 
         /// <summary>
@@ -225,8 +224,8 @@ namespace LiteDB
         public static bool IsCollection(Type type)
         {
             return
-                type.GetTypeInfo().IsGenericType &&
-                type.GetGenericTypeDefinition().Equals(typeof(ICollection<>)) ||
+                (type.GetTypeInfo().IsGenericType &&
+                type.GetGenericTypeDefinition().Equals(typeof(ICollection<>))) ||
                 type.GetInterfaces().Any(x => x == typeof(ICollection) ||
                 (x.GetTypeInfo().IsGenericType && x.GetGenericTypeDefinition() == typeof(ICollection<>)));
         }
@@ -237,8 +236,8 @@ namespace LiteDB
         public static bool IsDictionary(Type type)
         {
             return
-                type.GetTypeInfo().IsGenericType &&
-                type.GetGenericTypeDefinition().Equals(typeof(IDictionary<,>)) ||
+                (type.GetTypeInfo().IsGenericType &&
+                type.GetGenericTypeDefinition().Equals(typeof(IDictionary<,>))) ||
                 type.GetInterfaces().Any(x => x == typeof(IDictionary) ||
                 (x.GetTypeInfo().IsGenericType && x.GetGenericTypeDefinition().Equals(typeof(IDictionary<,>))));
         }

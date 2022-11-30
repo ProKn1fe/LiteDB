@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -39,7 +40,7 @@ namespace LiteDB.Engine
         /// Build QueryPlan instance based on QueryBuilder fields
         /// - Load used fields in all expressions
         /// - Select best index option
-        /// - Fill includes 
+        /// - Fill includes
         /// - Define orderBy
         /// - Define groupBy
         /// </summary>
@@ -104,7 +105,7 @@ namespace LiteDB.Engine
             }
 
             // check all where predicate for AND operators
-            foreach(var predicate in _query.Where)
+            foreach (var predicate in _query.Where)
             {
                 add(predicate);
             }
@@ -240,7 +241,7 @@ namespace LiteDB.Engine
                 Tuple<CollectionIndex, BsonExpression> index = null;
 
                 // check if expression is ANY
-                if (expr.Left.IsScalar == false && expr.Right.IsScalar == true)
+                if (!expr.Left.IsScalar && expr.Right.IsScalar)
                 {
                     // ANY expression support only LEFT (Enum) -> RIGHT (Scalar)
                     if (expr.IsANY)
@@ -280,9 +281,9 @@ namespace LiteDB.Engine
             if (lowest == null && (_query.OrderBy != null || _query.GroupBy != null || preferred != null))
             {
                 var index =
-                    indexes.FirstOrDefault(x => x.Expression == _query.GroupBy?.Source) ??
-                    indexes.FirstOrDefault(x => x.Expression == _query.OrderBy?.Source) ??
-                    indexes.FirstOrDefault(x => x.Expression == preferred);
+                    Array.Find(indexes, x => x.Expression == _query.GroupBy?.Source) ??
+                    Array.Find(indexes, x => x.Expression == _query.OrderBy?.Source) ??
+                    Array.Find(indexes, x => x.Expression == preferred);
 
                 if (index != null)
                 {
@@ -357,7 +358,7 @@ namespace LiteDB.Engine
         /// </summary>
         private void DefineIncludes()
         {
-            foreach(var include in _query.Includes)
+            foreach (var include in _query.Includes)
             {
                 // includes always has one single field
                 var field = include.Fields.Single();
