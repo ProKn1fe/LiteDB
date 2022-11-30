@@ -63,8 +63,6 @@ namespace LiteDB
             var isMatch = true;
             var isWildCardOn = false;
             var isCharWildCardOn = false;
-            var isCharSetOn = false;
-            var isNotCharSetOn = false;
             var endOfPattern = false;
             var lastWildCard = -1;
             var patternIndex = 0;
@@ -108,7 +106,7 @@ namespace LiteDB
 
                 if (isWildCardOn)
                 {
-                    if (char.ToUpper(c) == char.ToUpper(p))
+                    if (collation.Compare(c, p) == 0)
                     {
                         isWildCardOn = false;
                         patternIndex++;
@@ -117,26 +115,6 @@ namespace LiteDB
                 else if (isCharWildCardOn)
                 {
                     isCharWildCardOn = false;
-                }
-                else if (isCharSetOn || isNotCharSetOn)
-                {
-                    //var charMatch = (set.Contains(char.ToUpper(c))); // -- always "false" - remove [abc] support
-                    //if ((isNotCharSetOn && charMatch) || (isCharSetOn && !charMatch))
-
-                    if (isCharSetOn)
-                    {
-                        if (lastWildCard >= 0)
-                        {
-                            patternIndex = lastWildCard;
-                        }
-                        else
-                        {
-                            isMatch = false;
-                            break;
-                        }
-                    }
-
-                    isNotCharSetOn = isCharSetOn = false;
                 }
                 else
                 {
