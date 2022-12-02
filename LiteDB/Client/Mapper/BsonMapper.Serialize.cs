@@ -53,14 +53,14 @@ namespace LiteDB
             if (obj is BsonValue bsonValue) return bsonValue;
 
             // check if is a custom type
-            else if (_customSerializer.TryGetValue(type, out var custom) || _customSerializer.TryGetValue(obj.GetType(), out custom))
+            if (_customSerializer.TryGetValue(type, out var custom) || _customSerializer.TryGetValue(obj.GetType(), out custom))
             {
                 return custom(obj);
             }
             // test string - mapper has some special options
-            else if (obj is string str)
+            if (obj is string str)
             {
-                str = TrimWhitespace ? (obj as string).Trim() : str;
+                str = TrimWhitespace ? str.Trim() : str;
 
                 if (EmptyStringToNull && str.Length == 0)
                 {
@@ -72,39 +72,39 @@ namespace LiteDB
                 }
             }
             // basic Bson data types (cast datatype for better performance optimization)
-            else if (obj is int intVal) return new BsonValue(intVal);
-            else if (obj is long longVal) return new BsonValue(longVal);
-            else if (obj is double doubleVal) return new BsonValue(doubleVal);
-            else if (obj is decimal decimalVal) return new BsonValue(decimalVal);
-            else if (obj is byte[] bytesVal) return new BsonValue(bytesVal);
-            else if (obj is ObjectId objectId) return new BsonValue(objectId);
-            else if (obj is Guid guid) return new BsonValue(guid);
-            else if (obj is bool boolVal) return new BsonValue(boolVal);
-            else if (obj is DateTime dt) return new BsonValue(dt);
+            if (obj is int intVal) return new BsonValue(intVal);
+            if (obj is long longVal) return new BsonValue(longVal);
+            if (obj is double doubleVal) return new BsonValue(doubleVal);
+            if (obj is decimal decimalVal) return new BsonValue(decimalVal);
+            if (obj is byte[] bytesVal) return new BsonValue(bytesVal);
+            if (obj is ObjectId objectId) return new BsonValue(objectId);
+            if (obj is Guid guid) return new BsonValue(guid);
+            if (obj is bool boolVal) return new BsonValue(boolVal);
+            if (obj is DateTime dt) return new BsonValue(dt);
             // basic .net type to convert to bson
-            else if (obj is short || obj is ushort || obj is byte || obj is sbyte)
+            if (obj is short || obj is ushort || obj is byte || obj is sbyte)
             {
                 return new BsonValue(Convert.ToInt32(obj));
             }
-            else if (obj is uint)
+            if (obj is uint)
             {
                 return new BsonValue(Convert.ToInt64(obj));
             }
-            else if (obj is ulong ulng)
+            if (obj is ulong ulng)
             {
                 var lng = unchecked((long)ulng);
 
                 return new BsonValue(lng);
             }
-            else if (obj is float)
+            if (obj is float)
             {
                 return new BsonValue(Convert.ToDouble(obj));
             }
-            else if (obj is char)
+            if (obj is char)
             {
                 return new BsonValue(obj.ToString());
             }
-            else if (obj is Enum)
+            if (obj is Enum)
             {
                 if (EnumAsInteger)
                 {
@@ -116,7 +116,7 @@ namespace LiteDB
                 }
             }
             // for dictionary
-            else if (obj is IDictionary dict)
+            if (obj is IDictionary dict)
             {
                 // when you are converting Dictionary<string, object>
                 if (type == typeof(object))
@@ -129,15 +129,12 @@ namespace LiteDB
                 return SerializeDictionary(itemType, dict, depth);
             }
             // check if is a list or array
-            else if (obj is IEnumerable ie)
+            if (obj is IEnumerable ie)
             {
                 return SerializeArray(Reflection.GetListItemType(obj.GetType()), ie, depth);
             }
             // otherwise serialize as a plain object
-            else
-            {
-                return SerializeObject(type, obj, depth);
-            }
+            return SerializeObject(type, obj, depth);
         }
 
         private BsonArray SerializeArray(Type type, IEnumerable array, int depth)
