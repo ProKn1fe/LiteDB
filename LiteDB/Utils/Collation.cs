@@ -10,28 +10,22 @@ namespace LiteDB
     /// </summary>
     public class Collation : IComparer<BsonValue>, IComparer<string>, IEqualityComparer<BsonValue>
     {
-        private readonly CompareInfo _compareInfo;
+        private CompareInfo _compareInfo => Culture.CompareInfo;
 
         public Collation(string collation)
         {
             var parts = collation.Split('/');
             var culture = parts[0];
-            var sortOptions = parts.Length > 1 ?
+            SortOptions = parts.Length > 1 ?
                 (CompareOptions)Enum.Parse(typeof(CompareOptions), parts[1]) :
                 CompareOptions.None;
-
-            SortOptions = sortOptions;
             Culture = new CultureInfo(culture);
-
-            _compareInfo = Culture.CompareInfo;
         }
 
         public Collation(int lcid, CompareOptions sortOptions)
         {
             SortOptions = sortOptions;
             Culture = CultureInfo.GetCultureInfo(lcid);
-
-            _compareInfo = Culture.CompareInfo;
         }
 
         /// <summary>
@@ -70,7 +64,7 @@ namespace LiteDB
         public int Compare(char left, char right)
         {
             //TODO implementar o compare corretamente
-            return char.ToUpper(left) == char.ToUpper(right) ? 0 : 1;
+            return char.ToUpper(left, Culture) == char.ToUpper(right, Culture) ? 0 : 1;
         }
 
         public int Compare(BsonValue left, BsonValue rigth)

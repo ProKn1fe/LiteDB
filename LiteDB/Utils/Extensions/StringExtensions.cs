@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace LiteDB
@@ -34,11 +35,13 @@ namespace LiteDB
 
         public static string Sha1(this string value)
         {
-            var data = Encoding.UTF8.GetBytes(value);
-
 #if NET6_0_OR_GREATER
-            var hashData = SHA1.HashData(data);
+            var count = Encoding.UTF8.GetByteCount(value);
+            Span<byte> bytes = count < Constants.STACKALLOC_MAX_SIZE ? stackalloc byte[count] : new byte[count];
+            Encoding.UTF8.GetBytes(value, bytes);
+            var hashData = SHA1.HashData(bytes);
 #else
+            var data = Encoding.UTF8.GetBytes(value);
             using var sha = SHA1.Create();
             var hashData = sha.ComputeHash(data);
 #endif
@@ -72,7 +75,7 @@ namespace LiteDB
             {
                 var c = str[i];
 
-                endOfPattern = (patternIndex >= pattern.Length);
+                endOfPattern = patternIndex >= pattern.Length;
 
                 if (!endOfPattern)
                 {
@@ -116,30 +119,27 @@ namespace LiteDB
                 {
                     isCharWildCardOn = false;
                 }
+                else if (collation.Compare(c, p) == 0)
+                {
+                    patternIndex++;
+                }
                 else
                 {
-                    if (collation.Compare(c, p) == 0)
+                    if (lastWildCard >= 0)
                     {
-                        patternIndex++;
+                        var back = patternIndex - lastWildCard - 1;
+                        i -= back;
+                        patternIndex = lastWildCard;
                     }
                     else
                     {
-                        if (lastWildCard >= 0)
-                        {
-                            int back = patternIndex - lastWildCard - 1;
-                            i -= back;
-                            patternIndex = lastWildCard;
-                        }
-                        else
-                        {
-                            isMatch = false;
-                            break;
-                        }
+                        isMatch = false;
+                        break;
                     }
                 }
             }
 
-            endOfPattern = (patternIndex >= pattern.Length);
+            endOfPattern = patternIndex >= pattern.Length;
 
             if (isMatch && !endOfPattern)
             {

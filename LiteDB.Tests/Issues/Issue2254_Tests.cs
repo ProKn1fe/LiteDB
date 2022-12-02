@@ -20,8 +20,8 @@ namespace LiteDB.Tests.Issues
                 Name = "DC00001"
             });
 
-            Assert.NotNull(collection.FindOne(a => a.Name.Contains('0'))); // Work
-            Assert.NotNull(collection.FindOne(a => a.Name.Contains('1'))); // Work
+            Assert.NotNull(collection.FindOne(a => a.Name.Contains("0"))); // Work
+            Assert.NotNull(collection.FindOne(a => a.Name.Contains("1"))); // Work
             Assert.NotNull(collection.FindOne(a => a.Name.Contains("01"))); // Not work
             Assert.NotNull(collection.FindOne(a => a.Name.Contains("001"))); // Not work
             Assert.NotNull(collection.FindOne(a => a.Name.Contains("0001"))); // Not work
